@@ -10,6 +10,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UserdataService } from './userdata/userdata.service';
 import { UserdataModule } from './userdata/userdata.module';
 import { AuthModule } from './auth/auth.module';
+import { RegisterController } from './register/register.controller';
+import { RegisterModule } from './register/register.module';
 
 @Module({
   imports: [
@@ -26,8 +28,8 @@ import { AuthModule } from './auth/auth.module';
       entities: [Userdata],
       synchronize: true,
     }), 
-LoginModule, UserdataModule, AuthModule],
-  controllers: [AppController, LoginController],
+LoginModule, UserdataModule, AuthModule, RegisterModule],
+  controllers: [AppController, LoginController, RegisterController],
   providers: [AppService, LoginService,UserdataService],
 })
 export class AppModule {}
