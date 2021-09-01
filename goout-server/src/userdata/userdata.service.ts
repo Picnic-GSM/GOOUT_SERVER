@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Userdata } from './userdata.entity';
-import { LoginDataDto } from './userdata.interface';
 import * as crypto from 'crypto'
+import { LoginDataDto } from './login.interface';
 
 @Injectable()
 export class UserdataService {
@@ -30,11 +30,9 @@ export class UserdataService {
   findOne(id: string): Promise<Userdata> {
     return this.usersRepository.findOne(id);
   }
-/*
-  findIdCheck(userid: string): Promise<Userdata> {
-    return this.usersRepository.findOne({userid:userid});
+  findwithEmail(email: string): Promise<Userdata> {
+    return this.usersRepository.findOne({email:email});
   }
-*/
 /*
   async updateUserdata(updateUserdataDto:IUpdateUserdata) {
     const updatedata = await this.usersRepository.findOne({userid:updateUserdataDto.userid});
