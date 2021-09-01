@@ -7,6 +7,9 @@ import { LoginModule } from './login/login.module';
 import { Userdata } from './userdata/userdata.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { UserdataService } from './userdata/userdata.service';
+import { UserdataModule } from './userdata/userdata.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,8 +26,8 @@ import { ConfigModule } from '@nestjs/config';
       entities: [Userdata],
       synchronize: true,
     }), 
-LoginModule],
+LoginModule, UserdataModule, AuthModule],
   controllers: [AppController, LoginController],
-  providers: [AppService, LoginService],
+  providers: [AppService, LoginService,UserdataService],
 })
 export class AppModule {}
