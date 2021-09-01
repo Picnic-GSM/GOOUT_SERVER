@@ -3,10 +3,11 @@ import { UserdataService } from 'src/userdata/userdata.service';
 import { LoginService } from './login.service';
 import * as crypto from 'crypto'
 import { LoginDataDto } from 'src/userdata/login.interface';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('login')
 export class LoginController {
-    constructor(private readonly userdataservice:UserdataService) {}
+    constructor(private readonly userdataservice:UserdataService,private readonly authservice:AuthService) {}
     
     @Get()
     getdata() {
@@ -32,7 +33,7 @@ export class LoginController {
         if(result == req.password) {
             throw new HttpException('비밀번호가 잘못 됐습니다',HttpStatus.BAD_REQUEST);
         } else {
-            return JWT;
+            return this.authservice.IssueJWT(user);
         }
     }
 }
