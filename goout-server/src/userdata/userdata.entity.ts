@@ -19,4 +19,7 @@ export class Userdata {
 
   @Column()
   class:number;
+
+  @Column()
+  s_number:number;
 }

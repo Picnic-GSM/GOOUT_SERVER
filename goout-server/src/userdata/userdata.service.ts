@@ -13,14 +13,12 @@ export class UserdataService {
   ) {}
 
   async createUserdata(createUserDto: LoginDataDto) {
-    crypto.randomBytes(64, (err, buf) => {
-      crypto.pbkdf2('비밀번호', buf.toString('base64'), 100000, 64, 'sha512', (err, key) => {
-        //console.log(key.toString('base64'));
-        console.log(key)
-      });
-    });
-    //createUserDto.salt = await bcrypt.genSalt();
-    //createUserDto.password = await bcrypt.hash(createUserDto.password,createUserDto.salt);
+    const cipher = crypto.createCipher('aes-256-cbc', process.env.key);
+    let result = cipher.update(createUserDto.password, 'utf8', 'base64');
+    result += cipher.final('base64');
+    console.log("result"+result)
+    createUserDto.password = result;
+
     return this.usersRepository.save(createUserDto);
   }
   getData(): Promise<Userdata[]> {
