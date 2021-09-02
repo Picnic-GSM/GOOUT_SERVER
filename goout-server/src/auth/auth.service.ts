@@ -13,4 +13,10 @@ export class AuthService {
         console.log(this.jwtService.sign(payload))
 		return { access_token: this.jwtService.sign(payload) };
 	}
+/*
+	async JWTverify(token:any) {
+		let decoded = await this.jwtService.verify(token)
+        console.log(decoded)
+	}
+*/
 }

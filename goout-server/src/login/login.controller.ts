@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
 import { UserdataService } from 'src/userdata/userdata.service';
 import { LoginService } from './login.service';
 import * as crypto from 'crypto'
@@ -18,11 +18,13 @@ export class LoginController {
         const decipher = crypto.createDecipher('aes-256-cbc', process.env.key);
         let result2 = decipher.update(result, 'base64', 'utf8');
         result2 += decipher.final('utf8'); 
+        return result+result2
     }
     
     @Post()
-    async login(@Req() req:LoginDataDto) {
+    async login(@Body() req:LoginDataDto) {
         let user = await this.userdataservice.findwithEmail(req.email);
+        console.log(user)
         if(user == undefined) {
             throw new HttpException('아이디를 찾을 수 없습니다',HttpStatus.BAD_REQUEST)
         }

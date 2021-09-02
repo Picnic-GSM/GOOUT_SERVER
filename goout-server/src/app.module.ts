@@ -11,6 +11,8 @@ import { UserdataService } from './userdata/userdata.service';
 import { UserdataModule } from './userdata/userdata.module';
 import { AuthModule } from './auth/auth.module';
 import { LeavedataModule } from './leavedata/leavedata.module';
+import { LeaveController } from './leave/leave.controller';
+import { LeaveModule } from './leave/leave.module';
 
 @Module({
   imports: [
@@ -27,8 +29,8 @@ import { LeavedataModule } from './leavedata/leavedata.module';
       entities: [Userdata],
       synchronize: true,
     }), 
-LoginModule, UserdataModule, AuthModule, LeavedataModule],
-  controllers: [AppController, LoginController],
+LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule],
+  controllers: [AppController, LoginController, LeaveController],
   providers: [AppService, LoginService,UserdataService],
 })
 export class AppModule {}
