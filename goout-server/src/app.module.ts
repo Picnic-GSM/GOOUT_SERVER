@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserdataService } from './userdata/userdata.service';
 import { UserdataModule } from './userdata/userdata.module';
 import { AuthModule } from './auth/auth.module';
+import { LeavedataModule } from './leavedata/leavedata.module';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { AuthModule } from './auth/auth.module';
       entities: [Userdata],
       synchronize: true,
     }), 
-LoginModule, UserdataModule, AuthModule],
+LoginModule, UserdataModule, AuthModule, LeavedataModule],
   controllers: [AppController, LoginController],
   providers: [AppService, LoginService,UserdataService],
 })
