@@ -13,6 +13,10 @@ import { AuthModule } from './auth/auth.module';
 import { LeavedataModule } from './leavedata/leavedata.module';
 import { LeaveController } from './leave/leave.controller';
 import { LeaveModule } from './leave/leave.module';
+import { RegisterController } from './register/register.controller';
+import { RegisterModule } from './register/register.module';
+import { Leavedata } from './leavedata/leavedata.entity';
+import { LeavedataService } from './leavedata/leavedata.service';
 
 @Module({
   imports: [
@@ -26,11 +30,11 @@ import { LeaveModule } from './leave/leave.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Userdata],
+      entities: [Userdata,Leavedata],
       synchronize: true,
     }), 
-LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule],
-  controllers: [AppController, LoginController, LeaveController],
-  providers: [AppService, LoginService,UserdataService],
+LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule, RegisterModule],
+  controllers: [AppController, LoginController, LeaveController, RegisterController],
+  providers: [AppService, LoginService,UserdataService,LeavedataService],
 })
 export class AppModule {}

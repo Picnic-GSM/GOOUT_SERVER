@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Leavedata } from './leavedata.entity';
-import * as crypto from 'crypto'
 import { CreateLeavedataDto } from './leavedata.interface';
 
 @Injectable()

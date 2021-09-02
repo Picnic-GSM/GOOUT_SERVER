@@ -15,11 +15,13 @@ export class LeaveController {
         } catch (error) {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
+/*
         let decoded = jwt.verify(accessToken,jwtConstants.secret);
         let userdata = await this.leavedataservice.findOne(decoded['userid'])
         req.username = userdata.username;
         req.grade = userdata.grade;
         req.class = userdata.class;
         req.s_number = userdata.s_number;
+*/
     }
 }
