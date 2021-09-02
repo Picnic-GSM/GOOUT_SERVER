@@ -12,6 +12,7 @@ import { UserdataModule } from './userdata/userdata.module';
 import { AuthModule } from './auth/auth.module';
 import { RegisterController } from './register/register.controller';
 import { RegisterModule } from './register/register.module';
+import { LeaveController } from './leave/leave.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { RegisterModule } from './register/register.module';
       synchronize: true,
     }), 
 LoginModule, UserdataModule, AuthModule, RegisterModule],
-  controllers: [AppController, LoginController, RegisterController],
+  controllers: [AppController, LoginController, RegisterController, LeaveController],
   providers: [AppService, LoginService,UserdataService],
 })
 export class AppModule {}
