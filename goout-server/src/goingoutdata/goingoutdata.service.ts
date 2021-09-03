@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Goingoutdata } from './goingoutdata.entity';
 
 @Injectable()
-export class GoingoutService {
+export class GoingoutDataService {
   constructor(
     @InjectRepository(Goingoutdata)
     private usersRepository: Repository<Goingoutdata>,
