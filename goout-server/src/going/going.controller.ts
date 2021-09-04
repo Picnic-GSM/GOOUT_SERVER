@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { Get, HttpStatus } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { jwtConstants } from 'src/auth/constants';
@@ -10,6 +10,29 @@ import * as jwt from 'jsonwebtoken'
 @Controller('going')
 export class GoingController {
     constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService) {}
+
+    @Get()
+    check() {
+        let goingtime = "12:14"
+        let hour = Number(goingtime.substring(0,2));
+        let min = Number(goingtime.substring(3,5));
+        console.log(min)
+        let time = new Date();
+        let nowhour = time.getHours();
+        let nowmin = time.getMinutes();
+        if(nowhour > hour) {
+            console.log('지각')
+        } else if(nowhour == hour) {
+            if(nowmin > min) {
+                console.log('지각')
+            } else {
+                console.log('외출중')
+            }
+        } else {
+            console.log('외출중')
+        }
+        return time;
+    }
 
     @Post()
     async create_going(@Headers('accessToken') accessToken, @Body() req:CreateGoingDto) {
