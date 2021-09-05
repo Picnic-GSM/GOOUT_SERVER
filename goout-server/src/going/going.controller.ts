@@ -6,6 +6,7 @@ import { CreateGoingDto } from 'src/goingoutdata/goingoutdata.interface';
 import { GoingoutDataService } from 'src/goingoutdata/goingoutdata.service';
 import { UserdataService } from 'src/userdata/userdata.service';
 import * as jwt from 'jsonwebtoken'
+import * as moment from 'moment'
 
 @Controller('going')
 export class GoingController {
@@ -16,7 +17,6 @@ export class GoingController {
         let goingtime = "12:14"
         let hour = Number(goingtime.substring(0,2));
         let min = Number(goingtime.substring(3,5));
-        console.log(min)
         let time = new Date();
         let nowhour = time.getHours();
         let nowmin = time.getMinutes();
@@ -32,6 +32,7 @@ export class GoingController {
             console.log('외출중')
         }
         return time;
+
     }
 
     @Post()
