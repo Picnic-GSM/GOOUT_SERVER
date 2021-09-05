@@ -1,18 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Userdata {
+export class Leavedata {
   @PrimaryGeneratedColumn()
-  userid: number;
+  leaveid: number;
 
   @Column()
   username: string;
-
-  @Column()
-  password:string;
-
-  @Column()
-  email:string;
 
   @Column()
   grade:number;
@@ -22,4 +16,10 @@ export class Userdata {
 
   @Column()
   s_number:number;
+
+  @Column()
+  start_time:string;
+
+  @Column()
+  reason:string;
 }

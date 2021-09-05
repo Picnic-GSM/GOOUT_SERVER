@@ -10,6 +10,18 @@ import { ConfigModule } from '@nestjs/config';
 import { UserdataService } from './userdata/userdata.service';
 import { UserdataModule } from './userdata/userdata.module';
 import { AuthModule } from './auth/auth.module';
+import { LeavedataModule } from './leavedata/leavedata.module';
+import { LeaveController } from './leave/leave.controller';
+import { LeaveModule } from './leave/leave.module';
+import { RegisterController } from './register/register.controller';
+import { RegisterModule } from './register/register.module';
+import { Leavedata } from './leavedata/leavedata.entity';
+import { LeavedataService } from './leavedata/leavedata.service';
+import { GoingoutdataModule } from './goingoutdata/goingoutdata.module';
+import { Goingoutdata } from './goingoutdata/goingoutdata.entity';
+import { GoingController } from './going/going.controller';
+import { GoingModule } from './going/going.module';
+import { GoingoutDataService } from './goingoutdata/goingoutdata.service';
 
 @Module({
   imports: [
@@ -23,11 +35,11 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Userdata],
+      entities: [Userdata,Leavedata,Goingoutdata],
       synchronize: true,
     }), 
-LoginModule, UserdataModule, AuthModule],
-  controllers: [AppController, LoginController],
-  providers: [AppService, LoginService,UserdataService],
+LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule, RegisterModule, GoingoutdataModule, GoingModule],
+  controllers: [AppController, LoginController, LeaveController, RegisterController, GoingController],
+  providers: [AppService, LoginService,UserdataService,LeavedataService,GoingoutDataService],
 })
 export class AppModule {}
