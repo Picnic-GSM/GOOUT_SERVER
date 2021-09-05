@@ -16,9 +16,42 @@ export class LeaveController {
         } catch (error) {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
-
+        
         let data = await this.leavedataservice.getData();
         return data;
+    }
+
+    @Get('one')
+    async first_grade_leavedata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
+        let data = await this.leavedataservice.findwithclass(1)
+    }
+
+    @Get('two')
+    async second_grade_leavedata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
+        let data = await this.leavedataservice.findwithclass(1)
+    }
+
+    @Get('three')
+    async third_grade_leavedata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
+        let data = await this.leavedataservice.findwithclass(1)
     }
 
     @Post()
