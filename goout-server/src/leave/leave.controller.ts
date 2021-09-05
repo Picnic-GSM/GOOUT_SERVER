@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { CreateLeavedataDto } from 'src/leavedata/leavedata.interface';
 import * as jwt from 'jsonwebtoken'
 import { jwtConstants } from 'src/auth/constants';
@@ -8,6 +8,18 @@ import { UserdataService } from 'src/userdata/userdata.service';
 @Controller('leave')
 export class LeaveController {
     constructor(private readonly leavedataservice:LeavedataService,private readonly userdataservice:UserdataService) {}
+
+    @Get()
+    async get_leavedata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
+        let data = await this.leavedataservice.getData();
+        return data;
+    }
 
     @Post()
     async leave_request(@Headers("accessToken") accessToken, @Body() req:CreateLeavedataDto) {
