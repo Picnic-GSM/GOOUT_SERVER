@@ -22,6 +22,7 @@ import { Goingoutdata } from './goingoutdata/goingoutdata.entity';
 import { GoingController } from './going/going.controller';
 import { GoingModule } from './going/going.module';
 import { GoingoutDataService } from './goingoutdata/goingoutdata.service';
+import { GoingService } from './going/going.service';
 
 @Module({
   imports: [
@@ -40,6 +41,6 @@ import { GoingoutDataService } from './goingoutdata/goingoutdata.service';
     }), 
 LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule, RegisterModule, GoingoutdataModule, GoingModule],
   controllers: [AppController, LoginController, LeaveController, RegisterController, GoingController],
-  providers: [AppService, LoginService,UserdataService,LeavedataService,GoingoutDataService],
+  providers: [AppService, LoginService,UserdataService,LeavedataService,GoingoutDataService,GoingService],
 })
 export class AppModule {}
