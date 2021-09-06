@@ -7,10 +7,11 @@ import { GoingoutDataService } from 'src/goingoutdata/goingoutdata.service';
 import { UserdataService } from 'src/userdata/userdata.service';
 import * as jwt from 'jsonwebtoken'
 import { Goingoutdata } from 'src/goingoutdata/goingoutdata.entity';
+import { GoingService } from './going.service';
 
 @Controller('going')
 export class GoingController {
-    constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService) {}
+    constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService,private readonly goingservice:GoingService) {}
 
     @Get()
     async get_goingoutdata(@Headers("accessToken") accessToken) {
@@ -20,37 +21,9 @@ export class GoingController {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
 
-        let alldata = await this.goingoutservice.getData();
-        let change;
-        let status;
-        alldata.forEach(async going => {
-            let goingtime = going.end_time
-            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
-            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
-            let time = new Date();
-            let nowhour = time.getHours();
-            let nowmin = time.getMinutes();
-            
-            console.log(nowhour,nowmin)
-            if (going.back_check == 1) {
-                status = await '귀가 완료'
-            } else {
-                if(nowhour > hour) {
-                    status = await '지각'
-                } else if(nowhour == hour) {
-                    if(nowmin > min) {
-                        status = await '지각'
-                    } else {
-                        status = await '외출중'
-                    }
-                } else {
-                    status = await '외출중'
-                }
-            }
-            
-            console.log(hour,min,status)
-            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
-        });
+        let alldata = await this.goingoutservice.findwithclass(3);
+        let check_result = await this.goingservice.check_status(alldata);
+        alldata = await this.goingoutservice.findwithclass(3);
         return alldata;
     }
 
@@ -62,37 +35,9 @@ export class GoingController {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
 
-        let onedata = await this.goingoutservice.findwithclass(1);
-        console.log(onedata)
-        let change;
-        let status;
-        onedata.forEach(async going => {
-            let goingtime = going.end_time
-            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
-            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
-            let time = new Date();
-            let nowhour = time.getHours();
-            let nowmin = time.getMinutes();
-            
-            console.log(nowhour,nowmin)
-            if (going.back_check == 1) {
-                status = await '귀가 완료'
-            } else {
-                if(nowhour > hour) {
-                    status = await '지각'
-                } else if(nowhour == hour) {
-                    if(nowmin > min) {
-                        status = await '지각'
-                    } else {
-                        status = await '외출중'
-                    }
-                } else {
-                    status = await '외출중'
-                }
-            }
-            console.log(hour,min,status)
-            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
-        });
+        let onedata = await this.goingoutservice.findwithclass(3);
+        let check_result = await this.goingservice.check_status(onedata);
+        onedata = await this.goingoutservice.findwithclass(3);
         return onedata;
     }
 
@@ -104,36 +49,9 @@ export class GoingController {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
 
-        let twodata:any = await this.goingoutservice.findwithclass(2);
-        let change;
-        let status;
-        twodata.forEach(async going => {
-            let goingtime = going.end_time
-            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
-            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
-            let time = new Date();
-            let nowhour = time.getHours();
-            let nowmin = time.getMinutes();
-            
-            console.log(nowhour,nowmin)
-            if (going.back_check == 1) {
-                status = await '귀가 완료'
-            } else {
-                if(nowhour > hour) {
-                    status = await '지각'
-                } else if(nowhour == hour) {
-                    if(nowmin > min) {
-                        status = await '지각'
-                    } else {
-                        status = await '외출중'
-                    }
-                } else {
-                    status = await '외출중'
-                }
-            }
-            console.log(hour,min,status)
-            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
-        });
+        let twodata = await this.goingoutservice.findwithclass(3);
+        let check_result = await this.goingservice.check_status(twodata);
+        twodata = await this.goingoutservice.findwithclass(3);
         return twodata;
     }
 
@@ -145,37 +63,9 @@ export class GoingController {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
 
-        let threedata:any = await this.goingoutservice.findwithclass(3);
-        console.log(threedata)
-        let change;
-        let status;
-        threedata.forEach(async going => {
-            let goingtime = going.end_time
-            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
-            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
-            let time = new Date();
-            let nowhour = time.getHours();
-            let nowmin = time.getMinutes();
-            
-            console.log(nowhour,nowmin)
-            if (going.back_check == 1) {
-                status = await '귀가 완료'
-            } else {
-                if(nowhour > hour) {
-                    status = await '지각'
-                } else if(nowhour == hour) {
-                    if(nowmin > min) {
-                        status = await '지각'
-                    } else {
-                        status = await '외출중'
-                    }
-                } else {
-                    status = await '외출중'
-                }
-            }
-            console.log(hour,min,status)
-            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
-        });
+        let threedata = await this.goingoutservice.findwithclass(3);
+        let check_result = await this.goingservice.check_status(threedata);
+        threedata = await this.goingoutservice.findwithclass(3);
         return threedata;
     }
 
