@@ -4,7 +4,9 @@ import { LoginService } from './login.service';
 import * as crypto from 'crypto'
 import { LoginDataDto } from 'src/userdata/login.interface';
 import { AuthService } from 'src/auth/auth.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('학생 정보 관련 라우터')
 @Controller('login')
 export class LoginController {
     constructor(private readonly userdataservice:UserdataService,private readonly authservice:AuthService) {}
@@ -20,7 +22,7 @@ export class LoginController {
         result2 += decipher.final('utf8'); 
         return result+result2
     }
-    
+    @ApiOperation({summary:'로그인',description:'선생님과 학생의 로그인'})
     @Post()
     async login(@Body() req:LoginDataDto) {
         let user = await this.userdataservice.findwithEmail(req.email);
