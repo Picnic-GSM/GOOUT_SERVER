@@ -70,6 +70,11 @@ export class LeaveController {
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'조퇴 미승인 목록',description:'미승인된 조퇴 정보 출력'})
     async get_request_check(@Headers('accessToken') accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
         let result = await this.leavedataservice.find_with_request_check(0);
         return result;
     }
@@ -78,6 +83,11 @@ export class LeaveController {
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'조퇴 승인',description:'선생님이 조퇴를 허가해줌'})
     async post_request_check(@Headers('accessToken') accessToken, @Body() req) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
         await this.leavedataservice.CheckRequest(req.goingid);
         return '성공적으로 실행됐습니다.'
     }

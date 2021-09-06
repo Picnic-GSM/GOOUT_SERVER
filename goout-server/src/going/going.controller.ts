@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken'
 import { Goingoutdata } from 'src/goingoutdata/goingoutdata.entity';
 import { GoingService } from './going.service';
 import * as crypto from 'crypto'
-import { ApiHeader, ApiOperation, ApiProperty, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiOperation, ApiProperty, ApiTags, getSchemaPath } from '@nestjs/swagger';
 
 
 @Controller('going')
@@ -91,13 +91,31 @@ export class GoingController {
     @ApiOperation({summary:'승인 되지 않은 외출 정보만 출력',description:'선생님의 승인창'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_request_check(@Headers('accessToken') accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
         let result = this.goingoutservice.find_with_request_check(0);
     }
 
     @Post('request-check')
     @ApiOperation({summary:'외출을 승인시켜주는 창',description:'선생님이 승인할 때 사용됨'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
+    @ApiBody({
+        schema:{
+            type:'number',
+            items:{
+                type:'asd'
+            }
+        }
+    })
     async post_request_check(@Headers('accessToken') accessToken, @Body() req) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
         await this.goingoutservice.update_GoingRequestdata(req.goingid, 1);
         return '성공적으로 실행됐습니다.'
     }
