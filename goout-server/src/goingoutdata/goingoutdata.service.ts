@@ -20,8 +20,8 @@ export class GoingoutDataService {
   findOne(id: string): Promise<Goingoutdata> {
     return this.goingoutRepository.findOne(id);
   }
-  findwithclass(grade: number): Promise<Goingoutdata> {
-    return this.goingoutRepository.findOne({grade:grade});
+  findwithclass(grade: number): Promise<Goingoutdata[]> {
+    return this.goingoutRepository.find({grade:grade});
   }
   async updateGoingdata(goingid:number,going_status:string) {
     const updatedata = await this.goingoutRepository.findOne({goingid:goingid});
