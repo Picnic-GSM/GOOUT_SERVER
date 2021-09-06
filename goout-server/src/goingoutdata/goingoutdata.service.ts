@@ -7,28 +7,28 @@ import { Goingoutdata } from './goingoutdata.entity';
 export class GoingoutDataService {
   constructor(
     @InjectRepository(Goingoutdata)
-    private usersRepository: Repository<Goingoutdata>,
+    private goingoutRepository: Repository<Goingoutdata>,
   ) {}
 
   async createGoingout(createGoingDto) {
-    return this.usersRepository.save(createGoingDto);
+    return this.goingoutRepository.save(createGoingDto);
   }
   getData(): Promise<Goingoutdata[]> {
-    return this.usersRepository.find();
+    return this.goingoutRepository.find();
   }
 
   findOne(id: string): Promise<Goingoutdata> {
-    return this.usersRepository.findOne(id);
+    return this.goingoutRepository.findOne(id);
   }
   findwithclass(grade: number): Promise<Goingoutdata> {
-    return this.usersRepository.findOne({});
+    return this.goingoutRepository.findOne({grade:grade});
   }
   async updateGoingdata(goingid:number,going_status:string) {
-    const updatedata = await this.usersRepository.findOne({goingid:goingid});
+    const updatedata = await this.goingoutRepository.findOne({goingid:goingid});
     updatedata.going_status = going_status;
-    await this.usersRepository.save(updatedata);
+    await this.goingoutRepository.save(updatedata);
   }
   async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+    await this.goingoutRepository.delete(id);
   }
 }
