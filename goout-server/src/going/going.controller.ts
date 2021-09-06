@@ -6,7 +6,6 @@ import { CreateGoingDto } from 'src/goingoutdata/goingoutdata.interface';
 import { GoingoutDataService } from 'src/goingoutdata/goingoutdata.service';
 import { UserdataService } from 'src/userdata/userdata.service';
 import * as jwt from 'jsonwebtoken'
-import * as moment from 'moment'
 
 @Controller('going')
 export class GoingController {
@@ -14,33 +13,13 @@ export class GoingController {
 
     @Get()
     async get_goingoutdata() {
-        let goingtime = "12:14"
-        let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
-        let min = Number(goingtime.substring(3,5));
-
-        let time = new Date();
-        let nowhour = time.getHours();
-        let nowmin = time.getMinutes();
-        if(nowhour > hour) {
-            console.log('지각')
-        } else if(nowhour == hour) {
-            if(nowmin > min) {
-                console.log('지각')
-            } else {
-                console.log('외출중')
-            }
-        } else {
-            console.log('외출중')
-        }
-        //return time;
-        let data = await this.goingoutservice.getData();
+        let alldata = await this.goingoutservice.getData();
         let change;
         let status;
-        //console.log(data);
-        data.forEach(async going => {
+        alldata.forEach(async going => {
             let goingtime = going.end_time
             let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
-            let min = Number(goingtime.substring(3,5));
+            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
             let time = new Date();
             let nowhour = time.getHours();
             let nowmin = time.getMinutes();
@@ -57,11 +36,103 @@ export class GoingController {
             } else {
                 status = await '외출중'
             }
-            console.log(status)
+            console.log(hour,min,status)
             change = await this.goingoutservice.updateGoingdata(going.goingid,status);
-            console.log(change)
         });
-        return data;
+        return alldata;
+    }
+
+    @Get('one')
+    async get_first_goingoutdata() {
+        let onedata:any = await this.goingoutservice.findwithclass(1);
+        let change;
+        let status;
+        onedata.forEach(async going => {
+            let goingtime = going.end_time
+            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
+            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
+            let time = new Date();
+            let nowhour = time.getHours();
+            let nowmin = time.getMinutes();
+            
+            console.log(nowhour,nowmin)
+            if(nowhour > hour) {
+                status = await '지각'
+            } else if(nowhour == hour) {
+                if(nowmin > min) {
+                    status = await '지각'
+                } else {
+                    status = await '외출중'
+                }
+            } else {
+                status = await '외출중'
+            }
+            console.log(hour,min,status)
+            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
+        });
+        return onedata;
+    }
+
+    @Get('two')
+    async get_second_goingoutdata() {
+        let twodata:any = await this.goingoutservice.findwithclass(2);
+        let change;
+        let status;
+        twodata.forEach(async going => {
+            let goingtime = going.end_time
+            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
+            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
+            let time = new Date();
+            let nowhour = time.getHours();
+            let nowmin = time.getMinutes();
+            
+            console.log(nowhour,nowmin)
+            if(nowhour > hour) {
+                status = await '지각'
+            } else if(nowhour == hour) {
+                if(nowmin > min) {
+                    status = await '지각'
+                } else {
+                    status = await '외출중'
+                }
+            } else {
+                status = await '외출중'
+            }
+            console.log(hour,min,status)
+            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
+        });
+        return twodata;
+    }
+
+    @Get('three')
+    async get_third_goingoutdata() {
+        let threedata:any = await this.goingoutservice.findwithclass(3);
+        let change;
+        let status;
+        threedata.forEach(async going => {
+            let goingtime = going.end_time
+            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
+            let min = Number(goingtime.substring(goingtime.indexOf(':')+1,5));
+            let time = new Date();
+            let nowhour = time.getHours();
+            let nowmin = time.getMinutes();
+            
+            console.log(nowhour,nowmin)
+            if(nowhour > hour) {
+                status = await '지각'
+            } else if(nowhour == hour) {
+                if(nowmin > min) {
+                    status = await '지각'
+                } else {
+                    status = await '외출중'
+                }
+            } else {
+                status = await '외출중'
+            }
+            console.log(hour,min,status)
+            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
+        });
+        return threedata;
     }
 
     @Post()

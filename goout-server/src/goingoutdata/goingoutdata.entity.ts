@@ -6,7 +6,7 @@ export class Goingoutdata {
   goingid: number;
 
   @Column()
-  grade: string;
+  grade: number;
 
   @Column()
   class:number;
