@@ -25,4 +25,10 @@ export class Goingoutdata {
 
   @Column()
   going_status:string;
+
+  @Column()
+  request:number;
+
+  @Column()
+  back_check:number;
 }

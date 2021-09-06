@@ -14,7 +14,7 @@ export class GoingoutDataService {
     return this.goingoutRepository.save(createGoingDto);
   }
   getData(): Promise<Goingoutdata[]> {
-    return this.goingoutRepository.find();
+    return this.goingoutRepository.find({request:1});
   }
 
   findOne(id: string): Promise<Goingoutdata> {
