@@ -8,11 +8,19 @@ import { UserdataService } from 'src/userdata/userdata.service';
 import * as jwt from 'jsonwebtoken'
 import { Goingoutdata } from 'src/goingoutdata/goingoutdata.entity';
 import { GoingService } from './going.service';
+import * as crypto from 'crypto'
+
 
 @Controller('going')
 export class GoingController {
     constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService,private readonly goingservice:GoingService) {}
-
+    @Get('auth')
+    check_authCheck() {
+        const cipher = crypto.createCipher('aes-256-cbc', process.env.key);
+        let result = cipher.update("3-4", 'utf8', 'base64');
+        result += cipher.final('base64');
+        return result
+    }
     @Get()
     async get_goingoutdata(@Headers("accessToken") accessToken) {
         try {
