@@ -22,4 +22,7 @@ export class Leavedata {
 
   @Column()
   reason:string;
+
+  @Column()
+  request:number;
 }

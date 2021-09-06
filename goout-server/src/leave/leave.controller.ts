@@ -56,6 +56,17 @@ export class LeaveController {
         let data = await this.leavedataservice.findwithclass(3)
         return data;
     }
+    @Get('request-check')
+    async get_request_check(@Headers('accessToken') accessToken) {
+        let result = await this.leavedataservice.find_with_request_check(0);
+        return result;
+    }
+
+    @Post('request-check')
+    async post_request_check(@Headers('accessToken') accessToken, @Body() req) {
+        await this.leavedataservice.CheckRequest(req.goingid);
+        return '성공적으로 실행됐습니다.'
+    }
 
     @Post()
     async leave_request(@Headers("accessToken") accessToken, @Body() req:CreateLeavedataDto) {
