@@ -8,31 +8,31 @@ import { CreateLeavedataDto } from './leavedata.interface';
 export class LeavedataService {
   constructor(
     @InjectRepository(Leavedata)
-    private usersRepository: Repository<Leavedata>,
+    private leaveRepository: Repository<Leavedata>,
   ) {}
 
   async createLeavedata(createLeaveDto: CreateLeavedataDto) {
-    return this.usersRepository.save(createLeaveDto);
+    return this.leaveRepository.save(createLeaveDto);
   }
   getData(): Promise<Leavedata[]> {
-    return this.usersRepository.find();
+    return this.leaveRepository.find();
   }
 
   findOne(id: string): Promise<Leavedata> {
-    return this.usersRepository.findOne(id);
+    return this.leaveRepository.findOne(id);
   }
   findwithclass(grade: number): Promise<Leavedata> {
-    return this.usersRepository.findOne({grade:grade});
+    return this.leaveRepository.findOne({grade:grade});
   }
 /*
   async updateLeavedata(updateLeavedataDto) {
-    const updatedata = await this.usersRepository.findOne({userid:updateLeavedataDto.userid});
+    const updatedata = await this.leaveRepository.findOne({userid:updateLeavedataDto.userid});
     updatedata.username = updateLeavedataDto.username;
     updatedata.email = updateLeavedataDto.email;
-    await this.usersRepository.save(updatedata);
+    await this.leaveRepository.save(updatedata);
   }
 */
   async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+    await this.leaveRepository.delete(id);
   }
 }
