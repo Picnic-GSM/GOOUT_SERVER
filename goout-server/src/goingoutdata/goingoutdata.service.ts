@@ -23,14 +23,11 @@ export class GoingoutDataService {
   findwithclass(grade: number): Promise<Goingoutdata> {
     return this.usersRepository.findOne({});
   }
-/*
-  async updateLeavedata(updateLeavedataDto) {
-    const updatedata = await this.usersRepository.findOne({userid:updateLeavedataDto.userid});
-    updatedata.username = updateLeavedataDto.username;
-    updatedata.email = updateLeavedataDto.email;
+  async updateGoingdata(goingid:number,going_status:string) {
+    const updatedata = await this.usersRepository.findOne({goingid:goingid});
+    updatedata.going_status = going_status;
     await this.usersRepository.save(updatedata);
   }
-*/
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
