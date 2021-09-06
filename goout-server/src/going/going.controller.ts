@@ -6,13 +6,20 @@ import { CreateGoingDto } from 'src/goingoutdata/goingoutdata.interface';
 import { GoingoutDataService } from 'src/goingoutdata/goingoutdata.service';
 import { UserdataService } from 'src/userdata/userdata.service';
 import * as jwt from 'jsonwebtoken'
+import { Goingoutdata } from 'src/goingoutdata/goingoutdata.entity';
 
 @Controller('going')
 export class GoingController {
     constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService) {}
 
     @Get()
-    async get_goingoutdata() {
+    async get_goingoutdata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
         let alldata = await this.goingoutservice.getData();
         let change;
         let status;
@@ -43,8 +50,15 @@ export class GoingController {
     }
 
     @Get('one')
-    async get_first_goingoutdata() {
-        let onedata:any = await this.goingoutservice.findwithclass(1);
+    async get_first_goingoutdata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
+        let onedata = await this.goingoutservice.findwithclass(1);
+        console.log(onedata)
         let change;
         let status;
         onedata.forEach(async going => {
@@ -74,7 +88,13 @@ export class GoingController {
     }
 
     @Get('two')
-    async get_second_goingoutdata() {
+    async get_second_goingoutdata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
         let twodata:any = await this.goingoutservice.findwithclass(2);
         let change;
         let status;
@@ -105,8 +125,15 @@ export class GoingController {
     }
 
     @Get('three')
-    async get_third_goingoutdata() {
+    async get_third_goingoutdata(@Headers("accessToken") accessToken) {
+        try {
+            let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        } catch (error) {
+            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+        }
+
         let threedata:any = await this.goingoutservice.findwithclass(3);
+        console.log(threedata)
         let change;
         let status;
         threedata.forEach(async going => {

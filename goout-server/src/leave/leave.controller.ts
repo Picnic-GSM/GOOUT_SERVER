@@ -30,6 +30,7 @@ export class LeaveController {
         }
 
         let data = await this.leavedataservice.findwithclass(1)
+        return data;
     }
 
     @Get('two')
@@ -40,7 +41,8 @@ export class LeaveController {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
 
-        let data = await this.leavedataservice.findwithclass(1)
+        let data = await this.leavedataservice.findwithclass(2)
+        return data;
     }
 
     @Get('three')
@@ -51,7 +53,8 @@ export class LeaveController {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
 
-        let data = await this.leavedataservice.findwithclass(1)
+        let data = await this.leavedataservice.findwithclass(3)
+        return data;
     }
 
     @Post()
