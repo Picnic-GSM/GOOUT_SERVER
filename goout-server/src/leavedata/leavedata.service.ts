@@ -27,14 +27,14 @@ export class LeavedataService {
   find_with_grade_class(grade: number,class2:number): Promise<Leavedata> {
     return this.leaveRepository.findOne({grade:grade,class:class2});
   }
-/*
-  async updateLeavedata(updateLeavedataDto) {
-    const updatedata = await this.leaveRepository.findOne({userid:updateLeavedataDto.userid});
-    updatedata.username = updateLeavedataDto.username;
-    updatedata.email = updateLeavedataDto.email;
+  find_with_request_check(request: number): Promise<Leavedata[]> {
+    return this.leaveRepository.find({request:request});
+  }
+  async CheckRequest(leaveid:number) {
+    const updatedata = await this.leaveRepository.findOne({leaveid:leaveid});
+    updatedata.request = 1;
     await this.leaveRepository.save(updatedata);
   }
-*/
   async remove(id: string): Promise<void> {
     await this.leaveRepository.delete(id);
   }
