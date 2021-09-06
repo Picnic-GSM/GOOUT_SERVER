@@ -14,7 +14,7 @@ export class UserdataService {
 
   async createUserdata(createUserDto: LoginDataDto) {
     const cipher = crypto.createCipher('aes-256-cbc', process.env.key);
-    let result = cipher.update('암호화할문장', 'utf8', 'base64');
+    let result = cipher.update(createUserDto.password, 'utf8', 'base64');
     result += cipher.final('base64');
     createUserDto.password = await result;
     let create_result = await this.usersRepository.save(createUserDto);

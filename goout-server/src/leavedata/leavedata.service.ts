@@ -24,6 +24,9 @@ export class LeavedataService {
   findwithclass(grade: number): Promise<Leavedata> {
     return this.leaveRepository.findOne({grade:grade});
   }
+  find_with_grade_class(grade: number,class2:number): Promise<Leavedata> {
+    return this.leaveRepository.findOne({grade:grade,class:class2});
+  }
 /*
   async updateLeavedata(updateLeavedataDto) {
     const updatedata = await this.leaveRepository.findOne({userid:updateLeavedataDto.userid});
