@@ -13,10 +13,11 @@ export class GoingController {
     constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService) {}
 
     @Get()
-    check() {
+    async get_goingoutdata() {
         let goingtime = "12:14"
-        let hour = Number(goingtime.substring(0,2));
+        let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
         let min = Number(goingtime.substring(3,5));
+
         let time = new Date();
         let nowhour = time.getHours();
         let nowmin = time.getMinutes();
@@ -31,8 +32,36 @@ export class GoingController {
         } else {
             console.log('외출중')
         }
-        return time;
-
+        //return time;
+        let data = await this.goingoutservice.getData();
+        let change;
+        let status;
+        //console.log(data);
+        data.forEach(async going => {
+            let goingtime = going.end_time
+            let hour = Number(goingtime.substring(0,goingtime.indexOf(':')));
+            let min = Number(goingtime.substring(3,5));
+            let time = new Date();
+            let nowhour = time.getHours();
+            let nowmin = time.getMinutes();
+            
+            console.log(nowhour,nowmin)
+            if(nowhour > hour) {
+                status = await '지각'
+            } else if(nowhour == hour) {
+                if(nowmin > min) {
+                    status = await '지각'
+                } else {
+                    status = await '외출중'
+                }
+            } else {
+                status = await '외출중'
+            }
+            console.log(status)
+            change = await this.goingoutservice.updateGoingdata(going.goingid,status);
+            console.log(change)
+        });
+        return data;
     }
 
     @Post()
