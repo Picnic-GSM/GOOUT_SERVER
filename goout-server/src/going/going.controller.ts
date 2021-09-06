@@ -32,17 +32,22 @@ export class GoingController {
             let nowmin = time.getMinutes();
             
             console.log(nowhour,nowmin)
-            if(nowhour > hour) {
-                status = await '지각'
-            } else if(nowhour == hour) {
-                if(nowmin > min) {
+            if (going.back_check == 1) {
+                status = await '귀가 완료'
+            } else {
+                if(nowhour > hour) {
                     status = await '지각'
+                } else if(nowhour == hour) {
+                    if(nowmin > min) {
+                        status = await '지각'
+                    } else {
+                        status = await '외출중'
+                    }
                 } else {
                     status = await '외출중'
                 }
-            } else {
-                status = await '외출중'
             }
+            
             console.log(hour,min,status)
             change = await this.goingoutservice.updateGoingdata(going.goingid,status);
         });
@@ -70,16 +75,20 @@ export class GoingController {
             let nowmin = time.getMinutes();
             
             console.log(nowhour,nowmin)
-            if(nowhour > hour) {
-                status = await '지각'
-            } else if(nowhour == hour) {
-                if(nowmin > min) {
+            if (going.back_check == 1) {
+                status = await '귀가 완료'
+            } else {
+                if(nowhour > hour) {
                     status = await '지각'
+                } else if(nowhour == hour) {
+                    if(nowmin > min) {
+                        status = await '지각'
+                    } else {
+                        status = await '외출중'
+                    }
                 } else {
                     status = await '외출중'
                 }
-            } else {
-                status = await '외출중'
             }
             console.log(hour,min,status)
             change = await this.goingoutservice.updateGoingdata(going.goingid,status);
@@ -107,16 +116,20 @@ export class GoingController {
             let nowmin = time.getMinutes();
             
             console.log(nowhour,nowmin)
-            if(nowhour > hour) {
-                status = await '지각'
-            } else if(nowhour == hour) {
-                if(nowmin > min) {
+            if (going.back_check == 1) {
+                status = await '귀가 완료'
+            } else {
+                if(nowhour > hour) {
                     status = await '지각'
+                } else if(nowhour == hour) {
+                    if(nowmin > min) {
+                        status = await '지각'
+                    } else {
+                        status = await '외출중'
+                    }
                 } else {
                     status = await '외출중'
                 }
-            } else {
-                status = await '외출중'
             }
             console.log(hour,min,status)
             change = await this.goingoutservice.updateGoingdata(going.goingid,status);
@@ -145,16 +158,20 @@ export class GoingController {
             let nowmin = time.getMinutes();
             
             console.log(nowhour,nowmin)
-            if(nowhour > hour) {
-                status = await '지각'
-            } else if(nowhour == hour) {
-                if(nowmin > min) {
+            if (going.back_check == 1) {
+                status = await '귀가 완료'
+            } else {
+                if(nowhour > hour) {
                     status = await '지각'
+                } else if(nowhour == hour) {
+                    if(nowmin > min) {
+                        status = await '지각'
+                    } else {
+                        status = await '외출중'
+                    }
                 } else {
                     status = await '외출중'
                 }
-            } else {
-                status = await '외출중'
             }
             console.log(hour,min,status)
             change = await this.goingoutservice.updateGoingdata(going.goingid,status);
