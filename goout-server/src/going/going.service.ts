@@ -20,6 +20,7 @@ export class GoingService {
                 status = await '귀가 완료'
             } else {
                 if(nowhour > hour) {
+                    
                     status = await '지각'
                 } else if(nowhour == hour) {
                     if(nowmin > min) {
@@ -32,7 +33,7 @@ export class GoingService {
                 }
             }
             console.log(hour,min,status)    // 나중에 지우기
-            change = this.goingoutservice.updateGoingdata(going.goingid,status); //에러 발생시 await 추가
+            change = await this.goingoutservice.updateGoingdata(going.goingid,status); //에러 발생시 await 추가
         });
     }
 }
