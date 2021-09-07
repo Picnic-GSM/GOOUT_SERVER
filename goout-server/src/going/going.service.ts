@@ -31,7 +31,7 @@ export class GoingService {
                     status = await '외출중'
                 }
             }
-            console.log(hour,min,status)
+            console.log(hour,min,status)    // 나중에 지우기
             change = this.goingoutservice.updateGoingdata(going.goingid,status); //에러 발생시 await 추가
         });
     }

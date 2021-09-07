@@ -23,6 +23,9 @@ import { GoingController } from './going/going.controller';
 import { GoingModule } from './going/going.module';
 import { GoingoutDataService } from './goingoutdata/goingoutdata.service';
 import { GoingService } from './going/going.service';
+import { TeacherdataService } from './teacherdata/teacherdata.service';
+import { TeacherData } from './teacherdata/teacherdata.entity';
+import { TeacherdataModule } from './teacherdata/teacherdata.module';
 
 @Module({
   imports: [
@@ -36,11 +39,11 @@ import { GoingService } from './going/going.service';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Userdata,Leavedata,Goingoutdata],
+      entities: [Userdata,Leavedata,Goingoutdata,TeacherData],
       synchronize: true,
     }), 
-LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule, RegisterModule, GoingoutdataModule, GoingModule],
+LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule, RegisterModule, GoingoutdataModule, GoingModule, TeacherdataModule],
   controllers: [AppController, LoginController, LeaveController, RegisterController, GoingController],
-  providers: [AppService, LoginService,UserdataService,LeavedataService,GoingoutDataService,GoingService],
+  providers: [AppService, LoginService,UserdataService,LeavedataService,GoingoutDataService,GoingService,TeacherdataService],
 })
 export class AppModule {}
