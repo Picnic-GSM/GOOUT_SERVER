@@ -12,20 +12,21 @@ export class LeavedataService {
   ) {}
 
   async createLeavedata(createLeaveDto: CreateLeavedataDto) {
+    createLeaveDto.request = 0;
     return this.leaveRepository.save(createLeaveDto);
   }
   getData(): Promise<Leavedata[]> {
-    return this.leaveRepository.find();
+    return this.leaveRepository.find({request:1});
   }
 
   findOne(id: string): Promise<Leavedata> {
     return this.leaveRepository.findOne(id);
   }
   findwithclass(grade: number): Promise<Leavedata> {
-    return this.leaveRepository.findOne({grade:grade});
+    return this.leaveRepository.findOne({grade:grade,request:1});
   }
   find_with_grade_class(grade: number,class2:number): Promise<Leavedata> {
-    return this.leaveRepository.findOne({grade:grade,class:class2});
+    return this.leaveRepository.findOne({grade:grade,class:class2,request:1});
   }
   find_with_request_check(request: number): Promise<Leavedata[]> {
     return this.leaveRepository.find({request:request});
