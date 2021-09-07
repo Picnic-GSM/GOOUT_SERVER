@@ -1,16 +1,17 @@
-import { Body } from '@nestjs/common';
+import { Body, HttpCode } from '@nestjs/common';
 import { Controller, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RegisterDataDto } from 'src/userdata/register.interface';
 import { UserdataService } from 'src/userdata/userdata.service';
 
-@ApiTags('학생 정보 관련 라우터')
+@ApiTags('학생용 라우터')
 @Controller('register')
 	export class RegisterController {
     constructor(private readonly userdataservice:UserdataService) {}
 
     @ApiOperation({summary:'회원가입',description:'학생,선생님의 회원가입'})
     @Post()
+    @HttpCode(201)
     async register(@Body() req:RegisterDataDto) {
         let exist = await this.userdataservice.findwithEmail(req.email);
         if(exist != undefined) {

@@ -8,13 +8,14 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TeacherdataService } from 'src/teacherdata/teacherdata.service';
 import { TeacherLoginDto } from './loginuser.interface';
 
-@ApiTags('학생 정보 관련 라우터')
+@ApiTags('학생용 라우터')
 @Controller('login')
 export class LoginController {
     constructor(private readonly userdataservice:UserdataService,private readonly authservice:AuthService,private readonly teacherdataservice:TeacherdataService) {}
     
     @ApiOperation({summary:'로그인',description:'선생님과 학생의 로그인'})
     @Post()
+    @HttpCode(201)
     async login(@Body() req:LoginDataDto) {
         let user = await this.userdataservice.findwithEmail(req.email);
         console.log(user)
@@ -32,7 +33,9 @@ export class LoginController {
         }
     }
 
+    @ApiTags('선생님용 라우터')
     @Post('teacher')
+    @HttpCode(201)
     @ApiOperation({summary:'선생님 로그인',description:'코드로 로그인'})
     async Code_Login(@Body() req:TeacherLoginDto) {
         let teacherdata = await this.teacherdataservice.findOnewithCode(req.code);
