@@ -11,6 +11,6 @@ export class CreateGoingDto {
     end_time:string;
     @ApiProperty({description:'goingout reason'})
     reason:string;
-    @ApiProperty({description:'goingout result status'})
     going_status:string;
+    back_check:number;
 }

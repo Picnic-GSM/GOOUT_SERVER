@@ -11,4 +11,6 @@ export class RegisterDataDto {
     grade:number;
     @ApiProperty({description:'student class'})
     class:number;
+    @ApiProperty({description:'student number'})
+    s_number:number;
 }
