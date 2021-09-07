@@ -15,16 +15,10 @@ import { GoingOutCheckDto } from './outcheck.interface';
 
 
 @Controller('going')
-@ApiTags('외출 관련 라우터')
 export class GoingController {
     constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService,private readonly goingservice:GoingService) {}
-    @Get('auth')
-    check_authCheck() {
-        const cipher = crypto.createCipher('aes-256-cbc', process.env.key);
-        let result = cipher.update("3-4", 'utf8', 'base64');
-        result += cipher.final('base64');
-        return result
-    }
+    
+    @ApiTags('공용 라우터')
     @Get()
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'외출한 학생 모두 출력',description:'외출 정보를 반환'})
@@ -41,6 +35,7 @@ export class GoingController {
         return alldata;
     }
 
+    @ApiTags('공용 라우터')
     @Get('one')
     @ApiOperation({summary:'1학년 외출 학생만 출력', description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
@@ -57,6 +52,7 @@ export class GoingController {
         return onedata;
     }
 
+    @ApiTags('공용 라우터')
     @Get('two')
     @ApiOperation({summary:'2학년 외출 학생만 출력',description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
@@ -73,6 +69,7 @@ export class GoingController {
         return twodata;
     }
 
+    @ApiTags('공용 라우터')
     @Get('three')
     @ApiOperation({summary:'3학년 외출 학생만 출력',description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
@@ -89,6 +86,7 @@ export class GoingController {
         return threedata;
     }
 
+    @ApiTags('선생님용 라우터')
     @Get('request-check')
     @ApiOperation({summary:'승인 되지 않은 외출 정보만 출력',description:'선생님의 승인창'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
@@ -101,6 +99,7 @@ export class GoingController {
         let result = this.goingoutservice.find_with_request_check(0);
     }
 
+    @ApiTags('선생님용 라우터')
     @Post('request-check')
     @ApiOperation({summary:'외출을 승인시켜주는 창',description:'선생님이 승인할 때 사용됨'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
@@ -114,6 +113,7 @@ export class GoingController {
         return '성공적으로 실행됐습니다.'
     }
 
+    @ApiTags('학생용 라우터')
     @Post()
     @ApiOperation({summary:'외출을 요청',description:'학생들이 외출을 요청시켜줌'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
@@ -139,6 +139,7 @@ export class GoingController {
         }
     }
 
+    @ApiTags('선생님용 라우터')
     @Post('out-check')
     @ApiOperation({summary:'외출 귀가 완료창',description:'선생님이 귀가 확인시 사용'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})

@@ -8,7 +8,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TeacherdataService } from 'src/teacherdata/teacherdata.service';
 import { TeacherLoginDto } from './loginuser.interface';
 
-@ApiTags('학생 정보 관련 라우터')
+@ApiTags('학생용 라우터')
 @Controller('login')
 export class LoginController {
     constructor(private readonly userdataservice:UserdataService,private readonly authservice:AuthService,private readonly teacherdataservice:TeacherdataService) {}
@@ -32,6 +32,7 @@ export class LoginController {
         }
     }
 
+    @ApiTags('선생님용 라우터')
     @Post('teacher')
     @ApiOperation({summary:'선생님 로그인',description:'코드로 로그인'})
     async Code_Login(@Body() req:TeacherLoginDto) {

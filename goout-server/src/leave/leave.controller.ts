@@ -4,14 +4,16 @@ import * as jwt from 'jsonwebtoken'
 import { jwtConstants } from 'src/auth/constants';
 import { LeavedataService } from 'src/leavedata/leavedata.service';
 import { UserdataService } from 'src/userdata/userdata.service';
-import { ApiHeader, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestCheckDto } from './request-check.interface';
+import { Leavedata } from 'src/leavedata/leavedata.entity';
 
-@ApiTags('조퇴 관련 라우터')
+
 @Controller('leave')
 export class LeaveController {
     constructor(private readonly leavedataservice:LeavedataService,private readonly userdataservice:UserdataService) {}
 
+    @ApiTags('공용 라우터')
     @Get()
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'모든 학생의 조퇴 정보', description:'조퇴 관련 데이터 받아오기'})
@@ -26,6 +28,7 @@ export class LeaveController {
         return data;
     }
 
+    @ApiTags('공용 라우터')
     @Get('one')
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'1학년의 조퇴 정보',description:'1학년 학생의 조퇴 데이터 받아오기'})
@@ -40,6 +43,7 @@ export class LeaveController {
         return data;
     }
 
+    @ApiTags('공용 라우터')
     @Get('two')
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'2학년의 조퇴 정보',description:'2학년 학생의 조퇴 데이터 받아오기'})
@@ -54,6 +58,7 @@ export class LeaveController {
         return data;
     }
 
+    @ApiTags('공용 라우터')
     @Get('three')
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'3학년의 조퇴 정보',description:'3학년 학생의 조퇴 데이터 받아오기'})
@@ -67,6 +72,8 @@ export class LeaveController {
         let data = await this.leavedataservice.findwithclass(3)
         return data;
     }
+
+    @ApiTags('선생님용 라우터')
     @Get('request-check')
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'조퇴 미승인 목록',description:'미승인된 조퇴 정보 출력'})
@@ -80,6 +87,7 @@ export class LeaveController {
         return result;
     }
 
+    @ApiTags('선생님용 라우터')
     @Post('request-check')
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'조퇴 승인',description:'선생님이 조퇴를 허가해줌'})
@@ -92,7 +100,7 @@ export class LeaveController {
         await this.leavedataservice.CheckRequest(req.leaveid);
         return '성공적으로 실행됐습니다.'
     }
-
+    @ApiTags('학생용 라우터')
     @Post()
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'조퇴 신청',description:'학생이 조퇴를 신청할 때 사용'})

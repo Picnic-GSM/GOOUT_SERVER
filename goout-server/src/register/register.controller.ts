@@ -4,7 +4,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RegisterDataDto } from 'src/userdata/register.interface';
 import { UserdataService } from 'src/userdata/userdata.service';
 
-@ApiTags('학생 정보 관련 라우터')
+@ApiTags('학생용 라우터')
 @Controller('register')
 	export class RegisterController {
     constructor(private readonly userdataservice:UserdataService) {}
