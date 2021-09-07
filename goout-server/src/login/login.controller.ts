@@ -5,11 +5,12 @@ import * as crypto from 'crypto'
 import { LoginDataDto } from 'src/userdata/login.interface';
 import { AuthService } from 'src/auth/auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { TeacherdataService } from 'src/teacherdata/teacherdata.service';
 
 @ApiTags('학생 정보 관련 라우터')
 @Controller('login')
 export class LoginController {
-    constructor(private readonly userdataservice:UserdataService,private readonly authservice:AuthService) {}
+    constructor(private readonly userdataservice:UserdataService,private readonly authservice:AuthService,private readonly teacherdataservice:TeacherdataService) {}
     
     @Get()
     getdata() {
@@ -39,5 +40,12 @@ export class LoginController {
         } else {
             return this.authservice.IssueJWT(user);
         }
+    }
+
+    @Post('teacher')
+    async Code_Login(@Body() req) {
+        let teacherdata = await this.teacherdataservice.findOnewithCode(req.code);
+        return await this.authservice.IssueJWTforTeacher(teacherdata.grade,teacherdata.class);
+
     }
 }

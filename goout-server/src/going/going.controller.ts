@@ -102,14 +102,6 @@ export class GoingController {
     @Post('request-check')
     @ApiOperation({summary:'외출을 승인시켜주는 창',description:'선생님이 승인할 때 사용됨'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
-    @ApiBody({
-        schema:{
-            type:'number',
-            items:{
-                type:'asd'
-            }
-        }
-    })
     async post_request_check(@Headers('accessToken') accessToken, @Body() req) {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
