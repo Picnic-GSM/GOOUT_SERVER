@@ -3,6 +3,7 @@ import { Controller, HttpException, HttpStatus, Post, Req } from '@nestjs/common
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RegisterDataDto } from 'src/userdata/register.interface';
 import { UserdataService } from 'src/userdata/userdata.service';
+import { RegisterAuthNumCheck } from './registerAuth.interface';
 
 @ApiTags('학생용 라우터')
 @Controller('register')
@@ -26,5 +27,11 @@ import { UserdataService } from 'src/userdata/userdata.service';
             throw new HttpException("회원가입 에러",HttpStatus.BAD_REQUEST)
         }
 
+    }
+
+    @Post('Check')
+    async authNumCheck(@Body() req:RegisterAuthNumCheck) {
+        let user = await this.userdataservice.findOnewithUserid(req.userid);
+        
     }
 }
