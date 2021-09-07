@@ -24,7 +24,7 @@ export class LeaveController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
         
         let data = await this.leavedataservice.getData();
@@ -41,7 +41,7 @@ export class LeaveController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
         let data = await this.leavedataservice.findwithclass(1)
@@ -58,7 +58,7 @@ export class LeaveController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
         let data = await this.leavedataservice.findwithclass(2)
@@ -75,7 +75,7 @@ export class LeaveController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
         let data = await this.leavedataservice.findwithclass(3)
@@ -92,7 +92,7 @@ export class LeaveController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
         let result = await this.leavedataservice.find_with_request_check(0);
         return result;
@@ -108,7 +108,7 @@ export class LeaveController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
         await this.leavedataservice.CheckRequest(req.leaveid);
         return '성공적으로 실행됐습니다.'
@@ -123,7 +123,7 @@ export class LeaveController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
         let decoded = jwt.verify(accessToken,jwtConstants.secret);
         let userdata = await this.userdataservice.findOne(decoded['userid']);
@@ -137,7 +137,7 @@ export class LeaveController {
             return '생성되었습니다.'
         } catch (error) {
             console.log(error);
-            throw new HttpException("생성 중 에러 발생. 다시 시도해주세요",HttpStatus.BAD_REQUEST);
+            throw new HttpException("생성 중 에러 발생. 다시 시도해주세요",HttpStatus.UNAUTHORIZED);
         }
 
     }

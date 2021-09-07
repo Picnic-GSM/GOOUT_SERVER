@@ -25,11 +25,11 @@ export class LoginController {
         const decipher = crypto.createDecipher('aes-256-cbc', process.env.key);
         let result = decipher.update(user.password, 'base64', 'utf8');
         result += decipher.final('utf8');
-
+        console.log(result,req.password)
         if(result == req.password) {
-            throw new HttpException('비밀번호가 잘못 됐습니다',HttpStatus.BAD_REQUEST);
-        } else {
             return this.authservice.IssueJWT(user);
+        } else {
+            throw new HttpException('비밀번호가 잘못 됐습니다',HttpStatus.BAD_REQUEST);
         }
     }
 
