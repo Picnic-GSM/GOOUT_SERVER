@@ -5,6 +5,7 @@ import { jwtConstants } from 'src/auth/constants';
 import { LeavedataService } from 'src/leavedata/leavedata.service';
 import { UserdataService } from 'src/userdata/userdata.service';
 import { ApiHeader, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { RequestCheckDto } from './request-check.interface';
 
 @ApiTags('조퇴 관련 라우터')
 @Controller('leave')
@@ -82,13 +83,13 @@ export class LeaveController {
     @Post('request-check')
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'조퇴 승인',description:'선생님이 조퇴를 허가해줌'})
-    async post_request_check(@Headers('accessToken') accessToken, @Body() req) {
+    async post_request_check(@Headers('accessToken') accessToken, @Body() req:RequestCheckDto) {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
             throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
         }
-        await this.leavedataservice.CheckRequest(req.goingid);
+        await this.leavedataservice.CheckRequest(req.leaveid);
         return '성공적으로 실행됐습니다.'
     }
 

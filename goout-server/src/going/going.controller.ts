@@ -10,6 +10,8 @@ import { Goingoutdata } from 'src/goingoutdata/goingoutdata.entity';
 import { GoingService } from './going.service';
 import * as crypto from 'crypto'
 import { ApiBody, ApiHeader, ApiOperation, ApiProperty, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { GoingRequestCheckDto } from './requestcheck.interface';
+import { GoingOutCheckDto } from './outcheck.interface';
 
 
 @Controller('going')
@@ -102,7 +104,7 @@ export class GoingController {
     @Post('request-check')
     @ApiOperation({summary:'외출을 승인시켜주는 창',description:'선생님이 승인할 때 사용됨'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
-    async post_request_check(@Headers('accessToken') accessToken, @Body() req) {
+    async post_request_check(@Headers('accessToken') accessToken, @Body() req:GoingRequestCheckDto) {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
@@ -140,7 +142,7 @@ export class GoingController {
     @Post('out-check')
     @ApiOperation({summary:'외출 귀가 완료창',description:'선생님이 귀가 확인시 사용'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
-    async out_check(@Headers('accessToken') accessToken, @Body() req) {
+    async out_check(@Headers('accessToken') accessToken, @Body() req:GoingOutCheckDto) {
         
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
