@@ -28,6 +28,9 @@ export class UserdataService {
   findOne(id: string): Promise<Userdata> {
     return this.usersRepository.findOne(id);
   }
+  findOnewithUserid(userid: number): Promise<Userdata> {
+    return this.usersRepository.findOne(userid);
+  }
   findwithEmail(email: string): Promise<Userdata> {
     return this.usersRepository.findOne({email:email});
   }
