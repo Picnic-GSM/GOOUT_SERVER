@@ -32,12 +32,12 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
-        let alldata = await this.goingoutservice.findwithclass(3);
+        let alldata = await this.goingoutservice.find_with_request_check(1);
         let check_result = await this.goingservice.check_status(alldata);
-        alldata = await this.goingoutservice.findwithclass(3);
+        alldata = await this.goingoutservice.find_with_request_check(1);
         return alldata;
     }
 
@@ -48,12 +48,12 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
-        let onedata = await this.goingoutservice.findwithclass(3);
+        let onedata = await this.goingoutservice.findwithclass(1);
         let check_result = await this.goingservice.check_status(onedata);
-        onedata = await this.goingoutservice.findwithclass(3);
+        onedata = await this.goingoutservice.findwithclass(1);
         return onedata;
     }
 
@@ -64,12 +64,12 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
-        let twodata = await this.goingoutservice.findwithclass(3);
+        let twodata = await this.goingoutservice.findwithclass(2);
         let check_result = await this.goingservice.check_status(twodata);
-        twodata = await this.goingoutservice.findwithclass(3);
+        twodata = await this.goingoutservice.findwithclass(2);
         return twodata;
     }
 
@@ -80,7 +80,7 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
         let threedata = await this.goingoutservice.findwithclass(3);
@@ -96,7 +96,7 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
         let result = this.goingoutservice.find_with_request_check(0);
     }
@@ -108,7 +108,7 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
         await this.goingoutservice.update_GoingRequestdata(req.goingid, 1);
         return '성공적으로 실행됐습니다.'
@@ -121,7 +121,7 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
         let decoded = jwt.verify(accessToken,jwtConstants.secret);
         let userdata = await this.userdataservice.findOne(decoded['userid']);
@@ -135,7 +135,7 @@ export class GoingController {
             return '생성되었습니다.'
         } catch (error) {
             console.log(error);
-            throw new HttpException("생성 중 에러 발생. 다시 시도해주세요",HttpStatus.BAD_REQUEST);
+            throw new HttpException("생성 중 에러 발생. 다시 시도해주세요",HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -147,7 +147,7 @@ export class GoingController {
         try {
             let decoded = jwt.verify(accessToken,jwtConstants.secret);
         } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.BAD_REQUEST)
+            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
 
         await this.goingoutservice.updateGoingdata(req.goingid,'귀가완료');

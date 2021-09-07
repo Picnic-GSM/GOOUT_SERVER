@@ -36,6 +36,7 @@ export class LoginController {
     @ApiOperation({summary:'선생님 로그인',description:'코드로 로그인'})
     async Code_Login(@Body() req:TeacherLoginDto) {
         let teacherdata = await this.teacherdataservice.findOnewithCode(req.code);
+        if(teacherdata == null) throw new HttpException("인증코드가 잘못됐습니다.",HttpStatus.BAD_REQUEST)
         return await this.authservice.IssueJWTforTeacher(teacherdata.grade,teacherdata.class);
 
     }
