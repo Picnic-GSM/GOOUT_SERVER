@@ -15,6 +15,7 @@ export class LoginController {
     
     @ApiOperation({summary:'로그인',description:'선생님과 학생의 로그인'})
     @Post()
+    @HttpCode(201)
     async login(@Body() req:LoginDataDto) {
         let user = await this.userdataservice.findwithEmail(req.email);
         console.log(user)
@@ -34,6 +35,7 @@ export class LoginController {
 
     @ApiTags('선생님용 라우터')
     @Post('teacher')
+    @HttpCode(201)
     @ApiOperation({summary:'선생님 로그인',description:'코드로 로그인'})
     async Code_Login(@Body() req:TeacherLoginDto) {
         let teacherdata = await this.teacherdataservice.findOnewithCode(req.code);

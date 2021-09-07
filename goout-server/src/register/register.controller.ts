@@ -1,4 +1,4 @@
-import { Body } from '@nestjs/common';
+import { Body, HttpCode } from '@nestjs/common';
 import { Controller, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RegisterDataDto } from 'src/userdata/register.interface';
@@ -11,6 +11,7 @@ import { UserdataService } from 'src/userdata/userdata.service';
 
     @ApiOperation({summary:'회원가입',description:'학생,선생님의 회원가입'})
     @Post()
+    @HttpCode(201)
     async register(@Body() req:RegisterDataDto) {
         let exist = await this.userdataservice.findwithEmail(req.email);
         if(exist != undefined) {

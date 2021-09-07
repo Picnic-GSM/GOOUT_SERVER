@@ -1,4 +1,4 @@
-import { Get, HttpStatus } from '@nestjs/common';
+import { Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { jwtConstants } from 'src/auth/constants';
@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken'
 import { Goingoutdata } from 'src/goingoutdata/goingoutdata.entity';
 import { GoingService } from './going.service';
 import * as crypto from 'crypto'
-import { ApiBody, ApiHeader, ApiOperation, ApiProperty, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiOperation, ApiProperty, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { GoingRequestCheckDto } from './requestcheck.interface';
 import { GoingOutCheckDto } from './outcheck.interface';
 
@@ -20,6 +20,8 @@ export class GoingController {
     
     @ApiTags('공용 라우터')
     @Get()
+    @HttpCode(200)
+    @ApiResponse({description:'조퇴한 모든 학생을 출력',type:Goingoutdata,isArray:true,status:200})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'외출한 학생 모두 출력',description:'외출 정보를 반환'})
     async get_goingoutdata(@Headers("accessToken") accessToken) {
@@ -37,6 +39,8 @@ export class GoingController {
 
     @ApiTags('공용 라우터')
     @Get('one')
+    @HttpCode(200)
+    @ApiResponse({description:'외출한 1학년 출력',type:Goingoutdata,isArray:true,status:200})
     @ApiOperation({summary:'1학년 외출 학생만 출력', description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_first_goingoutdata(@Headers("accessToken") accessToken) {
@@ -54,6 +58,8 @@ export class GoingController {
 
     @ApiTags('공용 라우터')
     @Get('two')
+    @ApiResponse({description:'외출한 2학년 출력',type:Goingoutdata,isArray:true,status:200})
+    @HttpCode(200)
     @ApiOperation({summary:'2학년 외출 학생만 출력',description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_second_goingoutdata(@Headers("accessToken") accessToken) {
@@ -71,6 +77,8 @@ export class GoingController {
 
     @ApiTags('공용 라우터')
     @Get('three')
+    @ApiResponse({description:'외출한 3학년 출력',type:Goingoutdata,isArray:true,status:200})
+    @HttpCode(200)
     @ApiOperation({summary:'3학년 외출 학생만 출력',description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_third_goingoutdata(@Headers("accessToken") accessToken) {
@@ -88,6 +96,8 @@ export class GoingController {
 
     @ApiTags('선생님용 라우터')
     @Get('request-check')
+    @HttpCode(200)
+    @ApiResponse({description:'승인 되지 않은 외출 정보들 출력',type:Goingoutdata,isArray:true,status:200})
     @ApiOperation({summary:'승인 되지 않은 외출 정보만 출력',description:'선생님의 승인창'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_request_check(@Headers('accessToken') accessToken) {
@@ -101,6 +111,8 @@ export class GoingController {
 
     @ApiTags('선생님용 라우터')
     @Post('request-check')
+    @HttpCode(201)
+    @ApiResponse({status:201})
     @ApiOperation({summary:'외출을 승인시켜주는 창',description:'선생님이 승인할 때 사용됨'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async post_request_check(@Headers('accessToken') accessToken, @Body() req:GoingRequestCheckDto) {
@@ -115,6 +127,8 @@ export class GoingController {
 
     @ApiTags('학생용 라우터')
     @Post()
+    @HttpCode(201)
+    @ApiResponse({status:201})
     @ApiOperation({summary:'외출을 요청',description:'학생들이 외출을 요청시켜줌'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async create_going(@Headers('accessToken') accessToken, @Body() req:CreateGoingDto) {
@@ -141,6 +155,8 @@ export class GoingController {
 
     @ApiTags('선생님용 라우터')
     @Post('out-check')
+    @ApiResponse({status:201})
+    @HttpCode(201)
     @ApiOperation({summary:'외출 귀가 완료창',description:'선생님이 귀가 확인시 사용'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async out_check(@Headers('accessToken') accessToken, @Body() req:GoingOutCheckDto) {
