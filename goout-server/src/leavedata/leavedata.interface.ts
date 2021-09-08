@@ -8,6 +8,6 @@ export class CreateLeavedataDto {
     @ApiProperty({description:'leave start time'})
     start_time:string;
     @ApiProperty({description:'leave reason'})
-    reason:string;
     request:number;
+    back_check:string;
 }

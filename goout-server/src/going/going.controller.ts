@@ -32,12 +32,12 @@ export class GoingController {
         }
 
         let alldata = await this.goingoutservice.getData();
-        let result = await this.goingservice.check_status(alldata);
-        alldata = await this.goingoutservice.getData();
+        await this.goingservice.check_status(alldata);
+        let after_check = await this.goingoutservice.getData();
         if(!alldata) {
            // throw or ?
         }
-        return alldata;
+        return await after_check;
     }
 
     @ApiTags('공용 라우터')
