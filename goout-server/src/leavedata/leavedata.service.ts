@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Leavedata } from './leavedata.entity';
-import * as crypto from 'crypto'
-import { CreateLeavedataDto } from './leavedata.interface';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Leavedata } from "./leavedata.entity";
+import * as crypto from "crypto";
+import { CreateLeavedataDto } from "./leavedata.interface";
 
 @Injectable()
 export class LeavedataService {
   constructor(
     @InjectRepository(Leavedata)
-    private usersRepository: Repository<Leavedata>,
+    private usersRepository: Repository<Leavedata>
   ) {}
 
   async createLeavedata(createLeaveDto: CreateLeavedataDto) {
@@ -23,9 +23,9 @@ export class LeavedataService {
     return this.usersRepository.findOne(id);
   }
   findwithclass(grade: number): Promise<Leavedata> {
-    return this.usersRepository.findOne({grade:grade});
+    return this.usersRepository.findOne({ grade: grade });
   }
-/*
+  /*
   async updateLeavedata(updateLeavedataDto) {
     const updatedata = await this.usersRepository.findOne({userid:updateLeavedataDto.userid});
     updatedata.username = updateLeavedataDto.username;

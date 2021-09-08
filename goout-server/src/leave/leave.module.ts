@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Leavedata } from 'src/leavedata/leavedata.entity';
-import { LeavedataService } from 'src/leavedata/leavedata.service';
-import { LeaveService } from './leave.service';
+import { Module } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Leavedata } from "src/leavedata/leavedata.entity";
+import { LeavedataService } from "src/leavedata/leavedata.service";
+import { LeaveService } from "./leave.service";
 
 @Module({
-  providers: [LeaveService]
+  providers: [LeaveService],
 })
 export class LeaveModule {}
