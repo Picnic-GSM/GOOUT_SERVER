@@ -13,15 +13,13 @@ export class UserdataService {
   ) {}
 
   async createUserdata(createUserDto: LoginDataDto) {
-    crypto.randomBytes(64, (err, buf) => {
-      crypto.pbkdf2('비밀번호', buf.toString('base64'), 100000, 64, 'sha512', (err, key) => {
-        //console.log(key.toString('base64'));
-        console.log(key)
-      });
-    });
-    //createUserDto.salt = await bcrypt.genSalt();
-    //createUserDto.password = await bcrypt.hash(createUserDto.password,createUserDto.salt);
-    return this.usersRepository.save(createUserDto);
+    const cipher = crypto.createCipher('aes-256-cbc', process.env.key);
+    let result = cipher.update(createUserDto.password, 'utf8', 'base64');
+    result += cipher.final('base64');
+    createUserDto.password = await result;
+    let create_result = await this.usersRepository.save(createUserDto);
+    return create_result;
+    
   }
   getData(): Promise<Userdata[]> {
     return this.usersRepository.find();
@@ -29,6 +27,9 @@ export class UserdataService {
 
   findOne(id: string): Promise<Userdata> {
     return this.usersRepository.findOne(id);
+  }
+  findOnewithUserid(userid: number): Promise<Userdata> {
+    return this.usersRepository.findOne(userid);
   }
   findwithEmail(email: string): Promise<Userdata> {
     return this.usersRepository.findOne({email:email});
