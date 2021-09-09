@@ -13,6 +13,19 @@ import { AuthModule } from "./auth/auth.module";
 import { LeavedataModule } from "./leavedata/leavedata.module";
 import { LeaveController } from "./leave/leave.controller";
 import { LeaveModule } from "./leave/leave.module";
+import { RegisterController } from "./register/register.controller";
+import { RegisterModule } from "./register/register.module";
+import { Leavedata } from "./leavedata/leavedata.entity";
+import { LeavedataService } from "./leavedata/leavedata.service";
+import { GoingoutdataModule } from "./goingoutdata/goingoutdata.module";
+import { Goingoutdata } from "./goingoutdata/goingoutdata.entity";
+import { GoingController } from "./going/going.controller";
+import { GoingModule } from "./going/going.module";
+import { GoingoutDataService } from "./goingoutdata/goingoutdata.service";
+import { GoingService } from "./going/going.service";
+import { TeacherdataService } from "./teacherdata/teacherdata.service";
+import { Teacherdata } from "./teacherdata/teacherdata.entity";
+import { TeacherdataModule } from "./teacherdata/teacherdata.module";
 
 @Module({
   imports: [
@@ -26,7 +39,7 @@ import { LeaveModule } from "./leave/leave.module";
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Userdata],
+      entities: [Userdata, Leavedata, Goingoutdata, Teacherdata],
       synchronize: true,
     }),
     LoginModule,
@@ -34,8 +47,26 @@ import { LeaveModule } from "./leave/leave.module";
     AuthModule,
     LeavedataModule,
     LeaveModule,
+    RegisterModule,
+    GoingoutdataModule,
+    GoingModule,
+    TeacherdataModule,
   ],
-  controllers: [AppController, LoginController, LeaveController],
-  providers: [AppService, LoginService, UserdataService],
+  controllers: [
+    AppController,
+    LoginController,
+    LeaveController,
+    RegisterController,
+    GoingController,
+  ],
+  providers: [
+    AppService,
+    LoginService,
+    UserdataService,
+    LeavedataService,
+    GoingoutDataService,
+    GoingService,
+    TeacherdataService,
+  ],
 })
 export class AppModule {}

@@ -22,4 +22,10 @@ export class Userdata {
 
   @Column()
   s_number: number;
+  /*
+  @Column()
+  authNum:number;
+
+  @Column()
+  authNumCheck:number;*/
 }
