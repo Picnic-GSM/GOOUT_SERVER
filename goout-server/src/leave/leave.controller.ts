@@ -94,7 +94,7 @@ export class LeaveController {
             await this.leavedataservice.CheckRequest(req.leaveid);
             return '성공적으로 실행됐습니다.'
         } else {
-            throw new HttpException("token is expired",HttpStatus.FORBIDDEN)
+            throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
         }
 
         
@@ -107,16 +107,15 @@ export class LeaveController {
     @ApiResponse({status:201})
     async leave_request(@Headers("accessToken") accessToken, @Body() req:CreateLeavedataDto) {
         await this.authservice.JWTverify(accessToken);
-        
+
         let decoded = jwt.verify(accessToken,jwtConstants.secret);
         let userdata = await this.userdataservice.findOne(decoded['userid']);
-        console.log(userdata);
         req.username = userdata.username;
         req.grade = userdata.grade;
         req.class = userdata.class;
         req.s_number = userdata.s_number;
         try {
-            let createleavedata = await this.leavedataservice.createLeavedata(req);
+            await this.leavedataservice.createLeavedata(req);
             return '신청되었습니다.'
         } catch (error) {
             console.log(error);
