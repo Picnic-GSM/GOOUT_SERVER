@@ -12,11 +12,12 @@ import * as crypto from 'crypto'
 import { ApiBody, ApiHeader, ApiOperation, ApiProperty, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { GoingRequestCheckDto } from './requestcheck.interface';
 import { GoingOutCheckDto } from './outcheck.interface';
+import { AuthService } from 'src/auth/auth.service';
 
 
 @Controller('going')
 export class GoingController {
-    constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService,private readonly goingservice:GoingService) {}
+    constructor(private readonly userdataservice:UserdataService, private readonly goingoutservice:GoingoutDataService,private readonly goingservice:GoingService,private readonly authservice:AuthService) {}
     
     @ApiTags('공용 라우터')
     @Get()
@@ -25,15 +26,11 @@ export class GoingController {
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     @ApiOperation({summary:'외출한 학생 모두 출력',description:'외출 정보를 반환'})
     async get_goingoutdata(@Headers("accessToken") accessToken) {
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
+        await this.authservice.JWTverify(accessToken);
 
-        let alldata = await this.goingoutservice.getData();
-        await this.goingservice.check_status(alldata);
-        let after_check = await this.goingoutservice.getData();
+        let alldata = await this.goingoutservice.getData(); //1차 값 가져오기
+        await this.goingservice.check_status(alldata);  //값 확인 후 지각인지 확인
+        let after_check = await this.goingoutservice.getData(); //확인된 값을 다시 받아옴
         if(!alldata) {
            // throw or ?
         }
@@ -47,13 +44,11 @@ export class GoingController {
     @ApiOperation({summary:'1학년 외출 학생만 출력', description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_first_goingoutdata(@Headers("accessToken") accessToken) {
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
+        await this.authservice.JWTverify(accessToken);
 
         let onedata = await this.goingoutservice.findwithclass(1);
+        await this.goingservice.check_status(onedata);
+        onedata = await this.goingoutservice.findwithclass(1);
         return onedata;
     }
 
@@ -64,13 +59,11 @@ export class GoingController {
     @ApiOperation({summary:'2학년 외출 학생만 출력',description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_second_goingoutdata(@Headers("accessToken") accessToken) {
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
-
+        await this.authservice.JWTverify(accessToken);
+        
         let twodata = await this.goingoutservice.findwithclass(2);
+        await this.goingservice.check_status(twodata);
+        twodata = await this.goingoutservice.findwithclass(2);
         return twodata;
     }
 
@@ -81,13 +74,11 @@ export class GoingController {
     @ApiOperation({summary:'3학년 외출 학생만 출력',description:'외출 정보를 반환'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_third_goingoutdata(@Headers("accessToken") accessToken) {
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
+        await this.authservice.JWTverify(accessToken);
 
         let threedata = await this.goingoutservice.findwithclass(3);
+        await this.goingservice.check_status(threedata);
+        threedata = await this.goingoutservice.findwithclass(3);
         return threedata;
     }
 
@@ -98,11 +89,8 @@ export class GoingController {
     @ApiOperation({summary:'승인 되지 않은 외출 정보만 출력',description:'선생님의 승인창'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async get_request_check(@Headers('accessToken') accessToken) {
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
+        await this.authservice.JWTverify(accessToken);
+
         let result = this.goingoutservice.find_with_request_check(0);
         return result;
     }
@@ -114,13 +102,10 @@ export class GoingController {
     @ApiOperation({summary:'외출을 승인시켜주는 창',description:'선생님이 승인할 때 사용됨'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async post_request_check(@Headers('accessToken') accessToken, @Body() req:GoingRequestCheckDto) {
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
+        await this.authservice.JWTverify(accessToken);
+
         await this.goingoutservice.update_GoingRequestdata(req.goingid, 1);
-        return '성공적으로 실행됐습니다.'
+        return '승인되었습니다.'
     }
 
     @ApiTags('학생용 라우터')
@@ -130,11 +115,8 @@ export class GoingController {
     @ApiOperation({summary:'외출을 요청',description:'학생들이 외출을 요청시켜줌'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async create_going(@Headers('accessToken') accessToken, @Body() req:CreateGoingDto) {
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
+        await this.authservice.JWTverify(accessToken);
+
         let decoded = jwt.verify(accessToken,jwtConstants.secret);
         let userdata = await this.userdataservice.findOne(decoded['userid']);
         req.username = userdata.username;
@@ -144,7 +126,7 @@ export class GoingController {
         req.going_status = "외출중"
         try {
             await this.goingoutservice.createGoingout(req);
-            return '생성되었습니다.'
+            return '신청되었습니다.'
         } catch (error) {
             console.log(error);
             throw new HttpException("생성 중 에러 발생. 다시 시도해주세요",HttpStatus.UNAUTHORIZED);
@@ -158,14 +140,9 @@ export class GoingController {
     @ApiOperation({summary:'외출 귀가 완료창',description:'선생님이 귀가 확인시 사용'})
     @ApiHeader({name:'accessToken',description:'Input JWT'})
     async out_check(@Headers('accessToken') accessToken, @Body() req:GoingOutCheckDto) {
-        
-        try {
-            let decoded = jwt.verify(accessToken,jwtConstants.secret);
-        } catch (error) {
-            throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
-        }
+        await this.authservice.JWTverify(accessToken);
 
         await this.goingoutservice.updateGoingdata(req.goingid,'귀가완료');
-        return '성공적으로 실행됐습니다.'
+        return '실행됐습니다.'
     }
 }
