@@ -24,7 +24,7 @@ import { GoingModule } from './going/going.module';
 import { GoingoutDataService } from './goingoutdata/goingoutdata.service';
 import { GoingService } from './going/going.service';
 import { TeacherdataService } from './teacherdata/teacherdata.service';
-import { TeacherData } from './teacherdata/teacherdata.entity';
+import { Teacherdata } from './teacherdata/teacherdata.entity';
 import { TeacherdataModule } from './teacherdata/teacherdata.module';
 
 @Module({
@@ -39,7 +39,7 @@ import { TeacherdataModule } from './teacherdata/teacherdata.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Userdata,Leavedata,Goingoutdata,TeacherData],
+      entities: [Userdata,Leavedata,Goingoutdata,Teacherdata],
       synchronize: true,
     }), 
 LoginModule, UserdataModule, AuthModule, LeavedataModule, LeaveModule, RegisterModule, GoingoutdataModule, GoingModule, TeacherdataModule],

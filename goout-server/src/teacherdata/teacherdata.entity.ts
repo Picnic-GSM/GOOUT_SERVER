@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 
 
 @Entity()
-export class TeacherData {
+export class Teacherdata {
     @PrimaryColumn()
     tracherid:number;
 

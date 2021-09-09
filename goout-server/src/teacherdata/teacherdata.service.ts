@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TeacherData } from './teacherdata.entity';
+import { Teacherdata } from './teacherdata.entity';
 
 @Injectable()
 export class TeacherdataService {
     constructor(
-        @InjectRepository(TeacherData)
-        private readonly teacherrepository:Repository<TeacherData>
+        @InjectRepository(Teacherdata)
+        private readonly teacherrepository:Repository<Teacherdata>
     ) {}
-
-    findOne(id: string): Promise<TeacherData> {
+    getData(): Promise<Teacherdata[]> {
+        return this.teacherrepository.find();
+      }
+    findOne(id: string): Promise<Teacherdata> {
         return this.teacherrepository.findOne(id);
     }
 
-    findOnewithCode(teachercode: string): Promise<TeacherData> {
-        return this.teacherrepository.findOne({teachercode:teachercode});
+    async findOnewithCode(teachercode: string): Promise<Teacherdata> {
+        return await this.teacherrepository.findOne({teachercode:teachercode});
     }
 }
