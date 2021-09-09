@@ -110,8 +110,15 @@ export class LeaveController {
         } catch (error) {
             throw new HttpException("token is expired",HttpStatus.UNAUTHORIZED)
         }
-        await this.leavedataservice.CheckRequest(req.leaveid);
-        return '성공적으로 실행됐습니다.'
+        let decoded = jwt.verify(accessToken,jwtConstants.secret);
+        if(decoded['grade']) {
+            await this.leavedataservice.CheckRequest(req.leaveid);
+            return '성공적으로 실행됐습니다.'
+        } else {
+            throw new HttpException("token is expired",HttpStatus.FORBIDDEN)
+        }
+
+        
     }
     @ApiTags('학생용 라우터')
     @Post()
