@@ -45,7 +45,7 @@ export class RegisterController {
       // db값 수정하는 코드
       return "인증완료됐습니다."
     } else {
-      throw new HttpException("인증코드가 잘못됐습니다.",HttpStatus.BAD_REQUEST);
+      throw new HttpException("인증코드가 잘못됐거나 만료됐습니다.",HttpStatus.BAD_REQUEST);
     }
   }
 }
