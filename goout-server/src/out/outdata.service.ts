@@ -16,7 +16,7 @@ export class GoingoutDataService {
   ) {}
 
   async createGoingout(createGoingDto: CreateGoingDto) {
-    let goingtime = createGoingDto.end_time;
+    let goingtime = createGoingDto.end_at;
     let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
     let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
     let time = new Date();
