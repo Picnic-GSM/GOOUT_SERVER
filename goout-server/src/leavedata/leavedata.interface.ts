@@ -1,12 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateLeavedataDto {
-    username:string;
-    grade:number;
-    class:number;
-    s_number:number;
-    @ApiProperty({description:'leave start time'})
-    start_time:string;
-    request:number;
-    back_check:string;
+  @ApiProperty({ description: "외출 시작 시간" })
+  start_at: string;
+  status: string;
+  @ApiProperty({description:"외출 이유"})
+  reason:string;
 }

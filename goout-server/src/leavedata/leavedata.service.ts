@@ -1,39 +1,63 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Leavedata } from './leavedata.entity';
-import { CreateLeavedataDto } from './leavedata.interface';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Student } from "src/student/userdata.entity";
+import { StudentService } from "src/student/userdata.service";
+import { Repository } from "typeorm";
+import { Leave } from "./leavedata.entity";
+import { CreateLeavedataDto } from "./leavedata.interface";
 
 @Injectable()
 export class LeavedataService {
   constructor(
-    @InjectRepository(Leavedata)
-    private leaveRepository: Repository<Leavedata>,
+    @InjectRepository(Leave)
+    private leaveRepository: Repository<Leave>,
+    private readonly userdataservice: StudentService
   ) {}
 
   async createLeavedata(createLeaveDto: CreateLeavedataDto) {
-    createLeaveDto.request = 0;
+    createLeaveDto.status = "미승인";
     return this.leaveRepository.save(createLeaveDto);
   }
-  getData(): Promise<Leavedata[]> {
-    return this.leaveRepository.find({request:1});
+  getData(): Promise<Leave[]> {
+    return this.leaveRepository.find({ status: "승인" });
   }
 
-  findOne(id: string): Promise<Leavedata> {
-    return this.leaveRepository.findOne(id);
+  findOne(id: number): Promise<Leave> {
+    return this.leaveRepository.findOne({user_id:id});
   }
-  findwithclass(grade: number): Promise<Leavedata> {
-    return this.leaveRepository.findOne({grade:grade,request:1});
+  async findwithclass(grade: number): Promise<Leave> {
+    let leavedata = await this.leaveRepository.find({ status: "승인" });
+    let user_data: Student;
+    let return_data;
+    leavedata.forEach(async (i) => {
+      user_data = await this.userdataservice.findOne(i.user_id);
+      if (user_data.grade == grade) {
+        return_data.push(i);
+      }
+    });
+    return return_data;
   }
-  find_with_grade_class(grade: number,class2:number): Promise<Leavedata> {
-    return this.leaveRepository.findOne({grade:grade,class:class2,request:1});
+  async find_with_grade_class(
+    grade: number,
+    class1: number
+  ): Promise<Leave> {
+    let user_data: Student;
+    let return_data;
+    let leave_data = await this.leaveRepository.find({ status: "승인" });
+    await leave_data.forEach(async (each_leave) => {
+      user_data = await this.userdataservice.findOne(each_leave.user_id);
+      if (user_data.grade == grade && user_data.class == class1) {
+        return_data.push(each_leave);
+      }
+    });
+    return return_data;
   }
-  find_with_request_check(request: number): Promise<Leavedata[]> {
-    return this.leaveRepository.find({request:request});
+  find_with_request_check(request: string): Promise<Leave[]> {
+    return this.leaveRepository.find({ status: request });
   }
-  async CheckRequest(leaveid:number) {
-    const updatedata = await this.leaveRepository.findOne({leaveid:leaveid});
-    updatedata.request = 1;
+  async CheckRequest(id: number) {
+    const updatedata = await this.leaveRepository.findOne({ id: id });
+    updatedata.status = "승인";
     await this.leaveRepository.save(updatedata);
   }
   async remove(id: string): Promise<void> {

@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Userdata } from './userdata.entity';
-import * as crypto from 'crypto'
-import { LoginDataDto } from './login.interface';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Student } from "./userdata.entity";
+import * as crypto from "crypto";
+import { LoginDataDto } from "./login.interface";
 
 @Injectable()
-export class UserdataService {
+export class StudentService {
   constructor(
-    @InjectRepository(Userdata)
-    private usersRepository: Repository<Userdata>,
+    @InjectRepository(Student)
+    private usersRepository: Repository<Student>
   ) {}
 
   async createUserdata(createUserDto: LoginDataDto) {
@@ -21,20 +21,20 @@ export class UserdataService {
     return create_result;
     
   }
-  getData(): Promise<Userdata[]> {
+  getData(): Promise<Student[]> {
     return this.usersRepository.find();
   }
 
-  findOne(id: string): Promise<Userdata> {
+  findOne(id: number): Promise<Student> {
     return this.usersRepository.findOne(id);
   }
-  findOnewithUserid(userid: number): Promise<Userdata> {
+  findOnewithUserid(userid: number): Promise<Student> {
     return this.usersRepository.findOne(userid);
   }
-  findwithEmail(email: string): Promise<Userdata> {
-    return this.usersRepository.findOne({email:email});
+  findwithEmail(email: string): Promise<Student> {
+    return this.usersRepository.findOne({ email: email });
   }
-/*
+  /*
   async updateUserdata(updateUserdataDto:IUpdateUserdata) {
     const updatedata = await this.usersRepository.findOne({userid:updateUserdataDto.userid});
     updatedata.username = updateUserdataDto.username;
