@@ -15,7 +15,10 @@ import { RegisterService } from "./register.service";
 @ApiTags("학생용 라우터")
 @Controller("register")
 export class RegisterController {
-  constructor(private readonly userdataservice: UserdataService,private readonly registerservice:RegisterService) {}
+  constructor(
+    private readonly userdataservice: UserdataService,
+    private readonly registerservice: RegisterService
+  ) {}
 
   @ApiOperation({ summary: "회원가입", description: "학생,선생님의 회원가입" })
   @Post()
