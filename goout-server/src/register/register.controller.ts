@@ -10,11 +10,17 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { RegisterDataDto } from "src/userdata/register.interface";
 import { UserdataService } from "src/userdata/userdata.service";
 import { RegisterAuthNumCheck } from "./registerAuth.interface";
+import { RegisterService } from "./register.service";
+import { RedisService } from "src/util/redis.service";
 
 @ApiTags("학생용 라우터")
 @Controller("register")
 export class RegisterController {
-  constructor(private readonly userdataservice: UserdataService) {}
+  constructor(
+    private readonly userdataservice: UserdataService,
+    private readonly registerservice: RegisterService,
+    private readonly redisservice:RedisService
+  ) {}
 
   @ApiOperation({ summary: "회원가입", description: "학생,선생님의 회원가입" })
   @Post()
@@ -37,8 +43,14 @@ export class RegisterController {
     }
   }
 
-  @Post("Check")
+  @Post("Auth-Check")
   async authNumCheck(@Body() req: RegisterAuthNumCheck) {
-    let user = await this.userdataservice.findOnewithUserid(req.userid);
+    let authnum = await this.redisservice.get_redis(req.userid);
+    if(Number(authnum) == req.authNum) {
+      // db값 수정하는 코드
+      return "인증완료됐습니다."
+    } else {
+      throw new HttpException("인증코드가 잘못됐습니다.",HttpStatus.BAD_REQUEST);
+    }
   }
 }

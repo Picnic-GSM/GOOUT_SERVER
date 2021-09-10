@@ -26,6 +26,9 @@ import { GoingService } from "./going/going.service";
 import { TeacherdataService } from "./teacherdata/teacherdata.service";
 import { Teacherdata } from "./teacherdata/teacherdata.entity";
 import { TeacherdataModule } from "./teacherdata/teacherdata.module";
+import { RedisModule } from "@nestjs-modules/ioredis";
+import { RegisterService } from "./register/register.service";
+import { RedisService } from "./util/redis.service";
 
 @Module({
   imports: [
@@ -42,6 +45,12 @@ import { TeacherdataModule } from "./teacherdata/teacherdata.module";
       entities: [Userdata, Leavedata, Goingoutdata, Teacherdata],
       synchronize: true,
     }),
+    RedisModule.forRoot({
+      config: { 
+        url: 'redis://localhost:6379',
+      },
+    }),
+    
     LoginModule,
     UserdataModule,
     AuthModule,
@@ -67,6 +76,8 @@ import { TeacherdataModule } from "./teacherdata/teacherdata.module";
     GoingoutDataService,
     GoingService,
     TeacherdataService,
+    RegisterService,
+    RedisService
   ],
 })
 export class AppModule {}
