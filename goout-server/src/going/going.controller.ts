@@ -162,7 +162,7 @@ export class GoingController {
   ) {
     await this.authservice.JWTverify(accessToken);
 
-    await this.goingoutservice.update_GoingRequestdata(req.goingid, "승인");
+    await this.goingoutservice.update_GoingRequestdata(req.id, "승인");
     return "승인되었습니다.";
   }
 
@@ -183,7 +183,7 @@ export class GoingController {
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     let userdata = await this.userdataservice.findOne(decoded["userid"]);
-    req.going_status = "외출중";
+    req.status = "미승인";
     try {
       await this.goingoutservice.createGoingout(req);
       return "신청되었습니다.";
@@ -211,7 +211,7 @@ export class GoingController {
   ) {
     await this.authservice.JWTverify(accessToken);
 
-    await this.goingoutservice.updateGoingdata(req.goingid, "귀가완료");
+    await this.goingoutservice.updateGoingdata(req.id, "귀가완료");
     return "실행됐습니다.";
   }
 }

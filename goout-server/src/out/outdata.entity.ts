@@ -23,7 +23,7 @@ export class Out {
   @Column()
   reason: string;
 
-  @ApiProperty({ description: "외출 상태" })
+  @ApiProperty({ description: "외출 상태 및 허가여부" })
   @Column()
   status: string;
 

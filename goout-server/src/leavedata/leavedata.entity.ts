@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Student } from "src/student/userdata.entity";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 
 @Entity()
 export class Leave {
@@ -7,6 +8,7 @@ export class Leave {
   @ApiProperty({ description: "조퇴 id" })
   id: number;
 
+  @OneToMany(type=>Student, student => student.id)
   user_id:number;
 
   @ApiProperty({ description: "조퇴 시작 시간" })
@@ -17,7 +19,7 @@ export class Leave {
   @Column()
   reason: string;
 
-  @ApiProperty({ description: "조퇴 승인의 여부" })
+  @ApiProperty({ description: "조퇴 승인의 여부 및 상태" })
   @Column()
   status: string;
 

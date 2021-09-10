@@ -155,7 +155,7 @@ export class LeaveController {
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
-      await this.leavedataservice.CheckRequest(req.leaveid);
+      await this.leavedataservice.CheckRequest(req.id);
       return "성공적으로 실행됐습니다.";
     } else {
       throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);

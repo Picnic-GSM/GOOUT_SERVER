@@ -22,19 +22,19 @@ export class GoingoutDataService {
     let time = new Date();
     let nowhour = time.getHours();
     let nowmin = time.getMinutes();
-    if (nowhour > hour) {
-      createGoingDto.going_status = "지각";
-    } else if (nowhour == hour) {
-      if (nowmin > min) {
-        createGoingDto.going_status = "지각";
+    if(createGoingDto.status == "미승인") {
+      if (nowhour > hour) {
+        createGoingDto.status = "지각";
+      } else if (nowhour == hour) {
+        if (nowmin > min) {
+          createGoingDto.status = "지각";
+        } else {
+          createGoingDto.status = "외출중";
+        }
       } else {
-        createGoingDto.going_status = "외출중";
+        createGoingDto.status = "외출중";
       }
-    } else {
-      createGoingDto.going_status = "외출중";
     }
-    createGoingDto.request = 0;
-    createGoingDto.back_check = 0;
     return await this.goingoutRepository.save(createGoingDto);
   }
   async getData(): Promise<Out[]> {

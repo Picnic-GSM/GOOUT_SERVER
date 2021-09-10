@@ -1,13 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateGoingDto {
-  @ApiProperty({ description: "goingout start time" })
+  @ApiProperty({ description: "외출 시작 시간" })
   start_time: string;
-  @ApiProperty({ description: "goingout endtime" })
+  @ApiProperty({ description: "외출 끝나는 시간" })
   end_time: string;
-  @ApiProperty({ description: "goingout reason" })
+  @ApiProperty({ description: "외출의 이유" })
   reason: string;
-  request: number;
-  going_status: string;
-  back_check: number;
+  status: string;
 }
