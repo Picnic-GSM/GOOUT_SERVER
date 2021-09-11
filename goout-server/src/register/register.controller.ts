@@ -7,14 +7,14 @@ import {
   Req,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { RegisterDataDto } from "src/userdata/register.interface";
-import { UserdataService } from "src/userdata/userdata.service";
+import { RegisterDataDto } from "src/student/register.interface";
+import { StudentService } from "src/student/userdata.service";
 import { RegisterAuthNumCheck } from "./registerAuth.interface";
 
 @ApiTags("학생용 라우터")
 @Controller("register")
 export class RegisterController {
-  constructor(private readonly userdataservice: UserdataService) {}
+  constructor(private readonly userdataservice: StudentService) {}
 
   @ApiOperation({ summary: "회원가입", description: "학생,선생님의 회원가입" })
   @Post()
