@@ -1,27 +1,37 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Student } from "src/student/userdata.entity";
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { ApiProperty } from '@nestjs/swagger';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Leave {
+export class Leavedata {
   @PrimaryGeneratedColumn()
-  @ApiProperty({ description: "조퇴 id" })
-  id: number;
+  @ApiProperty({description:'조퇴 id'})
+  leaveid: number;
 
-  @OneToMany(type=>Student, student => student.id)
-  user_id:number;
-
-  @ApiProperty({ description: "조퇴 시작 시간" })
+  @ApiProperty({description:'조퇴한 학생의 이름'})
   @Column()
-  start_at: string;
+  username: string;
 
-  @ApiProperty({ description: "조퇴 이유" })
+  @ApiProperty({description:'조퇴한 학생의 학년'})
   @Column()
-  reason: string;
+  grade:number;
 
-  @ApiProperty({ description: "조퇴 승인의 여부 및 상태" })
+  @ApiProperty({description:'조퇴한 학생의 반'})
   @Column()
-  status: string;
+  class:number;
 
-  created_at:Date;
+  @ApiProperty({description:'조퇴한 학생의 번호'})
+  @Column()
+  s_number:number;
+
+  @ApiProperty({description:'조퇴 시작 시간'})
+  @Column()
+  start_time:string;
+
+  @ApiProperty({description:'조퇴 이유'})
+  @Column()
+  reason:string;
+
+  @ApiProperty({description:'조퇴 승인의 여부'})
+  @Column()
+  request:number;
 }

@@ -1,12 +1,12 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Teacher } from "src/teacher/teacher.entity";
-import { TeacherdataService } from "src/teacher/teacher.service";
-import { Student } from "src/student/userdata.entity";
-import { StudentService } from "src/student/userdata.service";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Teacherdata } from 'src/teacherdata/teacherdata.entity';
+import { TeacherdataService } from 'src/teacherdata/teacherdata.service';
+import { Userdata } from 'src/userdata/userdata.entity';
+import { UserdataService } from 'src/userdata/userdata.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Teacher, Student])],
-  providers: [StudentService, TeacherdataService],
+    imports:[TypeOrmModule.forFeature([Teacherdata,Userdata])],
+    providers:[UserdataService,TeacherdataService]
 })
 export class LoginModule {}
