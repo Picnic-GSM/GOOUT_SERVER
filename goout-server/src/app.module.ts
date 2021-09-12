@@ -4,32 +4,32 @@ import { AppService } from "./app.service";
 import { LoginController } from "./login/login.controller";
 import { LoginService } from "./login/login.service";
 import { LoginModule } from "./login/login.module";
-import { Userdata } from "./userdata/userdata.entity";
+import { Student } from "./student/userdata.entity";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
-import { UserdataService } from "./userdata/userdata.service";
-import { UserdataModule } from "./userdata/userdata.module";
+import { StudentService } from "./student/userdata.service";
+import { UserdataModule } from "./student/userdata.module";
 import { AuthModule } from "./auth/auth.module";
 import { LeavedataModule } from "./leavedata/leavedata.module";
 import { LeaveController } from "./leave/leave.controller";
 import { LeaveModule } from "./leave/leave.module";
 import { RegisterController } from "./register/register.controller";
 import { RegisterModule } from "./register/register.module";
-import { Leavedata } from "./leavedata/leavedata.entity";
+import { Leave } from "./leavedata/leavedata.entity";
 import { LeavedataService } from "./leavedata/leavedata.service";
-import { GoingoutdataModule } from "./goingoutdata/goingoutdata.module";
-import { Goingoutdata } from "./goingoutdata/goingoutdata.entity";
+import { GoingoutdataModule } from "./out/outdata.module";
+import { Out } from "./out/outdata.entity";
 import { GoingController } from "./going/going.controller";
 import { GoingModule } from "./going/going.module";
-import { GoingoutDataService } from "./goingoutdata/goingoutdata.service";
+import { GoingoutDataService } from "./out/outdata.service";
 import { GoingService } from "./going/going.service";
-import { TeacherdataService } from "./teacherdata/teacherdata.service";
-import { Teacherdata } from "./teacherdata/teacherdata.entity";
-import { TeacherdataModule } from "./teacherdata/teacherdata.module";
 import { RedisModule } from "@nestjs-modules/ioredis";
 import { RegisterService } from "./register/register.service";
 import { RedisService } from "./util/redis.service";
 import { authnumService } from "./util/authnum.service";
+import { TeacherdataService } from "./teacher/teacher.service";
+import { Teacher } from "./teacher/teacher.entity";
+import { TeacherdataModule } from "./teacher/teacher.module";
 
 @Module({
   imports: [
@@ -43,7 +43,7 @@ import { authnumService } from "./util/authnum.service";
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Userdata, Leavedata, Goingoutdata, Teacherdata],
+      entities: [Student, Leave, Out, Teacher],
       synchronize: true,
     }),
     RedisModule.forRoot({
@@ -72,7 +72,7 @@ import { authnumService } from "./util/authnum.service";
   providers: [
     AppService,
     LoginService,
-    UserdataService,
+    StudentService,
     LeavedataService,
     GoingoutDataService,
     GoingService,

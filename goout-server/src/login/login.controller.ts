@@ -8,20 +8,20 @@ import {
   Post,
   Req,
 } from "@nestjs/common";
-import { UserdataService } from "src/userdata/userdata.service";
+import { StudentService } from "src/student/userdata.service";
 import { LoginService } from "./login.service";
 import * as crypto from "crypto";
-import { LoginDataDto } from "src/userdata/login.interface";
+import { LoginDataDto } from "src/student/login.interface";
 import { AuthService } from "src/auth/auth.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { TeacherdataService } from "src/teacherdata/teacherdata.service";
+import { TeacherdataService } from "src/teacher/teacher.service";
 import { TeacherLoginDto } from "./loginuser.interface";
 
 @ApiTags("학생용 라우터")
 @Controller("login")
 export class LoginController {
   constructor(
-    private readonly userdataservice: UserdataService,
+    private readonly userdataservice: StudentService,
     private readonly authservice: AuthService,
     private readonly teacherdataservice: TeacherdataService
   ) {}
