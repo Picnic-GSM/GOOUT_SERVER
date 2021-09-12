@@ -12,13 +12,14 @@ import { UserdataService } from "src/userdata/userdata.service";
 import { RegisterAuthNumCheck } from "./registerAuth.interface";
 import { RegisterService } from "./register.service";
 import { RedisService } from "src/util/redis.service";
+import { authnumService } from "src/util/authnum.service";
 
 @ApiTags("학생용 라우터")
 @Controller("register")
 export class RegisterController {
   constructor(
     private readonly userdataservice: UserdataService,
-    private readonly registerservice: RegisterService,
+    private readonly authnumservice:authnumService,
     private readonly redisservice:RedisService
   ) {}
 
@@ -34,7 +35,7 @@ export class RegisterController {
         HttpStatus.BAD_REQUEST
       );
     }
-    await this.registerservice.send_AuthNum(req);
+    await this.authnumservice.send_AuthNum(req);
     return "이메일 인증 후 로그인이 가능합니다.";
   }
 

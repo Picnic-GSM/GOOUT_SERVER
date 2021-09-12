@@ -41,6 +41,6 @@ export class AppController {
   }
   @Get("redis-test")
   async redis_test() {
-    return await this.redisservice.get_redis("key");
+    return await this.redisservice.get_redis(5);
   }
 }
