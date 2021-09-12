@@ -12,13 +12,14 @@ import { UserdataService } from "src/userdata/userdata.service";
 import { RegisterAuthNumCheck } from "./registerAuth.interface";
 import { RegisterService } from "./register.service";
 import { RedisService } from "src/util/redis.service";
+import { authnumService } from "src/util/authnum.service";
 
 @ApiTags("학생용 라우터")
 @Controller("register")
 export class RegisterController {
   constructor(
     private readonly userdataservice: UserdataService,
-    private readonly registerservice: RegisterService,
+    private readonly authnumservice:authnumService,
     private readonly redisservice:RedisService
   ) {}
 
