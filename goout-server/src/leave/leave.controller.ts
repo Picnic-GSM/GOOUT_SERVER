@@ -8,11 +8,11 @@ import {
   HttpStatus,
   Post,
 } from "@nestjs/common";
-import { CreateLeavedataDto } from "src/leavedata/leavedata.interface";
+import { CreateLeaveDataDto } from "src/leave/dto/create-leave.dto";
 import * as jwt from "jsonwebtoken";
 import { jwtConstants } from "src/auth/constants";
-import { LeavedataService } from "src/leavedata/leavedata.service";
-import { StudentService } from "src/student/userdata.service";
+import { LeaveDataService } from "./leave.service";
+import { StudentDataService } from "src/user/user.service";
 import {
   ApiHeader,
   ApiOperation,
@@ -21,16 +21,16 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { RequestCheckDto } from "./request-check.interface";
-import { Leave } from "src/leavedata/leavedata.entity";
+import { Leave } from "src/leave/entites/leave.entity";
 import { isArray } from "util";
 import { AuthService } from "src/auth/auth.service";
 
 @Controller("leave")
 export class LeaveController {
   constructor(
-    private readonly leavedataservice: LeavedataService,
-    private readonly userdataservice: StudentService,
-    private readonly authservice: AuthService
+    private readonly leaveDataService: LeaveDataService,
+    private readonly studentDataService: StudentDataService,
+    private readonly authService: AuthService
   ) {}
 
   @ApiTags("공용 라우터")
@@ -48,9 +48,9 @@ export class LeaveController {
     description: "조퇴 관련 데이터 받아오기",
   })
   async get_leavedata(@Headers("accessToken") accessToken) {
-    await this.authservice.JWTverify(accessToken);
+    await this.authService.validator(accessToken);
 
-    let data = await this.leavedataservice.getData();
+    let data = await this.leaveDataService.getData();
     return data;
   }
 
@@ -69,9 +69,9 @@ export class LeaveController {
     status: 200,
   })
   async first_grade_leavedata(@Headers("accessToken") accessToken) {
-    await this.authservice.JWTverify(accessToken);
+    await this.authService.validator(accessToken);
 
-    let data = await this.leavedataservice.findwithclass(1);
+    let data = await this.leaveDataService.findWithClass(1);
     return data;
   }
 
@@ -90,9 +90,9 @@ export class LeaveController {
     description: "2학년 학생의 조퇴 데이터 받아오기",
   })
   async second_grade_leavedata(@Headers("accessToken") accessToken) {
-    await this.authservice.JWTverify(accessToken);
+    await this.authService.validator(accessToken);
 
-    let data = await this.leavedataservice.findwithclass(2);
+    let data = await this.leaveDataService.findWithClass(2);
     return data;
   }
 
@@ -111,9 +111,9 @@ export class LeaveController {
     description: "3학년 학생의 조퇴 데이터 받아오기",
   })
   async third_grade_leavedata(@Headers("accessToken") accessToken) {
-    await this.authservice.JWTverify(accessToken);
+    await this.authService.validator(accessToken);
 
-    let data = await this.leavedataservice.findwithclass(3);
+    let data = await this.leaveDataService.findWithClass(3);
     return data;
   }
 
@@ -132,9 +132,9 @@ export class LeaveController {
     description: "미승인된 조퇴 정보 출력",
   })
   async get_request_check(@Headers("accessToken") accessToken) {
-    await this.authservice.JWTverify(accessToken);
+    await this.authService.validator(accessToken);
 
-    let result = await this.leavedataservice.find_with_request_check("미승인");
+    let result = await this.leaveDataService.find_with_request_check("미승인");
     return result;
   }
 
@@ -151,11 +151,11 @@ export class LeaveController {
     @Headers("accessToken") accessToken,
     @Body() req: RequestCheckDto
   ) {
-    await this.authservice.JWTverify(accessToken);
+    await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
-      await this.leavedataservice.CheckRequest(req.id);
+      await this.leaveDataService.checkRequest(req.id);
       return "성공적으로 실행됐습니다.";
     } else {
       throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
@@ -172,14 +172,14 @@ export class LeaveController {
   @ApiResponse({ status: 201 })
   async leave_request(
     @Headers("accessToken") accessToken,
-    @Body() req: CreateLeavedataDto
+    @Body() req: CreateLeaveDataDto
   ) {
-    await this.authservice.JWTverify(accessToken);
+    await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    let userdata = await this.userdataservice.findOne(decoded["userid"]);
+    let userdata = await this.studentDataService.findOne(decoded["userid"]);
     try {
-      await this.leavedataservice.createLeavedata(req);
+      await this.leaveDataService.createLeaveData(req);
       return "신청되었습니다.";
     } catch (error) {
       console.log(error);
