@@ -23,6 +23,10 @@ import { GoingController } from "./going/going.controller";
 import { GoingModule } from "./going/going.module";
 import { GoingoutDataService } from "./out/outdata.service";
 import { GoingService } from "./going/going.service";
+import { RedisModule } from "@nestjs-modules/ioredis";
+import { RegisterService } from "./register/register.service";
+import { RedisService } from "./util/redis.service";
+import { authnumService } from "./util/authnum.service";
 import { TeacherdataService } from "./teacher/teacher.service";
 import { Teacher } from "./teacher/teacher.entity";
 import { TeacherdataModule } from "./teacher/teacher.module";
@@ -42,6 +46,12 @@ import { TeacherdataModule } from "./teacher/teacher.module";
       entities: [Student, Leave, Out, Teacher],
       synchronize: true,
     }),
+    RedisModule.forRoot({
+      config: { 
+        url: process.env.REDIS_URL,
+      },
+    }),
+    
     LoginModule,
     UserdataModule,
     AuthModule,
@@ -67,6 +77,9 @@ import { TeacherdataModule } from "./teacher/teacher.module";
     GoingoutDataService,
     GoingService,
     TeacherdataService,
+    RegisterService,
+    RedisService,
+    authnumService
   ],
 })
 export class AppModule {}
