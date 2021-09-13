@@ -6,14 +6,12 @@ import {
   HttpStatus,
   HttpException,
 } from "@nestjs/common";
-import { AppService } from "./app.service";
 import * as jwt from "jsonwebtoken";
 import { jwtConstants } from "./auth/constants";
 import { ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
   @ApiTags("개발용")
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   @ApiOperation({
