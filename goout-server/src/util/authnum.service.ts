@@ -1,12 +1,12 @@
-import { RegisterDataDto } from "src/userdata/register.interface";
-import { UserdataService } from "src/userdata/userdata.service";
+import { RegisterDataDto } from "src/student/register.interface";
+import { StudentService } from "src/student/userdata.service";
 import { RedisService } from "./redis.service";
 import * as nodemailer from "nodemailer";
 import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class authnumService {
   constructor(
-    private readonly userdataservice: UserdataService,
+    private readonly userdataservice: StudentService,
     private readonly redisservice: RedisService
   ) {}
 
@@ -29,7 +29,7 @@ export class authnumService {
         text: `인증번호는 ${authNum}입니다.`,
       };
       let created_data = await this.userdataservice.createUserdata(req);
-      this.redisservice.add_redis(created_data.userid, authNum, 180);
+      this.redisservice.add_redis(created_data.id, authNum, 180);
     } catch (error) {
       console.log(error);
       throw new HttpException("이메일 전송 에러", HttpStatus.CONFLICT);
