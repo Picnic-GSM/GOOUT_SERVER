@@ -11,22 +11,22 @@ export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 45 })
   name: string;
 
-  @Column()
+  @Column({ length: 45 })
   password: string;
 
-  @Column()
+  @Column({ unique: true, length: 100 })
   email: string;
 
-  @Column()
+  @Column("tinyint")
   grade: number;
 
-  @Column()
+  @Column("tinyint")
   class: number;
 
-  @Column()
+  @Column("tinyint")
   s_number: number;
 
   @Column()
