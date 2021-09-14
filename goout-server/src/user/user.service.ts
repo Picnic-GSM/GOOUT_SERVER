@@ -8,17 +8,19 @@ import { Teacher } from "./entites/teacher.entity";
 export class TeacherDataService {
   constructor(
     @InjectRepository(Teacher)
-    private readonly teacherrepository: Repository<Teacher>
+    private readonly teacherRepository: Repository<Teacher>
   ) {}
+
   getData(): Promise<Teacher[]> {
-    return this.teacherrepository.find();
-  }
-  findOne(id: string): Promise<Teacher> {
-    return this.teacherrepository.findOne(id);
+    return this.teacherRepository.find();
   }
 
-  async findOnewithCode(registerCode: number): Promise<Teacher> {
-    return await this.teacherrepository.findOne({ registerCode: registerCode });
+  findOne(id: string): Promise<Teacher> {
+    return this.teacherRepository.findOne(id);
+  }
+
+  async findOneWithActivateCode(code: number): Promise<Teacher> {
+    return await this.teacherRepository.findOne({ activateCode: code });
   }
 }
 
@@ -29,7 +31,7 @@ export class StudentDataService {
     private usersRepository: Repository<Student>
   ) {}
 
-  async createUserdata(createUserDto: LoginDataDto) {
+  async create(createUserDto: LoginDataDto) {
     const cipher = crypto.createCipher("aes-256-cbc", process.env.key);
     let result = cipher.update(createUserDto.password, "utf8", "base64");
     result += cipher.final("base64");
@@ -37,17 +39,16 @@ export class StudentDataService {
     let create_result = await this.usersRepository.save(createUserDto);
     return create_result;
   }
-  getData(): Promise<Student[]> {
+
+  findAll(): Promise<Student[]> {
     return this.usersRepository.find();
   }
 
-  findOne(id: number): Promise<Student> {
-    return this.usersRepository.findOne(id);
+  findOneWithId(id: number): Promise<Student> {
+    return this.usersRepository.findOneOrFail(id);
   }
-  findOnewithUserid(userid: number): Promise<Student> {
-    return this.usersRepository.findOne(userid);
-  }
-  findwithEmail(email: string): Promise<Student> {
+
+  findOneWithEmail(email: string): Promise<Student> {
     return this.usersRepository.findOne({ email: email });
   }
   /*
