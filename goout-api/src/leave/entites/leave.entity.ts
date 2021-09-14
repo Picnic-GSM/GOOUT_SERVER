@@ -12,7 +12,7 @@ import {
 export class Leave {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: "조퇴 id" })
-  id: number;
+  idx: number;
 
   @OneToMany((type) => Student, (student) => student.id)
   user_id: number;

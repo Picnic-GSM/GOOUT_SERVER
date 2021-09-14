@@ -1,15 +1,9 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Student {
   @PrimaryGeneratedColumn()
-  id: number;
+  idx: number;
 
   @Column({ length: 45 })
   name: string;
