@@ -66,15 +66,16 @@ export class UserController {
   }
 }
 
+
 @Controller("student")
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
     // private readonly redisService: RedisService
   ) {}
-
+  @ApiTags('학생용 라우터')
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
-  @Post()
+  @Post("register")
   @HttpCode(201)
   async register(@Body() req: CreateStudentDto) {
     let exist = await this.studentDataService.findOneWithEmail(req.email);
