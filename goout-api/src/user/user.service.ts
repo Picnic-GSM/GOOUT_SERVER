@@ -62,7 +62,7 @@ export class TeacherDataService {
     return await this.teacherRepository.findOne({ grade: grade });
   }
 
-  async findOneWithGradeAndClass(teacher_grade:number,teacher_class:number): Promise<Teacher> {
-    return await this.teacherRepository.findOne({ grade:teacher_grade,class:teacher_class });
+  async findOneWithGradeAndClass(teacherGrade:number,teacher_class:number): Promise<Teacher> {
+    return await this.teacherRepository.findOne({ grade:teacherGrade,class:teacher_class });
   }
 }
