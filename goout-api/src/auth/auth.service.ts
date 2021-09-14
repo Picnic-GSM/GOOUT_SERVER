@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { Student } from "src/user/entites/student.entity";
 import { Teacher } from "src/user/entites/teacher.entity";
 import { StudentDataService, TeacherDataService } from "src/user/user.service";
+import { hashSha512 } from "src/util/hash";
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,9 +17,9 @@ export class AuthService {
     const payload = {
       iss: "GooutAPIServer",
       email: studentObj.email,
-      sub: studentObj.id,
+      sub: studentObj.idx,
     };
-    return { access_token: this.jwtService.sign(payload) };
+    return this.jwtService.sign(payload);
   }
 
   // 선생님용 accessToken 발급
@@ -31,18 +32,8 @@ export class AuthService {
     return { access_token: this.jwtService.sign(payload) };
   }
 
-  // 학생 email, password validator
-  async validateStudent(email: string, password: string): Promise<any> {
-    const studentObj = await this.studentDataService.findOneWithEmail(email);
-    if (studentObj && studentObj.password === password) {
-      const { password, ...result } = studentObj;
-      return result;
-    }
-    return null;
-  }
-
   // accessToken validator
-  async validator(token: any) {
+  async validator(token: string) {
     try {
       return await this.jwtService.verify(token);
     } catch (error) {
