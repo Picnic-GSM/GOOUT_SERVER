@@ -18,6 +18,9 @@ import {
   getSchemaPath,
 } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
+import { CheckOutRequestDto } from "./dto/check-out-request.dto";
+import { decode } from "punycode";
+import { OutBackCheckDto } from "./dto/out-back-check.dto";
 
 @Controller("out")
 export class OutController {
@@ -45,7 +48,7 @@ export class OutController {
     await this.authService.validator(accessToken);
 
     let alldata = await this.outService.getData(); //1차 값 가져오기
-    await this.outService.checkStatus(alldata); //값 확인 후 지각인지 확인
+    await this.outService.check_status(alldata); //값 확인 후 지각인지 확인
     let after_check = await this.outService.getData(); //확인된 값을 다시 받아옴
     if (!alldata) {
       // throw or ?
@@ -137,9 +140,9 @@ export class OutController {
   })
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   async get_request_check(@Headers("accessToken") accessToken) {
-    await this.authService.(accessToken);
+    await this.authService.validator(accessToken);
 
-    let result = this.outService.find_with_request_check("미승인");
+    let result = this.outService.find_with_request_check(1);
     return result;
   }
 
@@ -154,11 +157,11 @@ export class OutController {
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   async post_request_check(
     @Headers("accessToken") accessToken,
-    @Body() req: GoingRequestCheckDto
+    @Body() req: CheckOutRequestDto
   ) {
     await this.authService.validator(accessToken);
 
-    await this.outService.update_GoingRequestdata(req.id, "승인");
+    await this.outService.update_GoingRequestdata(req.id, req.response);
     return "승인되었습니다.";
   }
 
@@ -178,8 +181,9 @@ export class OutController {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
-    req.status = 1;
+    //let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
+    req.user_id = await decoded["userid"];
+    req.status = await 1;
     try {
       await this.outService.create(req);
       return "신청되었습니다.";
@@ -203,11 +207,11 @@ export class OutController {
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   async out_check(
     @Headers("accessToken") accessToken,
-    @Body() req: GoingOutCheckDto
+    @Body() req: OutBackCheckDto
   ) {
     await this.authService.validator(accessToken);
 
-    await this.outService.updateGoingdata(req.id, "귀가완료");
+    await this.outService.updateGoingdata(req.id, 4);
     return "실행됐습니다.";
   }
 }

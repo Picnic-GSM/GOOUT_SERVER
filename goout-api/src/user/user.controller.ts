@@ -8,12 +8,15 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
-import { RedisService } from "src/util/redis";
+// import { RedisService } from "src/util/redis";
 import { EmailAuthDto } from "./dto/email-auth.dto";
 import { LoginDataDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { ActivateTeacherDto } from "./dto/activate-teacher.dto";
+import { jwtConstants } from "src/auth/constants";
+import { findTeacherWithGrade } from "./dto/find-teacher-with-grade.dto";
+import { FindTeacherWithGradeNClass } from "./dto/find-teacher-with-grade-class.dto";
 
 @ApiTags("유저 라우터")
 @Controller("user")
@@ -36,10 +39,12 @@ export class UserController {
         HttpStatus.BAD_REQUEST
       );
     }
+    /*
     const decipher = crypto.createDecipher("aes-256-cbc", process.env.key);
     let result = decipher.update(user.password, "base64", "utf8");
     result += decipher.final("utf8");
     console.log(result, req.password);
+    
     if (result == req.password) {
       return this.authservice.issueToken(user);
     } else {
@@ -48,29 +53,22 @@ export class UserController {
         HttpStatus.BAD_REQUEST
       );
     }
+    */
   }
 
-  @ApiTags("선생님용 라우터")
-  @Post("teacher")
-  @HttpCode(201)
-  @ApiOperation({ summary: "선생님 로그인", description: "코드로 로그인" })
-  async Code_Login(@Body() req: ActivateTeacherDto) {
-    let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
-      req.activateCode
-    );
-    return await this.authservice.issueTokenForTeacher(teacherObj);
-  }
+  
 }
+
 
 @Controller("student")
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
-    private readonly redisService: RedisService
+    // private readonly redisService: RedisService
   ) {}
-
+  @ApiTags('학생용 라우터')
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
-  @Post()
+  @Post("register")
   @HttpCode(201)
   async register(@Body() req: CreateStudentDto) {
     let exist = await this.studentDataService.findOneWithEmail(req.email);
@@ -89,7 +87,7 @@ export class StudentController {
       throw new HttpException("회원가입 에러", HttpStatus.BAD_REQUEST);
     }
   }
-
+/*
   @Post("activate")
   async authNumCheck(@Body() req: EmailAuthDto) {
     let authCode = await this.redisService.get_redis(req.userId);
@@ -103,7 +101,46 @@ export class StudentController {
       );
     }
   }
+  */
 }
 
+@ApiTags("선생님용 라우터")
 @Controller("teacher")
-export class TeacherController {}
+export class TeacherController {
+  constructor(
+    private readonly teacherdataservice: TeacherDataService,
+    private readonly authservice: AuthService
+  ) {}
+
+  @Post("login")
+  @HttpCode(201)
+  @ApiOperation({ summary: "선생님 로그인", description: "코드로 로그인" })
+  async Code_Login(@Body() req: ActivateTeacherDto) {
+    
+    let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
+      req.activateCode
+    );
+    console.log(process.env.JWT_SECRET_KEY)
+
+    if(teacherObj.is_active == false) teacherObj.is_active = true;
+    return await this.authservice.issueTokenForTeacher(teacherObj);
+
+  }
+  @Post('showWithGrade')
+  @HttpCode(201)
+  @ApiOperation({summary:"특정 학년 선생님 출력", description:'특정 학년을 입력받아 선생님 찾기'})
+  async findTeacherWithGrade(@Body() req:findTeacherWithGrade) {
+    let teacherdata = await this.teacherdataservice.findOneWithGrade(req.grade);
+    if(!teacherdata) throw new HttpException("해당 학급 선생님을 찾을 수 없습니다.",HttpStatus.BAD_REQUEST);
+    return teacherdata;
+  }
+
+  @Post('showWithGradeAndClass')
+  @HttpCode(201)
+  @ApiOperation({summary:"특정 학년 및 반 선생님 출력", description:'특정 학년과 반을 입력받아 선생님 찾기'})
+  async findTeacherWithGradeAndClass(@Body() req:FindTeacherWithGradeNClass) {
+    let teacherdata = await this.teacherdataservice.findOneWithGradeAndClass(req.grade,req.class);
+    if(!teacherdata) throw new HttpException("해당 선생님을 찾을 수 없습니다.",HttpStatus.BAD_REQUEST);
+    return teacherdata;
+  }
+}

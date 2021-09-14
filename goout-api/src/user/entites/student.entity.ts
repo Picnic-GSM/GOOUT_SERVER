@@ -29,6 +29,6 @@ export class Student {
   @Column("tinyint")
   s_number: number;
 
-  @Column()
+  @Column({default:false})
   is_active: boolean;
 }

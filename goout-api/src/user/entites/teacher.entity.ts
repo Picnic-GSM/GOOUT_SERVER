@@ -17,6 +17,6 @@ export class Teacher {
   @Column("tinyint")
   activateCode: number;
 
-  @Column()
+  @Column({default:false})
   is_active: boolean;
 }

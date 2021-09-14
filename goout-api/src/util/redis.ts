@@ -1,3 +1,4 @@
+/*
 import { InjectRedis, Redis } from "@nestjs-modules/ioredis";
 
 export class RedisService {
@@ -11,3 +12,4 @@ export class RedisService {
     return await this.redis.get(name);
   }
 }
+*/

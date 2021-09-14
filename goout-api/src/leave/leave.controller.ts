@@ -20,10 +20,10 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { RequestCheckDto } from "./request-check.interface";
 import { Leave } from "src/leave/entites/leave.entity";
 import { isArray } from "util";
 import { AuthService } from "src/auth/auth.service";
+import { CheckLeaveRequestDto } from "./dto/check-leave-request.dto";
 
 @Controller("leave")
 export class LeaveController {
@@ -134,7 +134,7 @@ export class LeaveController {
   async get_request_check(@Headers("accessToken") accessToken) {
     await this.authService.validator(accessToken);
 
-    let result = await this.leaveDataService.find_with_request_check("미승인");
+    let result = await this.leaveDataService.find_with_request_check(1);
     return result;
   }
 
@@ -149,13 +149,13 @@ export class LeaveController {
   @ApiResponse({ status: 201 })
   async post_request_check(
     @Headers("accessToken") accessToken,
-    @Body() req: RequestCheckDto
+    @Body() req: CheckLeaveRequestDto
   ) {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
-      await this.leaveDataService.checkRequest(req.id);
+      await this.leaveDataService.checkRequest(req.id,req.response);
       return "성공적으로 실행됐습니다.";
     } else {
       throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
