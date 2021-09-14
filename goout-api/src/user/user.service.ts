@@ -13,10 +13,12 @@ export class StudentDataService {
   ) {}
 
   async create(createUserDto: LoginDataDto) {
+    /*
     const cipher = crypto.createCipher("aes-256-cbc", process.env.key);
     let result = cipher.update(createUserDto.password, "utf8", "base64");
     result += cipher.final("base64");
     createUserDto.password = await result;
+    */
     let create_result = await this.usersRepository.save(createUserDto);
     return create_result;
   }
@@ -54,5 +56,13 @@ export class TeacherDataService {
 
   async findOneWithActivateCode(code: number): Promise<Teacher> {
     return await this.teacherRepository.findOne({ activateCode: code });
+  }
+
+  async findOneWithGrade(grade: number): Promise<Teacher> {
+    return await this.teacherRepository.findOne({ grade: grade });
+  }
+
+  async findOneWithGradeAndClass(teacher_grade:number,teacher_class:number): Promise<Teacher> {
+    return await this.teacherRepository.findOne({ grade:teacher_grade,class:teacher_class });
   }
 }

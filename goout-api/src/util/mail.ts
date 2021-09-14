@@ -1,13 +1,13 @@
 import { EmailAuthDto } from "src/user/dto/email-auth.dto";
 import { StudentDataService } from "src/user/user.service";
-import { RedisService } from "./redis";
+// import { RedisService } from "./redis";
 import * as nodemailer from "nodemailer";
 import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class SendEmail {
   constructor(
     private readonly studentDataService: StudentDataService,
-    private readonly redisService: RedisService
+    // private readonly redisService: RedisService
   ) {}
 
   async sendMail(req: EmailAuthDto) {
@@ -28,8 +28,7 @@ export class SendEmail {
         subject: "Go-Out 회원가입 E-Mail인증번호",
         text: `인증번호는 ${authNum}입니다.`,
       };
-      let created_data = await this.studentDataService.create(req);
-      this.redisService.add_redis(created_data.id, authNum, 180);
+      // this.redisService.add_redis(req.userId, authNum, 180);
     } catch (error) {
       console.log(error);
       throw new HttpException("이메일 전송 에러", HttpStatus.CONFLICT);

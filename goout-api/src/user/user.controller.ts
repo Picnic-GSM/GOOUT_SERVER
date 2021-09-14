@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
-import { RedisService } from "src/util/redis";
+// import { RedisService } from "src/util/redis";
 import { EmailAuthDto } from "./dto/email-auth.dto";
 import { LoginDataDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
@@ -36,10 +36,12 @@ export class UserController {
         HttpStatus.BAD_REQUEST
       );
     }
+    /*
     const decipher = crypto.createDecipher("aes-256-cbc", process.env.key);
     let result = decipher.update(user.password, "base64", "utf8");
     result += decipher.final("utf8");
     console.log(result, req.password);
+    
     if (result == req.password) {
       return this.authservice.issueToken(user);
     } else {
@@ -48,6 +50,7 @@ export class UserController {
         HttpStatus.BAD_REQUEST
       );
     }
+    */
   }
 
   @ApiTags("선생님용 라우터")
@@ -58,6 +61,7 @@ export class UserController {
     let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
       req.activateCode
     );
+    if(teacherObj.is_active == false) teacherObj.is_active = true;
     return await this.authservice.issueTokenForTeacher(teacherObj);
   }
 }
@@ -66,7 +70,7 @@ export class UserController {
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
-    private readonly redisService: RedisService
+    // private readonly redisService: RedisService
   ) {}
 
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
@@ -89,7 +93,7 @@ export class StudentController {
       throw new HttpException("회원가입 에러", HttpStatus.BAD_REQUEST);
     }
   }
-
+/*
   @Post("activate")
   async authNumCheck(@Body() req: EmailAuthDto) {
     let authCode = await this.redisService.get_redis(req.userId);
@@ -103,6 +107,7 @@ export class StudentController {
       );
     }
   }
+  */
 }
 
 @Controller("teacher")
