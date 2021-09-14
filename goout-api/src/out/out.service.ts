@@ -20,14 +20,15 @@ export class OutDataService {
 // 시간 업데이트 함수
   async check_status(obj: Out[]) {
     obj.forEach(async element => {
-    let goingtime = element.end_at;
-    let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
-    let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
-    let time = new Date();
-    let nowhour = time.getHours();
-    let nowmin = time.getMinutes();
+    if (element.status == 3) {
 
-    if (element.status == 1) {
+      let goingtime = element.end_at;
+      let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
+      let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
+      let time = new Date();
+      let nowhour = time.getHours();
+      let nowmin = time.getMinutes();
+      
       if (nowhour > hour) {
         element.status = 5;
       } else if (nowhour == hour) {
@@ -46,7 +47,7 @@ export class OutDataService {
     
   }
   async getData(): Promise<Out[]> {
-    return await this.outRepository.find({ status: 3 });
+    return await this.outRepository.find();
   }
 
   findOne(id: number): Promise<Out> {
