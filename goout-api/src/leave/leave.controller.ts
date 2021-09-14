@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { RequestCheckDto } from "./request-check.interface";
+// import { RequestCheckDto } from "./request-check.interface";
 import { Leave } from "src/leave/entites/leave.entity";
 import { isArray } from "util";
 import { AuthService } from "src/auth/auth.service";
@@ -134,8 +134,8 @@ export class LeaveController {
   async get_request_check(@Headers("accessToken") accessToken) {
     await this.authService.validator(accessToken);
 
-    let result = await this.leaveDataService.find_with_request_check("미승인");
-    return result;
+    // let result = await this.leaveDataService.find_with_request_check(1);
+    // return result;
   }
 
   @ApiTags("선생님용 라우터")
@@ -147,10 +147,7 @@ export class LeaveController {
     description: "선생님이 조퇴를 허가해줌",
   })
   @ApiResponse({ status: 201 })
-  async post_request_check(
-    @Headers("accessToken") accessToken,
-    @Body() req: RequestCheckDto
-  ) {
+  async post_request_check(@Headers("accessToken") accessToken, @Body() req) {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
@@ -177,7 +174,9 @@ export class LeaveController {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
+    let userdata = await this.studentDataService.findOneWithId(
+      decoded["userid"]
+    );
     try {
       await this.leaveDataService.create(req);
       return "신청되었습니다.";

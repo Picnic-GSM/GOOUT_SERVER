@@ -31,7 +31,7 @@ export class LeaveDataService {
     let userData: Student;
     let returnData;
     leaveData.forEach(async (i) => {
-      userData = await this.studentDataService.findOne(i.user_id);
+      userData = await this.studentDataService.findOneWithId(i.user_id);
       if (userData.grade == grade) {
         returnData.push(i);
       }
@@ -44,7 +44,9 @@ export class LeaveDataService {
     let return_data;
     let leave_data = await this.leaveRepository.find({ status: 2 });
     await leave_data.forEach(async (each_leave) => {
-      user_data = await this.studentDataService.findOne(each_leave.user_id);
+      user_data = await this.studentDataService.findOneWithId(
+        each_leave.user_id
+      );
       if (user_data.grade == grade && user_data.class == class_n) {
         return_data.push(each_leave);
       }
@@ -53,7 +55,7 @@ export class LeaveDataService {
   }
 
   async checkRequest(id: number) {
-    const updatedata = await this.leaveRepository.findOne({ id: id });
+    const updatedata = await this.leaveRepository.findOne({ idx: id });
     updatedata.status = 2;
     await this.leaveRepository.save(updatedata);
   }

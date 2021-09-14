@@ -1,6 +1,10 @@
 import { Module } from "@nestjs/common";
 import { DatabaseModule } from "src/database/database.module";
-import { UserController } from "./user.controller";
+import {
+  LoginController,
+  StudentController,
+  TeacherController,
+} from "./user.controller";
 import { studentProviders, teacherProviders } from "./user.providers";
 import { StudentDataService, TeacherDataService } from "./user.service";
 
@@ -12,6 +16,6 @@ import { StudentDataService, TeacherDataService } from "./user.service";
     StudentDataService,
     TeacherDataService,
   ],
-  controllers: [UserController],
+  controllers: [LoginController, StudentController, TeacherController],
 })
 export class UserModule {}
