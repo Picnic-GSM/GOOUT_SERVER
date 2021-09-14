@@ -4,36 +4,53 @@ import { Repository } from "typeorm";
 import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
 import { LoginDataDto } from "./dto/login.dto";
+import { hashSha512 } from "src/util/hash";
+import { CreateStudentDto } from "./dto/create-student.dto";
 
 @Injectable()
 export class StudentDataService {
   constructor(
     @InjectRepository(Student)
-    private usersRepository: Repository<Student>
+    private studentRepository: Repository<Student>
   ) {}
 
-  async create(createUserDto: LoginDataDto) {
-    const cipher = crypto.createCipher("aes-256-cbc", process.env.key);
-    let result = cipher.update(createUserDto.password, "utf8", "base64");
-    result += cipher.final("base64");
-    createUserDto.password = await result;
-    let create_result = await this.usersRepository.save(createUserDto);
-    return create_result;
+  // 학생 데이터 생성
+  async create(studentObj: CreateStudentDto): Promise<Student | undefined> {
+    const isExist = this.findOneWithEmail(studentObj.email);
+    if (!isExist) {
+      return;
+    }
+    return await this.studentRepository.save(studentObj);
   }
 
+  // 모든 학생 데이터 조회
   findAll(): Promise<Student[]> {
-    return this.usersRepository.find();
+    return this.studentRepository.find();
   }
 
-  findOneWithId(id: number): Promise<Student> {
-    return this.usersRepository.findOneOrFail(id);
+  // 인덱스를 통한 학생 데이터 검색
+  findOneWithId(id: number): Promise<Student | undefined> {
+    return this.studentRepository.findOne({ idx: id });
   }
 
-  findOneWithEmail(email: string): Promise<Student> {
-    return this.usersRepository.findOne({ email: email });
+  // 이메일을 통한 학생 데이터 검색
+  findOneWithEmail(email: string): Promise<Student | undefined> {
+    return this.studentRepository.findOne({ email: email });
   }
+
+  async validator(
+    email: string,
+    password: string
+  ): Promise<Student | undefined> {
+    const hashedPassword = hashSha512(password);
+    return this.studentRepository.findOne({
+      email: email,
+      password: hashedPassword,
+    });
+  }
+
   async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+    await this.studentRepository.delete(id);
   }
 }
 
