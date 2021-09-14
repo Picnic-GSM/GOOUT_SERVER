@@ -14,7 +14,7 @@ export class Leave {
   @ApiProperty({ description: "조퇴 id" })
   idx: number;
 
-  @OneToMany((type) => Student, (student) => student.id)
+  @OneToMany((type) => Student, (student) => student.idx)
   user_id: number;
 
   @ApiProperty({ description: "조퇴 시작 시간" })
