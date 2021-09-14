@@ -51,6 +51,12 @@ export class StudentDataService {
 
   // 각 반의 학생 데이터 조회
   findAllWithGradeAndClass(grade: number, s_class: number) {
+    if (!(1 <= grade && grade <= 4)) {
+      return;
+    }
+    if (!(1 <= s_class && s_class <= 21)) {
+      return;
+    }
     return this.studentRepository.find({
       grade: grade,
       class: s_class,
