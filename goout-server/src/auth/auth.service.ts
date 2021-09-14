@@ -1,29 +1,47 @@
 import { HttpException, HttpStatus, Injectable, Module } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { JwtModule } from "@nestjs/jwt";
-import { jwtConstants } from "./constants";
-
-@Module({
-  imports: [
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: "10m" },
-    }),
-  ],
-})
+import { Student } from "src/user/entites/student.entity";
+import { Teacher } from "src/user/entites/teacher.entity";
+import { StudentDataService, TeacherDataService } from "src/user/user.service";
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private studentDataService: StudentDataService,
+    private teacherDataService: TeacherDataService
+  ) {}
 
-  async issueToken(user: any) {
-    const payload = { userid: user.userid, sub: user.email };
+  // 학생용 accessToken 발급
+  async issueToken(studentObj: Student) {
+    const payload = {
+      iss: "GooutAPIServer",
+      email: studentObj.email,
+      sub: studentObj.id,
+    };
     return { access_token: this.jwtService.sign(payload) };
   }
 
-  async issueTokenForTeacher(TeacherGrade: number, TeacherClass: number) {
-    const payload = { grade: TeacherGrade, class: TeacherClass };
+  // 선생님용 accessToken 발급
+  async issueTokenForTeacher(teacherObj: Teacher) {
+    const payload = {
+      iss: "GooutAPIServer",
+      grade: teacherObj.grade,
+      class: teacherObj.class,
+    };
     return { access_token: this.jwtService.sign(payload) };
   }
+
+  // 학생 email, password validator
+  async validateStudent(email: string, password: string): Promise<any> {
+    const studentObj = await this.studentDataService.findOneWithEmail(email);
+    if (studentObj && studentObj.password === password) {
+      const { password, ...result } = studentObj;
+      return result;
+    }
+    return null;
+  }
+
+  // accessToken validator
   async validator(token: any) {
     try {
       return await this.jwtService.verify(token);
