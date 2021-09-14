@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Query,
+  Response,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
@@ -15,6 +16,7 @@ import { LoginReqDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { LoginForTeacherDto } from "./dto/login-teacher.dto";
+import { MailHandler } from "src/util/mail";
 
 @ApiTags("로그인 API")
 @Controller("login")
@@ -59,7 +61,10 @@ export class LoginController {
 @ApiTags("학생 데이터 API")
 @Controller()
 export class StudentController {
-  constructor(private readonly studentDataService: StudentDataService) {}
+  constructor(
+    private readonly studentDataService: StudentDataService,
+    private readonly mailHandler: MailHandler
+  ) {}
 
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
   @Post("register")
@@ -148,6 +153,17 @@ export class StudentController {
   }
 
   // 이메일 인증코드 보내기
+  @Post("mail")
+  @HttpCode(200)
+  async sendAuthCode(@Body() email: string) {
+    const studentObj = await this.studentDataService.findOneWithEmail(email);
+    if (!studentObj) {
+      throw new HttpException("invalid email", HttpStatus.BAD_REQUEST);
+    }
+    await this.mailHandler.send(studentObj);
+    return { message: "success" };
+  }
+
   // 이메일 인증을 통한 계정 활성화
 }
 
