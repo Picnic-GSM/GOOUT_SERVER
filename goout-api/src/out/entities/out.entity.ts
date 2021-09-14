@@ -36,13 +36,11 @@ export class Out {
 
   @CreateDateColumn({
     type: "timestamp",
-    default: () => "CURRENT_TIMESTAMP",
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     type: "timestamp",
-    default: () => "CURRENT_TIMESTAMP",
   })
   updated_at: Date;
 }

@@ -20,10 +20,10 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-// import { RequestCheckDto } from "./request-check.interface";
 import { Leave } from "src/leave/entites/leave.entity";
 import { isArray } from "util";
 import { AuthService } from "src/auth/auth.service";
+import { CheckLeaveRequestDto } from "./dto/check-leave-request.dto";
 
 @Controller("leave")
 export class LeaveController {
@@ -134,8 +134,8 @@ export class LeaveController {
   async get_request_check(@Headers("accessToken") accessToken) {
     await this.authService.validator(accessToken);
 
-    // let result = await this.leaveDataService.find_with_request_check(1);
-    // return result;
+    let result = await this.leaveDataService.find_with_request_check(1);
+    return result;
   }
 
   @ApiTags("선생님용 라우터")
@@ -147,12 +147,15 @@ export class LeaveController {
     description: "선생님이 조퇴를 허가해줌",
   })
   @ApiResponse({ status: 201 })
-  async post_request_check(@Headers("accessToken") accessToken, @Body() req) {
+  async post_request_check(
+    @Headers("accessToken") accessToken,
+    @Body() req: CheckLeaveRequestDto
+  ) {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
-      await this.leaveDataService.checkRequest(req.id);
+      //await this.leaveDataService.checkRequest(req.id, req.response);
       return "성공적으로 실행됐습니다.";
     } else {
       throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);

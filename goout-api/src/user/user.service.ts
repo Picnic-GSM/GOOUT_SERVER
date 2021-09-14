@@ -108,4 +108,18 @@ export class TeacherDataService {
   async findOneWithActivateCode(code: number): Promise<Teacher> {
     return await this.teacherRepository.findOne({ activateCode: code });
   }
+
+  async findOneWithGrade(grade: number): Promise<Teacher> {
+    return await this.teacherRepository.findOne({ grade: grade });
+  }
+
+  async findOneWithGradeAndClass(
+    teacherGrade: number,
+    teacher_class: number
+  ): Promise<Teacher> {
+    return await this.teacherRepository.findOne({
+      grade: teacherGrade,
+      class: teacher_class,
+    });
+  }
 }

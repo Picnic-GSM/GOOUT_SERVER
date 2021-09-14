@@ -27,7 +27,7 @@ export class LeaveDataService {
   create(obj: CreateLeaveDataDto) {}
 
   async findWithClass(grade: number): Promise<Leave> {
-    let leaveData = await this.leaveRepository.find({ status: 2 });
+    let leaveData = await this.leaveRepository.find({ status: 3 });
     let userData: Student;
     let returnData;
     leaveData.forEach(async (i) => {
@@ -42,7 +42,7 @@ export class LeaveDataService {
   async findWithGradeClass(grade: number, class_n: number): Promise<Leave> {
     let user_data: Student;
     let return_data;
-    let leave_data = await this.leaveRepository.find({ status: 2 });
+    let leave_data = await this.leaveRepository.find({ status: 3 });
     await leave_data.forEach(async (each_leave) => {
       user_data = await this.studentDataService.findOneWithId(
         each_leave.user_id
@@ -54,7 +54,11 @@ export class LeaveDataService {
     return return_data;
   }
 
-  async checkRequest(id: number) {
+  async find_with_request_check(status: number) {
+    return await this.leaveRepository.find({ status: status });
+  }
+
+  async checkRequest(id: number, response: number) {
     const updatedata = await this.leaveRepository.findOne({ idx: id });
     updatedata.status = 2;
     await this.leaveRepository.save(updatedata);

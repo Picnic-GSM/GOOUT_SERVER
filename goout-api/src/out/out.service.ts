@@ -43,8 +43,9 @@ export class OutDataService {
 
     return await this.outRepository.save(obj);
   }
+
   async getData(): Promise<Out[]> {
-    return await this.outRepository.find({ status: 3 });
+    return await this.outRepository.find();
   }
 
   findOne(id: number): Promise<Out> {

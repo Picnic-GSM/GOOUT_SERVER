@@ -18,6 +18,9 @@ import {
   getSchemaPath,
 } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
+import { CheckOutRequestDto } from "./dto/check-out-request.dto";
+import { decode } from "punycode";
+import { OutBackCheckDto } from "./dto/out-back-check.dto";
 
 @Controller("out")
 export class OutController {
@@ -152,10 +155,13 @@ export class OutController {
     description: "선생님이 승인할 때 사용됨",
   })
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async post_request_check(@Headers("accessToken") accessToken, @Body() req) {
+  async post_request_check(
+    @Headers("accessToken") accessToken,
+    @Body() req: CheckOutRequestDto
+  ) {
     await this.authService.validator(accessToken);
 
-    await this.outService.update_GoingRequestdata(req.id, 3);
+    await this.outService.update_GoingRequestdata(req.id, req.response);
     return "승인되었습니다.";
   }
 
@@ -175,9 +181,9 @@ export class OutController {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    let userdata = await this.studentDataService.findOneWithId(
-      decoded["userid"]
-    );
+    //let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
+    req.user_id = await decoded["userid"];
+    req.status = await 1;
     try {
       await this.outService.create(req);
       return "신청되었습니다.";
@@ -199,7 +205,10 @@ export class OutController {
     description: "선생님이 귀가 확인시 사용",
   })
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async out_check(@Headers("accessToken") accessToken, @Body() req) {
+  async out_check(
+    @Headers("accessToken") accessToken,
+    @Body() req: OutBackCheckDto
+  ) {
     await this.authService.validator(accessToken);
 
     await this.outService.updateGoingdata(req.id, 4);
