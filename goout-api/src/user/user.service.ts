@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Student } from "./entites/student.entity";
@@ -50,6 +50,7 @@ export class StudentDataService {
     });
   }
 
+  // 이메일, 비밀번호 확인
   async validator(
     email: string,
     password: string
@@ -59,6 +60,16 @@ export class StudentDataService {
       email: email,
       password: hashedPassword,
     });
+  }
+
+  // 학생 게정 활성화
+  async activateAccount(id: number): Promise<void> {
+    const studentObj = await this.findOneWithId(id);
+    if (!studentObj) {
+      return;
+    }
+    studentObj.is_active = true;
+    this.studentRepository.save(studentObj);
   }
 
   async remove(id: string): Promise<void> {
