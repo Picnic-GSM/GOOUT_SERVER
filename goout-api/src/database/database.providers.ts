@@ -1,3 +1,7 @@
+import { Leave } from "src/leave/entites/leave.entity";
+import { Out } from "src/out/entities/out.entity";
+import { Student } from "src/user/entites/student.entity";
+import { Teacher } from "src/user/entites/teacher.entity";
 import { createConnection } from "typeorm";
 
 export const databaseProviders = [
@@ -11,7 +15,7 @@ export const databaseProviders = [
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
-        entities: [__dirname + "/../**/*.entity{.ts,.js}"],
+        entities: [Leave,Out,Student,Teacher],
         synchronize: true,
       }),
   },
