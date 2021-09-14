@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Response,
@@ -17,6 +18,7 @@ import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { LoginForTeacherDto } from "./dto/login-teacher.dto";
 import { MailHandler } from "src/util/mail";
+import { EmailAuthDto } from "./dto/email-auth.dto";
 
 @ApiTags("로그인 API")
 @Controller("login")
@@ -79,19 +81,6 @@ export class StudentController {
     }
     return await this.studentDataService.create(req);
   }
-
-  // @Post("activate")
-  // async activateStudentAccount(@Body() req: EmailAuthDto) {
-  //   const authCode = await this.redisService.get_redis(req.id);
-  //   if (Number(authCode) == req.authCode) {
-  //     return "인증완료됐습니다.";
-  //   } else {
-  //     throw new HttpException(
-  //       "인증코드가 잘못됐거나 만료됐습니다.",
-  //       HttpStatus.BAD_REQUEST
-  //     );
-  //   }
-  // }
 
   // 인덱스를 활용한 학생 데이터 조회
   @Get("/:id")
@@ -165,6 +154,21 @@ export class StudentController {
   }
 
   // 이메일 인증을 통한 계정 활성화
+  @Patch("activate")
+  async activateAccount(@Body() req: EmailAuthDto) {
+    // redis에서 해당 id의 authCode 가져오기
+    // const authCode = await this.redisService.get_redis(req.id);
+    // if (+authCode == req.authCode) {
+    //   return "인증완료됐습니다.";
+    // } else {
+    //   throw new HttpException(
+    //     "인증코드가 잘못됐거나 만료됐습니다.",
+    //     HttpStatus.BAD_REQUEST
+    //   );
+    // }
+    const studentObj = await this.studentDataService.activateAccount(req.id);
+    return studentObj;
+  }
 }
 
 @Controller("teacher")
