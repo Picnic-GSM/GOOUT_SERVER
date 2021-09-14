@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
-import { LoginDataDto } from "./dto/login.dto";
 import { hashSha512 } from "src/util/hash";
 import { CreateStudentDto } from "./dto/create-student.dto";
 
@@ -36,6 +35,11 @@ export class StudentDataService {
   // 이메일을 통한 학생 데이터 검색
   findOneWithEmail(email: string): Promise<Student | undefined> {
     return this.studentRepository.findOne({ email: email });
+  }
+
+  // 각 학년 학생 데이터 조회
+  findAllWithGrade(grade: number): Promise<Student[]> {
+    return this.studentRepository.find({ grade: grade });
   }
 
   async validator(
