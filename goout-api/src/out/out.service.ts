@@ -15,28 +15,35 @@ export class OutDataService {
   ) {}
 
   async create(obj: CreateOutDataDto) {
-    let goingtime = obj.end_at;
+    return await this.outRepository.save(obj);
+}
+// 시간 업데이트 함수
+  async check_status(obj: Out[]) {
+    obj.forEach(async element => {
+    let goingtime = element.end_at;
     let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
     let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
     let time = new Date();
     let nowhour = time.getHours();
     let nowmin = time.getMinutes();
 
-    if (obj.status == "미승인") {
+    if (element.status == 1) {
       if (nowhour > hour) {
-        obj.status = "지각";
+        element.status = 5;
       } else if (nowhour == hour) {
         if (nowmin > min) {
-          obj.status = "지각";
+          element.status = 5;
         } else {
-          obj.status = "외출중";
+          element.status = 3;
         }
       } else {
-        obj.status = "외출중";
+        element.status = 3;
       }
     }
 
-    return await this.outRepository.save(obj);
+    return await this.outRepository.save(element);
+    });
+    
   }
   async getData(): Promise<Out[]> {
     return await this.outRepository.find({ status: 3 });
@@ -74,14 +81,14 @@ export class OutDataService {
   async find_with_request_check(request: number): Promise<Out[]> {
     return await this.outRepository.find({ status: request });
   }
-  async updateGoingdata(id: number, going_status: string) {
+  async updateGoingdata(id: number, going_status: number) {
     const updatedata = await this.outRepository.findOne({
       id: id,
     });
     updatedata.status = going_status;
     await this.outRepository.save(updatedata);
   }
-  async update_GoingRequestdata(id: number, going_request: string) {
+  async update_GoingRequestdata(id: number, going_request: number) {
     const updatedata = await this.outRepository.findOne({
       id: id,
     });
