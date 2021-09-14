@@ -14,6 +14,7 @@ import { LoginDataDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { ActivateTeacherDto } from "./dto/activate-teacher.dto";
+import { jwtConstants } from "src/auth/constants";
 
 @ApiTags("유저 라우터")
 @Controller("user")
@@ -58,11 +59,15 @@ export class UserController {
   @HttpCode(201)
   @ApiOperation({ summary: "선생님 로그인", description: "코드로 로그인" })
   async Code_Login(@Body() req: ActivateTeacherDto) {
+    
     let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
       req.activateCode
     );
+    console.log(process.env.JWT_SECRET_KEY)
+
     if(teacherObj.is_active == false) teacherObj.is_active = true;
     return await this.authservice.issueTokenForTeacher(teacherObj);
+
   }
 }
 
