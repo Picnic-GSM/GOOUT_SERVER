@@ -15,26 +15,31 @@ export class OutDataService {
   ) {}
 
   async create(obj: CreateOutDataDto) {
-    let goingtime = obj.end_at;
-    let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
-    let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
-    let time = new Date();
-    let nowhour = time.getHours();
-    let nowmin = time.getMinutes();
+    return this.outRepository.save(obj);
+  }
+  async check_status(obj: Out[]) {
+    obj.forEach((element) => {
+      if (element.status == 3) {
+        let goingtime = element.end_at.toISOString();
+        let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
+        let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
+        let time = new Date();
+        let nowhour = time.getHours();
+        let nowmin = time.getMinutes();
 
-    if (obj.status == "미승인") {
-      if (nowhour > hour) {
-        obj.status = "지각";
-      } else if (nowhour == hour) {
-        if (nowmin > min) {
-          obj.status = "지각";
+        if (nowhour > hour) {
+          element.status = 5;
+        } else if (nowhour == hour) {
+          if (nowmin > min) {
+            element.status = 5;
+          } else {
+            element.status = 3;
+          }
         } else {
-          obj.status = "외출중";
+          element.status = 3;
         }
-      } else {
-        obj.status = "외출중";
       }
-    }
+    });
 
     return await this.outRepository.save(obj);
   }
@@ -74,19 +79,19 @@ export class OutDataService {
   async find_with_request_check(request: number): Promise<Out[]> {
     return await this.outRepository.find({ status: request });
   }
-  async updateGoingdata(id: number, going_status: string) {
-    const updatedata = await this.outRepository.findOne({
-      id: id,
+  async updateGoingdata(id: number, going_status: number) {
+    const updateObj = await this.outRepository.findOne({
+      idx: id,
     });
-    updatedata.status = going_status;
-    await this.outRepository.save(updatedata);
+    updateObj.status = going_status;
+    await this.outRepository.save(updateObj);
   }
-  async update_GoingRequestdata(id: number, going_request: string) {
-    const updatedata = await this.outRepository.findOne({
-      id: id,
+  async update_GoingRequestdata(id: number, going_request: number) {
+    const updateObj = await this.outRepository.findOne({
+      idx: id,
     });
-    updatedata.status = going_request;
-    await this.outRepository.save(updatedata);
+    updateObj.status = going_request;
+    await this.outRepository.save(updateObj);
   }
   async remove(id: string): Promise<void> {
     await this.outRepository.delete(id);
