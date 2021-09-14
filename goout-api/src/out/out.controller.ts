@@ -211,7 +211,7 @@ export class OutController {
   ) {
     await this.authService.validator(accessToken);
 
-    await this.outService.updateGoingdata(req.id, req.response);
+    await this.outService.updateGoingdata(req.id, 4);
     return "실행됐습니다.";
   }
 }
