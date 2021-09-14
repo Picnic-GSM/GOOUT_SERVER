@@ -42,6 +42,14 @@ export class StudentDataService {
     return this.studentRepository.find({ grade: grade });
   }
 
+  // 각 반의 학생 데이터 조회
+  findAllWithGradeAndClass(grade: number, s_class: number) {
+    return this.studentRepository.find({
+      grade: grade,
+      class: s_class,
+    });
+  }
+
   async validator(
     email: string,
     password: string
