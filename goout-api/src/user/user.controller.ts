@@ -15,6 +15,8 @@ import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { ActivateTeacherDto } from "./dto/activate-teacher.dto";
 import { jwtConstants } from "src/auth/constants";
+import { findTeacherWithGrade } from "./dto/find-teacher-with-grade.dto";
+import { FindTeacherWithGradeNClass } from "./dto/find-teacher-with-grade-class.dto";
 
 @ApiTags("유저 라우터")
 @Controller("user")
@@ -123,5 +125,22 @@ export class TeacherController {
     if(teacherObj.is_active == false) teacherObj.is_active = true;
     return await this.authservice.issueTokenForTeacher(teacherObj);
 
+  }
+  @Post('showWithGrade')
+  @HttpCode(201)
+  @ApiOperation({summary:"특정 학년 선생님 출력", description:'특정 학년을 입력받아 선생님 찾기'})
+  async findTeacherWithGrade(@Body() req:findTeacherWithGrade) {
+    let teacherdata = await this.teacherdataservice.findOneWithGrade(req.grade);
+    if(!teacherdata) throw new HttpException("해당 학급 선생님을 찾을 수 없습니다.",HttpStatus.BAD_REQUEST);
+    return teacherdata;
+  }
+
+  @Post('showWithGradeAndClass')
+  @HttpCode(201)
+  @ApiOperation({summary:"특정 학년 및 반 선생님 출력", description:'특정 학년과 반을 입력받아 선생님 찾기'})
+  async findTeacherWithGradeAndClass(@Body() req:FindTeacherWithGradeNClass) {
+    let teacherdata = await this.teacherdataservice.findOneWithGradeAndClass(req.grade,req.class);
+    if(!teacherdata) throw new HttpException("해당 선생님을 찾을 수 없습니다.",HttpStatus.BAD_REQUEST);
+    return teacherdata;
   }
 }
