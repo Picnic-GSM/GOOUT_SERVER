@@ -4,6 +4,6 @@ export class EmailAuthDto {
   @ApiProperty({ description: "이메일 인증번호" })
   authCode: number;
 
-  @ApiProperty({ description: "해당 유저의 id" })
-  userId: number;
+  @ApiProperty({ description: "해당 학생 데이터의 인덱스" })
+  id: number;
 }
