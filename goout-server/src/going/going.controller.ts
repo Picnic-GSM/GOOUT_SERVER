@@ -2,11 +2,11 @@ import { Get, HttpCode, HttpStatus } from "@nestjs/common";
 import { HttpException } from "@nestjs/common";
 import { Body, Controller, Headers, Post } from "@nestjs/common";
 import { jwtConstants } from "src/auth/constants";
-import { CreateGoingDto } from "src/goingoutdata/goingoutdata.interface";
-import { GoingoutDataService } from "src/goingoutdata/goingoutdata.service";
-import { UserdataService } from "src/userdata/userdata.service";
+import { CreateGoingDto } from "src/out/outdata.interface";
+import { GoingoutDataService } from "src/out/outdata.service";
+import { StudentService } from "src/student/userdata.service";
 import * as jwt from "jsonwebtoken";
-import { Goingoutdata } from "src/goingoutdata/goingoutdata.entity";
+import { Out } from "src/out/outdata.entity";
 import { GoingService } from "./going.service";
 import * as crypto from "crypto";
 import {
@@ -25,7 +25,7 @@ import { AuthService } from "src/auth/auth.service";
 @Controller("going")
 export class GoingController {
   constructor(
-    private readonly userdataservice: UserdataService,
+    private readonly userdataservice: StudentService,
     private readonly goingoutservice: GoingoutDataService,
     private readonly goingservice: GoingService,
     private readonly authservice: AuthService
@@ -36,7 +36,7 @@ export class GoingController {
   @HttpCode(200)
   @ApiResponse({
     description: "조퇴한 모든 학생을 출력",
-    type: Goingoutdata,
+    type: Out,
     isArray: true,
     status: 200,
   })
@@ -62,7 +62,7 @@ export class GoingController {
   @HttpCode(200)
   @ApiResponse({
     description: "외출한 1학년 출력",
-    type: Goingoutdata,
+    type: Out,
     isArray: true,
     status: 200,
   })
@@ -84,7 +84,7 @@ export class GoingController {
   @Get("two")
   @ApiResponse({
     description: "외출한 2학년 출력",
-    type: Goingoutdata,
+    type: Out,
     isArray: true,
     status: 200,
   })
@@ -107,7 +107,7 @@ export class GoingController {
   @Get("three")
   @ApiResponse({
     description: "외출한 3학년 출력",
-    type: Goingoutdata,
+    type: Out,
     isArray: true,
     status: 200,
   })
@@ -131,7 +131,7 @@ export class GoingController {
   @HttpCode(200)
   @ApiResponse({
     description: "승인 되지 않은 외출 정보들 출력",
-    type: Goingoutdata,
+    type: Out,
     isArray: true,
     status: 200,
   })
@@ -143,7 +143,7 @@ export class GoingController {
   async get_request_check(@Headers("accessToken") accessToken) {
     await this.authservice.JWTverify(accessToken);
 
-    let result = this.goingoutservice.find_with_request_check(0);
+    let result = this.goingoutservice.find_with_request_check("미승인");
     return result;
   }
 
@@ -162,7 +162,7 @@ export class GoingController {
   ) {
     await this.authservice.JWTverify(accessToken);
 
-    await this.goingoutservice.update_GoingRequestdata(req.goingid, 1);
+    await this.goingoutservice.update_GoingRequestdata(req.id, "승인");
     return "승인되었습니다.";
   }
 
@@ -183,11 +183,7 @@ export class GoingController {
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     let userdata = await this.userdataservice.findOne(decoded["userid"]);
-    req.username = userdata.username;
-    req.grade = userdata.grade;
-    req.class = userdata.class;
-    req.s_number = userdata.s_number;
-    req.going_status = "외출중";
+    req.status = "미승인";
     try {
       await this.goingoutservice.createGoingout(req);
       return "신청되었습니다.";
@@ -215,7 +211,7 @@ export class GoingController {
   ) {
     await this.authservice.JWTverify(accessToken);
 
-    await this.goingoutservice.updateGoingdata(req.goingid, "귀가완료");
+    await this.goingoutservice.updateGoingdata(req.id, "귀가완료");
     return "실행됐습니다.";
   }
 }

@@ -1,12 +1,12 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
-export class Teacherdata {
+export class Teacher {
   @PrimaryColumn()
-  tracherid: number;
+  id: number;
 
   @Column()
-  teachercode: string;
+  teachercode: number;
 
   @Column()
   grade: number;

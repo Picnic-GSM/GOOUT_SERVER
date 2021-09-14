@@ -12,7 +12,7 @@ import { CreateLeavedataDto } from "src/leavedata/leavedata.interface";
 import * as jwt from "jsonwebtoken";
 import { jwtConstants } from "src/auth/constants";
 import { LeavedataService } from "src/leavedata/leavedata.service";
-import { UserdataService } from "src/userdata/userdata.service";
+import { StudentService } from "src/student/userdata.service";
 import {
   ApiHeader,
   ApiOperation,
@@ -21,7 +21,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { RequestCheckDto } from "./request-check.interface";
-import { Leavedata } from "src/leavedata/leavedata.entity";
+import { Leave } from "src/leavedata/leavedata.entity";
 import { isArray } from "util";
 import { AuthService } from "src/auth/auth.service";
 
@@ -29,14 +29,14 @@ import { AuthService } from "src/auth/auth.service";
 export class LeaveController {
   constructor(
     private readonly leavedataservice: LeavedataService,
-    private readonly userdataservice: UserdataService,
+    private readonly userdataservice: StudentService,
     private readonly authservice: AuthService
   ) {}
 
   @ApiTags("공용 라우터")
   @ApiResponse({
     description: "조퇴한 모든 학생을 출력",
-    type: Leavedata,
+    type: Leave,
     isArray: true,
     status: 200,
   })
@@ -64,7 +64,7 @@ export class LeaveController {
   })
   @ApiResponse({
     description: "조퇴한 1학년 학생들만 출력",
-    type: Leavedata,
+    type: Leave,
     isArray: true,
     status: 200,
   })
@@ -80,7 +80,7 @@ export class LeaveController {
   @HttpCode(200)
   @ApiResponse({
     description: "조퇴한 2학년 학생들만 출력",
-    type: Leavedata,
+    type: Leave,
     isArray: true,
     status: 200,
   })
@@ -101,7 +101,7 @@ export class LeaveController {
   @HttpCode(200)
   @ApiResponse({
     description: "조퇴한 3학년 학생들만 출력",
-    type: Leavedata,
+    type: Leave,
     isArray: true,
     status: 200,
   })
@@ -122,7 +122,7 @@ export class LeaveController {
   @HttpCode(200)
   @ApiResponse({
     description: "미승인된 조퇴 목록 출력",
-    type: Leavedata,
+    type: Leave,
     isArray: true,
     status: 200,
   })
@@ -134,7 +134,7 @@ export class LeaveController {
   async get_request_check(@Headers("accessToken") accessToken) {
     await this.authservice.JWTverify(accessToken);
 
-    let result = await this.leavedataservice.find_with_request_check(0);
+    let result = await this.leavedataservice.find_with_request_check("미승인");
     return result;
   }
 
@@ -155,7 +155,7 @@ export class LeaveController {
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
-      await this.leavedataservice.CheckRequest(req.leaveid);
+      await this.leavedataservice.CheckRequest(req.id);
       return "성공적으로 실행됐습니다.";
     } else {
       throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
@@ -178,10 +178,6 @@ export class LeaveController {
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     let userdata = await this.userdataservice.findOne(decoded["userid"]);
-    req.username = userdata.username;
-    req.grade = userdata.grade;
-    req.class = userdata.class;
-    req.s_number = userdata.s_number;
     try {
       await this.leavedataservice.createLeavedata(req);
       return "신청되었습니다.";

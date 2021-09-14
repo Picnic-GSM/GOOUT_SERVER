@@ -1,12 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Userdata {
+export class Student {
   @PrimaryGeneratedColumn()
-  userid: number;
+  id: number;
 
   @Column()
-  username: string;
+  name: string;
 
   @Column()
   password: string;
@@ -22,10 +22,7 @@ export class Userdata {
 
   @Column()
   s_number: number;
-  /*
-  @Column()
-  authNum:number;
 
   @Column()
-  authNumCheck:number;*/
+  is_active:number;
 }

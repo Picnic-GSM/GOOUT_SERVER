@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { GoingoutDataService } from "./goingoutdata.service";
+import { GoingoutDataService } from "./outdata.service";
 
 describe("GoingoutdataService", () => {
   let service: GoingoutdataService;

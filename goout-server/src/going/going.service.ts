@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { GoingoutDataService } from "src/goingoutdata/goingoutdata.service";
+import { GoingoutDataService } from "src/out/outdata.service";
 
 @Injectable()
 export class GoingService {

@@ -7,8 +7,8 @@ import {
   Req,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { RegisterDataDto } from "src/userdata/register.interface";
-import { UserdataService } from "src/userdata/userdata.service";
+import { RegisterDataDto } from "src/student/register.interface";
+import { StudentService } from "src/student/userdata.service";
 import { RegisterAuthNumCheck } from "./registerAuth.interface";
 import { RegisterService } from "./register.service";
 import { RedisService } from "src/util/redis.service";
@@ -18,7 +18,7 @@ import { authnumService } from "src/util/authnum.service";
 @Controller("register")
 export class RegisterController {
   constructor(
-    private readonly userdataservice: UserdataService,
+    private readonly userdataservice: StudentService,
     private readonly authnumservice:authnumService,
     private readonly redisservice:RedisService
   ) {}
