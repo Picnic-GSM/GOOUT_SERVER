@@ -138,8 +138,15 @@ export class StudentController {
         HttpStatus.BAD_REQUEST
       );
     }
+    return studentsObj;
   }
+
   // 모든 학생 데이터 조회
+  @Get()
+  async findAll() {
+    return await this.studentDataService.findAll();
+  }
+
   // 이메일 인증코드 보내기
   // 이메일 인증을 통한 계정 활성화
 }
