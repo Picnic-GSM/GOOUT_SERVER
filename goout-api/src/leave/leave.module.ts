@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { AuthModule } from "src/auth/auth.module";
 import { DatabaseModule } from "src/database/database.module";
 import { Student } from "src/user/entites/student.entity";
 import { StudentDataService } from "src/user/user.service";
@@ -9,7 +10,7 @@ import { leaveProviders } from "./leave.providers";
 import { LeaveDataService } from "./leave.service";
 
 @Module({
-  imports: [DatabaseModule,TypeOrmModule.forFeature([Leave,Student])],
+  imports: [DatabaseModule,TypeOrmModule.forFeature([Leave,Student]),AuthModule],
   providers: [...leaveProviders, LeaveDataService,StudentDataService],
   controllers: [LeaveController],
 })

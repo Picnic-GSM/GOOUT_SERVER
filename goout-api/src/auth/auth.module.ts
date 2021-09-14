@@ -15,7 +15,7 @@ import { jwtConstants } from "./constants";
     }),
     TypeOrmModule.forFeature([Student,Teacher])
   ],
-  providers: [AuthService,StudentDataService,TeacherDataService,JwtService],
+  providers: [AuthService,StudentDataService,TeacherDataService],
   exports: [AuthService],
 })
 export class AuthModule {}

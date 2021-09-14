@@ -13,6 +13,7 @@ import { Leave } from "./leave/entites/leave.entity";
 import { Out } from "./out/entities/out.entity";
 import { Student } from "./user/entites/student.entity";
 import { Teacher } from "./user/entites/teacher.entity";
+import { AuthService } from "./auth/auth.service";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +34,6 @@ import { Teacher } from "./user/entites/teacher.entity";
     LeaveModule,
     AuthModule,
     DatabaseModule,
-  ],
+  ]
 })
 export class AppModule {}
