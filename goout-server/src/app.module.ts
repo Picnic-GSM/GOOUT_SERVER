@@ -73,7 +73,7 @@ import { TeacherdataModule } from "./teacher/teacher.module";
     AppService,
     LoginService,
     StudentService,
-    LeavedataService,
+      LeavedataService,
     GoingoutDataService,
     GoingService,
     TeacherdataService,

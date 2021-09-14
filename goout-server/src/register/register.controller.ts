@@ -35,13 +35,8 @@ export class RegisterController {
         HttpStatus.BAD_REQUEST
       );
     }
-    try {
-      await this.userdataservice.createUserdata(req);
-      return "회원가입 성공";
-    } catch (error) {
-      console.log(error);
-      throw new HttpException("회원가입 에러", HttpStatus.BAD_REQUEST);
-    }
+    await this.authnumservice.send_AuthNum(req);
+    return "이메일 인증 후 로그인이 가능합니다.";
   }
 
   @Post("Auth-Check")
