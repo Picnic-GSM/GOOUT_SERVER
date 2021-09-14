@@ -1,18 +1,11 @@
-import { EmailAuthDto } from "src/user/dto/email-auth.dto";
 import { StudentDataService } from "src/user/user.service";
-import { RedisService } from "./redis";
 import * as nodemailer from "nodemailer";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { Student } from "src/user/entites/student.entity";
 
-export class SendEmail {
-  constructor(
-    private readonly studentDataService: StudentDataService,
-    private readonly redisService: RedisService
-  ) {}
-
-  async sendMail(req: EmailAuthDto) {
-    const userEmail = this.studentDataService.findOneWithId(req.userId);
-    let authNum = await this.makeAuthCode();
+export class MailHandler {
+  async send(obj: Student) {
+    const authNum = await this.makeAuthCode();
     try {
       const smtpTransport = nodemailer.createTransport({
         service: "Gmail",
@@ -24,15 +17,20 @@ export class SendEmail {
 
       const mailOptions = {
         from: process.env.NODEMAILER_USER,
-        to: userEmail,
+        to: obj.email,
         subject: "Go-Out 회원가입 E-Mail인증번호",
         text: `인증번호는 ${authNum}입니다.`,
       };
-      let created_data = await this.studentDataService.create(req);
-      this.redisService.add_redis(created_data.id, authNum, 180);
+
+      await smtpTransport.sendMail(mailOptions);
+      // redis 모듈 추가
+      // this.redisService.add_redis(studentObj.idx, authNum, 180);
     } catch (error) {
       console.log(error);
-      throw new HttpException("이메일 전송 에러", HttpStatus.CONFLICT);
+      throw new HttpException(
+        "이메일 전송 에러",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 
