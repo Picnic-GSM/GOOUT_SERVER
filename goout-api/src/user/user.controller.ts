@@ -121,7 +121,24 @@ export class StudentController {
     }
     return studentsObj;
   }
+
   // 반별 학생 데이터 조회
+  @Get()
+  async findWithGradeAndClass(
+    @Query("grade") grade: number,
+    @Query("class") s_class: number
+  ) {
+    const studentsObj = await this.studentDataService.findAllWithGradeAndClass(
+      grade,
+      s_class
+    );
+    if (!studentsObj) {
+      throw new HttpException(
+        "grade는 1~4, class는 1~21 내에서 입력해주십시오.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
   // 모든 학생 데이터 조회
   // 이메일 인증코드 보내기
   // 이메일 인증을 통한 계정 활성화
