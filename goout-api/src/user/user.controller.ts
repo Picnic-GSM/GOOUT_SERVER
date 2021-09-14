@@ -54,21 +54,7 @@ export class UserController {
     */
   }
 
-  @ApiTags("선생님용 라우터")
-  @Post("teacher")
-  @HttpCode(201)
-  @ApiOperation({ summary: "선생님 로그인", description: "코드로 로그인" })
-  async Code_Login(@Body() req: ActivateTeacherDto) {
-    
-    let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
-      req.activateCode
-    );
-    console.log(process.env.JWT_SECRET_KEY)
-
-    if(teacherObj.is_active == false) teacherObj.is_active = true;
-    return await this.authservice.issueTokenForTeacher(teacherObj);
-
-  }
+  
 }
 
 
@@ -116,5 +102,26 @@ export class StudentController {
   */
 }
 
+@ApiTags("선생님용 라우터")
 @Controller("teacher")
-export class TeacherController {}
+export class TeacherController {
+  constructor(
+    private readonly teacherdataservice: TeacherDataService,
+    private readonly authservice: AuthService
+  ) {}
+
+  @Post("login")
+  @HttpCode(201)
+  @ApiOperation({ summary: "선생님 로그인", description: "코드로 로그인" })
+  async Code_Login(@Body() req: ActivateTeacherDto) {
+    
+    let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
+      req.activateCode
+    );
+    console.log(process.env.JWT_SECRET_KEY)
+
+    if(teacherObj.is_active == false) teacherObj.is_active = true;
+    return await this.authservice.issueTokenForTeacher(teacherObj);
+
+  }
+}

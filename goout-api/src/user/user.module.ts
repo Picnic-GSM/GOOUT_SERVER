@@ -6,7 +6,7 @@ import { AuthModule } from "src/auth/auth.module";
 import { DatabaseModule } from "src/database/database.module";
 import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
-import { StudentController, UserController } from "./user.controller";
+import { StudentController, TeacherController, UserController } from "./user.controller";
 import { studentProviders, teacherProviders } from "./user.providers";
 import { StudentDataService, TeacherDataService } from "./user.service";
 
@@ -18,6 +18,6 @@ import { StudentDataService, TeacherDataService } from "./user.service";
     StudentDataService,
     TeacherDataService,
   ],
-  controllers: [UserController,StudentController],
+  controllers: [UserController,StudentController,TeacherController],
 })
 export class UserModule {}
