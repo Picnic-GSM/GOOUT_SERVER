@@ -11,7 +11,6 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
-import { EmailAuthDto } from "./dto/email-auth.dto";
 import { LoginReqDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
@@ -111,6 +110,17 @@ export class StudentController {
   }
 
   // 학년별 학생 데이터 조회
+  @Get()
+  async findWithGrade(@Query("grade") grade: number) {
+    const studentsObj = await this.studentDataService.findAllWithGrade(grade);
+    if (!studentsObj) {
+      throw new HttpException(
+        "1~4 중 하나를 입력해주십시오.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return studentsObj;
+  }
   // 반별 학생 데이터 조회
   // 모든 학생 데이터 조회
   // 이메일 인증코드 보내기

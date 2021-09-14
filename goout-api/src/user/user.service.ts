@@ -5,6 +5,7 @@ import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
 import { hashSha512 } from "src/util/hash";
 import { CreateStudentDto } from "./dto/create-student.dto";
+import { validate } from "email-validator";
 
 @Injectable()
 export class StudentDataService {
@@ -34,11 +35,17 @@ export class StudentDataService {
 
   // 이메일을 통한 학생 데이터 검색
   findOneWithEmail(email: string): Promise<Student | undefined> {
+    if (!validate(email)) {
+      return;
+    }
     return this.studentRepository.findOne({ email: email });
   }
 
   // 각 학년 학생 데이터 조회
   findAllWithGrade(grade: number): Promise<Student[]> {
+    if (!(1 <= grade && grade <= 4)) {
+      return;
+    }
     return this.studentRepository.find({ grade: grade });
   }
 
