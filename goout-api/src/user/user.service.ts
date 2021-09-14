@@ -76,13 +76,13 @@ export class StudentDataService {
   }
 
   // 학생 게정 활성화
-  async activateAccount(id: number): Promise<void> {
+  async activateAccount(id: number) {
     const studentObj = await this.findOneWithId(id);
     if (!studentObj) {
       return;
     }
     studentObj.is_active = true;
-    this.studentRepository.save(studentObj);
+    return this.studentRepository.save(studentObj);
   }
 
   async remove(id: string): Promise<void> {
