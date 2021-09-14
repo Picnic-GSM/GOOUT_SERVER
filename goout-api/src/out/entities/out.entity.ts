@@ -13,36 +13,36 @@ import {
 export class Out {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: "외출 정보 id" })
-  id!: number;
+  id: number;
 
   @OneToMany((type) => Student, (student) => student.id)
-  user_id!: number;
+  user_id: number;
 
   @ApiProperty({ description: "외출 시작 시간" })
-  @Column()
-  start_at!: string;
+  @Column("datetime")
+  start_at: Date;
 
   @ApiProperty({ description: "외출 끝나는 시간" })
-  @Column()
-  end_at!: string;
+  @Column("datetime")
+  end_at: Date;
 
   @ApiProperty({ description: "외출 사유" })
-  @Column()
-  reason!: string;
+  @Column({ length: 200 })
+  reason: string;
 
   @ApiProperty({ description: "외출 상태 및 허가여부" })
-  @Column()
-  status!: Status;
+  @Column("enum")
+  status: Status;
 
   @CreateDateColumn({
     type: "timestamp",
   })
-  created_at!: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({
     type: "timestamp",
   })
-  updated_at!: Date;
+  updated_at: Date;
 }
 
 enum Status {

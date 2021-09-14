@@ -5,7 +5,7 @@ export class Teacher {
   @PrimaryColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 45 })
   name: string;
 
   @Column()
@@ -14,7 +14,7 @@ export class Teacher {
   @Column()
   class: number;
 
-  @Column()
+  @Column("tinyint")
   activateCode: number;
 
   @Column({default:false})
