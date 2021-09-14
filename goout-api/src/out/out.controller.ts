@@ -45,7 +45,7 @@ export class OutController {
     await this.authService.validator(accessToken);
 
     let alldata = await this.outService.getData(); //1차 값 가져오기
-    await this.outService.checkStatus(alldata); //값 확인 후 지각인지 확인
+    await this.outService.check_status(alldata); //값 확인 후 지각인지 확인
     let after_check = await this.outService.getData(); //확인된 값을 다시 받아옴
     if (!alldata) {
       // throw or ?
@@ -137,9 +137,9 @@ export class OutController {
   })
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   async get_request_check(@Headers("accessToken") accessToken) {
-    await this.authService.(accessToken);
+    await this.authService.validator(accessToken);
 
-    let result = this.outService.find_with_request_check("미승인");
+    let result = this.outService.find_with_request_check(1);
     return result;
   }
 
@@ -152,13 +152,10 @@ export class OutController {
     description: "선생님이 승인할 때 사용됨",
   })
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async post_request_check(
-    @Headers("accessToken") accessToken,
-    @Body() req: GoingRequestCheckDto
-  ) {
+  async post_request_check(@Headers("accessToken") accessToken, @Body() req) {
     await this.authService.validator(accessToken);
 
-    await this.outService.update_GoingRequestdata(req.id, "승인");
+    await this.outService.update_GoingRequestdata(req.id, 3);
     return "승인되었습니다.";
   }
 
@@ -178,8 +175,9 @@ export class OutController {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
-    req.status = 1;
+    let userdata = await this.studentDataService.findOneWithId(
+      decoded["userid"]
+    );
     try {
       await this.outService.create(req);
       return "신청되었습니다.";
@@ -201,13 +199,10 @@ export class OutController {
     description: "선생님이 귀가 확인시 사용",
   })
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async out_check(
-    @Headers("accessToken") accessToken,
-    @Body() req: GoingOutCheckDto
-  ) {
+  async out_check(@Headers("accessToken") accessToken, @Body() req) {
     await this.authService.validator(accessToken);
 
-    await this.outService.updateGoingdata(req.id, "귀가완료");
+    await this.outService.updateGoingdata(req.id, 4);
     return "실행됐습니다.";
   }
 }
