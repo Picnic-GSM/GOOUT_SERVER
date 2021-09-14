@@ -31,7 +31,7 @@ export class Out {
   reason: string;
 
   @ApiProperty({ description: "외출 상태 및 허가여부" })
-  @Column("enum")
+  @Column("enum", { default: 1 })
   status: Status;
 
   @CreateDateColumn({
