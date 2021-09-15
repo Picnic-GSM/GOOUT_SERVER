@@ -8,13 +8,19 @@ import {
   CreateDateColumn,
 } from "typeorm";
 
+enum LeaveStatus {
+  DisApproved = 1,
+  Approved = 2,
+  Rejected = 3,
+}
+
 @Entity()
 export class Leave {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: "조퇴 id" })
   id: number;
 
-  @OneToMany((type) => Student, (student) => student.id)
+  @OneToMany(type => Student, (student) => student.id)
   user_id: number;
 
   @ApiProperty({ description: "조퇴 시작 시간" })
@@ -26,7 +32,7 @@ export class Leave {
   reason: string;
 
   @ApiProperty({ description: "조퇴 승인의 여부 및 상태" })
-  @Column("enum")
+  @Column("enum", {enum:LeaveStatus,name:'status'})
   status: LeaveStatus;
 
   @CreateDateColumn({
@@ -35,8 +41,4 @@ export class Leave {
   created_at: Date;
 }
 
-enum LeaveStatus {
-  DisApproved = 1,
-  Approved = 2,
-  Rejected = 3,
-}
+
