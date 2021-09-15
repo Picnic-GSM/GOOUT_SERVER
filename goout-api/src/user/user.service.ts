@@ -16,6 +16,8 @@ export class StudentDataService {
 
   // 학생 데이터 생성
   async create(studentObj: CreateStudentDto): Promise<Student | undefined> {
+    let hashedPassword = hashSha512(studentObj.password);
+    studentObj.password = hashedPassword;
     return await this.studentRepository.save(studentObj);
   }
 
