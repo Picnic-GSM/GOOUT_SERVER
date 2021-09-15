@@ -7,6 +7,7 @@ import {
   OneToMany,
   CreateDateColumn,
 } from "typeorm";
+import { LeaveStatus } from "../enum";
 
 @Entity()
 export class Leave {
@@ -26,17 +27,11 @@ export class Leave {
   reason: string;
 
   @ApiProperty({ description: "조퇴 승인의 여부 및 상태" })
-  @Column("enum")
+  @Column("enum", { enum: LeaveStatus, default: LeaveStatus.DisApproved })
   status: LeaveStatus;
 
   @CreateDateColumn({
     type: "timestamp",
   })
   created_at: Date;
-}
-
-enum LeaveStatus {
-  DisApproved = 1,
-  Approved = 2,
-  Rejected = 3,
 }
