@@ -11,7 +11,7 @@ import { AuthService } from "src/auth/auth.service";
 import { EmailAuthDto } from "./dto/email-auth.dto";
 import { LoginDataDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
-import { StudentDataService, TeacherDataService } from "./user.service";
+import { StudentDataService, TeacherDataService, UserService } from "./user.service";
 import { ActivateTeacherDto } from "./dto/activate-teacher.dto";
 import { jwtConstants } from "src/auth/constants";
 import { findTeacherWithGrade } from "./dto/find-teacher-with-grade.dto";
@@ -63,7 +63,8 @@ export class UserController {
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private readonly userService:UserService
   ) {}
   @ApiTags("학생용 라우터")
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
@@ -78,6 +79,9 @@ export class StudentController {
         HttpStatus.BAD_REQUEST
       );
     }
+    let createdResult = await this.studentDataService.create(req);
+    this.userService.sendMail(createdResult.email,createdResult.id)
+/*
     try {
       let createdResult = await this.studentDataService.create(req);
       console.log(createdResult.id);
@@ -110,6 +114,7 @@ export class StudentController {
       console.log(error);
       throw new HttpException("이메일 전송 에러", HttpStatus.CONFLICT);
     }
+    */
   }
   @Post("activate")
   async authNumCheck(@Body() req: EmailAuthDto) {

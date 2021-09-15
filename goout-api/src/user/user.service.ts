@@ -5,7 +5,7 @@ import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
 import { LoginDataDto } from "./dto/login.dto";
 import { RedisService } from "src/util/redis";
-import * as nodemailer from 'nodemailer'
+import * as nodemailer from "nodemailer";
 
 @Injectable()
 export class StudentDataService {
@@ -29,12 +29,12 @@ export class StudentDataService {
     return this.usersRepository.find();
   }
 
-  async findOne(id:number) {
-    return await this.usersRepository.findOne(id)
+  async findOne(id: number) {
+    return await this.usersRepository.findOne(id);
   }
 
   async findOneWithId(id: number): Promise<Student> {
-    console.log(id)
+    console.log(id);
     return await this.usersRepository.findOne(id);
   }
 
@@ -45,7 +45,7 @@ export class StudentDataService {
     await this.usersRepository.delete(id);
   }
   //인증 확인 후 활성화 시키는 메서드
-  async Activating(id:number) {
+  async Activating(id: number) {
     let data = await this.usersRepository.findOne(id);
     data.is_active = true;
     this.usersRepository.save(data);
@@ -56,7 +56,7 @@ export class StudentDataService {
 export class TeacherDataService {
   constructor(
     @InjectRepository(Teacher)
-    private readonly teacherRepository: Repository<Teacher>,
+    private readonly teacherRepository: Repository<Teacher>
   ) {}
 
   getData(): Promise<Teacher[]> {
@@ -75,18 +75,24 @@ export class TeacherDataService {
     return await this.teacherRepository.findOne({ grade: grade });
   }
 
-  async findOneWithGradeAndClass(teacherGrade:number,teacher_class:number): Promise<Teacher> {
-    return await this.teacherRepository.findOne({ grade:teacherGrade,class:teacher_class });
+  async findOneWithGradeAndClass(
+    teacherGrade: number,
+    teacher_class: number
+  ): Promise<Teacher> {
+    return await this.teacherRepository.findOne({
+      grade: teacherGrade,
+      class: teacher_class,
+    });
   }
 }
 
 export class UserService {
-  constructor(private readonly studentdataservice:StudentDataService, private readonly redisService:RedisService) {}
-  async sendMail(id:number) {
+  constructor(
+    private readonly studentdataservice: StudentDataService,
+    private readonly redisService: RedisService
+  ) {}
+  async sendMail(userEmail: string, id: number) {
     try {
-      
-      console.log(id);
-      const userEmail = await this.studentdataservice.findOne(id);
       console.log(userEmail);
       let authNum = await Number(Math.random().toString().substr(2, 6));
 
@@ -100,13 +106,13 @@ export class UserService {
 
       const mailOptions = {
         from: process.env.NODEMAILER_USER,
-        to: userEmail.email,
+        to: userEmail,
         subject: "Go-Out 회원가입 E-Mail인증번호",
         text: `인증번호는 ${authNum}입니다.`,
       };
-      
+
       await smtpTransport.sendMail(mailOptions, (err) => {
-        if(err) console.log(err)
+        if (err) console.log(err);
       });
       console.log("인증번호:" + authNum);
       this.redisService.add_redis(id, authNum, 180);
