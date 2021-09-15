@@ -27,8 +27,13 @@ export class StudentDataService {
     return this.usersRepository.find();
   }
 
-  findOneWithId(id: number): Promise<Student> {
-    return this.usersRepository.findOneOrFail(id);
+  async findOne(id:number) {
+    return await this.usersRepository.findOne(id)
+  }
+
+  async findOneWithId(id: number): Promise<Student> {
+    console.log(id)
+    return await this.usersRepository.findOne(id);
   }
 
   findOneWithEmail(email: string): Promise<Student> {
@@ -36,6 +41,11 @@ export class StudentDataService {
   }
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
+  }
+  //인증 확인 후 활성화 시키는 메서드
+  async Activating(id:number) {
+    let data = await this.usersRepository.findOne(id);
+    data.is_active = true;
   }
 }
 
