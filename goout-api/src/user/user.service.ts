@@ -81,12 +81,12 @@ export class TeacherDataService {
 }
 
 export class UserService {
-  constructor(private readonly studentDataService:StudentDataService, private readonly redisService:RedisService) {}
+  constructor(private readonly studentdataservice:StudentDataService, private readonly redisService:RedisService) {}
   async sendMail(id:number) {
     try {
       
       console.log(id);
-      const userEmail = await this.studentDataService.findOne(id);
+      const userEmail = await this.studentdataservice.findOne(id);
       console.log(userEmail);
       let authNum = await Number(Math.random().toString().substr(2, 6));
 

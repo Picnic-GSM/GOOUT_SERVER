@@ -16,13 +16,18 @@ import { StudentDataService, TeacherDataService, UserService } from "./user.serv
 import { RedisService } from "src/util/redis";
 import { SendEmail } from "src/util/mail";
 import { ConfigModule } from "@nestjs/config";
+import * as redisStore from 'cache-manager-ioredis';
 
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([Student, Teacher]),
     AuthModule,
-    CacheModule.register(),
+    CacheModule.register({
+      store:redisStore,
+      host:'localhost',
+      port:+process.env.REDIS_PORT
+    }),
     ConfigModule.forRoot()
   ],
   providers: [

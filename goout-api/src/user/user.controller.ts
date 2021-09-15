@@ -11,7 +11,7 @@ import { AuthService } from "src/auth/auth.service";
 import { EmailAuthDto } from "./dto/email-auth.dto";
 import { LoginDataDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
-import { StudentDataService, TeacherDataService, UserService } from "./user.service";
+import { StudentDataService, TeacherDataService } from "./user.service";
 import { ActivateTeacherDto } from "./dto/activate-teacher.dto";
 import { jwtConstants } from "src/auth/constants";
 import { findTeacherWithGrade } from "./dto/find-teacher-with-grade.dto";
@@ -63,8 +63,7 @@ export class UserController {
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
-    private readonly redisService: RedisService,
-    private readonly userService:UserService
+    private readonly redisService: RedisService
   ) {}
   @ApiTags("학생용 라우터")
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
@@ -78,11 +77,39 @@ export class StudentController {
         "이메일이 이미 존재합니다",
         HttpStatus.BAD_REQUEST
       );
-    } else {
-      let createdResult = await this.studentDataService.create(req);
-      this.userService.sendMail(createdResult.id)
     }
-    
+    try {
+      let createdResult = await this.studentDataService.create(req);
+      console.log(createdResult.id);
+      const userEmail = await this.studentDataService.findOne(createdResult.id);
+      console.log(userEmail);
+      let authNum = await Number(Math.random().toString().substr(2, 6));
+
+      const smtpTransport = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: process.env.NODEMAILER_USER,
+          pass: process.env.NODEMAILER_PASS,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.NODEMAILER_USER,
+        to: userEmail.email,
+        subject: "Go-Out 회원가입 E-Mail인증번호",
+        text: `인증번호는 ${authNum}입니다.`,
+      };
+      
+      await smtpTransport.sendMail(mailOptions, (err) => {
+        if(err) console.log(err)
+      });
+      console.log("인증번호:" + authNum);
+      this.redisService.add_redis(createdResult.id, authNum, 180);
+      return "회원가입 성공";
+    } catch (error) {
+      console.log(error);
+      throw new HttpException("이메일 전송 에러", HttpStatus.CONFLICT);
+    }
   }
   @Post("activate")
   async authNumCheck(@Body() req: EmailAuthDto) {
