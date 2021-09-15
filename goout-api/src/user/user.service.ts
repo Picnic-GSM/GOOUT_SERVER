@@ -65,16 +65,24 @@ export class StudentDataService {
     });
   }
 
-  // 학년, 반 validator
+  // 학년 validator
   isValidGrade(grade: number): Boolean {
-    if (!(1 <= grade && grade <= 4)) {
+    if (!(1 <= grade && grade <= 3)) {
       return false;
     }
+    return true;
+  }
+  // 학년 validator
+  isValidClass(s_class: number): Boolean {
+    if (!(1 <= s_class && s_class <= 4)) {
+      return false;
+    }
+    return true;
   }
 
-  // 반 validator
-  isValidClass(s_class: number): Boolean {
-    if (!(1 <= s_class && s_class <= 21)) {
+  // 번호 validator
+  isValidNumber(s_number: number): Boolean {
+    if (!(1 <= s_number && s_number <= 21)) {
       return;
     }
     return true;
