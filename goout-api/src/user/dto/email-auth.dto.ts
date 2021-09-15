@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class EmailAuthDto {
+export class ActivateAccountDto {
   @ApiProperty({ description: "이메일 인증번호" })
   authCode: number;
 
