@@ -9,6 +9,13 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
+enum Status {
+  Disapproved = 1,
+  Rejected = 2,
+  Approved = 3,
+  Returned = 4,
+}
+
 @Entity()
 export class Out {
   @PrimaryGeneratedColumn()
@@ -31,7 +38,7 @@ export class Out {
   reason: string;
 
   @ApiProperty({ description: "외출 상태 및 허가여부" })
-  @Column("enum")
+  @Column("enum",{enum:Status, name:'status'})
   status: Status;
 
   @CreateDateColumn({
@@ -45,9 +52,3 @@ export class Out {
   updated_at: Date;
 }
 
-enum Status {
-  Disapproved = 1,
-  Rejected = 2,
-  Approved = 3,
-  Returned = 4,
-}
