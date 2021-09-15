@@ -8,7 +8,7 @@ export class Student {
   @Column({ length: 45 })
   name: string;
 
-  @Column({ length: 45 })
+  @Column({ length: 100 })
   password: string;
 
   @Column({ unique: true, length: 100 })
