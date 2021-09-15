@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { CacheModule, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 
@@ -30,6 +30,7 @@ import { AuthService } from "./auth/auth.service";
         entities: [Leave,Out,Student,Teacher],
         synchronize: true,
     }),
+    CacheModule.register(),
     OutModule,
     UserModule,
     LeaveModule,
