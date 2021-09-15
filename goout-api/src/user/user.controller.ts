@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  Response,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
@@ -18,10 +17,11 @@ import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { LoginForTeacherDto } from "./dto/login-teacher.dto";
 import { MailHandler } from "src/util/mailHandler";
-import { EmailAuthDto } from "./dto/email-auth.dto";
-import { jwtConstants } from "src/auth/constants";
-import { findTeacherWithGrade } from "./dto/find-teacher-with-grade.dto";
-import { FindTeacherWithGradeNClass } from "./dto/find-teacher-with-grade-class.dto";
+import { ActivateAccountDto } from "./dto/email-auth.dto";
+import { FindWithGradeDto } from "./dto/find-with-grade.dto";
+import { validate } from "email-validator";
+import { EmailDto } from "./dto/send-email.dto";
+import { FindWithGradeAndClassDto } from "./dto/find-with-grade-class.dto";
 
 @ApiTags("로그인 API")
 @Controller("login")
@@ -64,17 +64,37 @@ export class LoginController {
 }
 
 @ApiTags("학생 데이터 API")
-@Controller()
+@Controller("student")
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
     private readonly mailHandler: MailHandler
   ) {}
-  @ApiTags("학생용 라우터")
+
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
   @Post("register")
   @HttpCode(201)
   async register(@Body() req: CreateStudentDto) {
+    if (!validate(req.email)) {
+      throw new HttpException(
+        "잘못된 이메일입니다. 다시 입력하여주세요.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    if (
+      !(
+        this.studentDataService.isValidClass(req.class) &&
+        this.studentDataService.isValidGrade(req.grade) &&
+        this.studentDataService.isValidNumber(req.s_number)
+      )
+    ) {
+      throw new HttpException(
+        "grade는 1~3, class는 1~4, number는 1~21 내에서 입력해주십시오.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     const exist = await this.studentDataService.findOneWithEmail(req.email);
     if (exist) {
       throw new HttpException(
@@ -86,29 +106,22 @@ export class StudentController {
   }
 
   // 인덱스를 활용한 학생 데이터 조회
+  @ApiOperation({
+    summary: "인덱스를 활용한 학생 데이터 조회",
+    description: "인덱스를 활용한 학생 데이터 조회",
+  })
   @Get("/:id")
-  async findWithId(@Param("id") studentId: number) {
-    return await this.studentDataService.findOneWithId(studentId);
-  }
-
-  // 이메일을 활용한 학생 데이터 조회
-  @Get()
-  async findWithEmail(@Query("email") studentEmail: string) {
-    const studentObj = await this.studentDataService.findOneWithEmail(
-      studentEmail
-    );
-    if (!studentObj) {
-      throw new HttpException(
-        "존재하지 않는 이메일입니다.",
-        HttpStatus.BAD_REQUEST
-      );
-    }
-    return studentObj;
+  async findWithId(@Param("id") id: number) {
+    return await this.studentDataService.findOneWithId(id);
   }
 
   // 학년별 학생 데이터 조회
-  @Get()
-  async findWithGrade(@Query("grade") grade: number) {
+  @ApiOperation({
+    summary: "학년별 학생 데이터 조회",
+    description: "학년별 학생 데이터 조회",
+  })
+  @Get("/grade/:grade")
+  async findWithGrade(@Param("grade") grade: number) {
     const studentsObj = await this.studentDataService.findAllWithGrade(grade);
     if (!studentsObj) {
       throw new HttpException(
@@ -119,8 +132,29 @@ export class StudentController {
     return studentsObj;
   }
 
+  // 이메일을 활용한 학생 데이터 조회
+  @ApiOperation({
+    summary: " 이메일을 활용한 학생 데이터 조회",
+    description: "이메일을 활용한 학생 데이터 조회",
+  })
+  @Get("email/:email")
+  async findWithEmail(@Param("email") email: string) {
+    const studentObj = await this.studentDataService.findOneWithEmail(email);
+    if (!studentObj) {
+      throw new HttpException(
+        "존재하지 않는 이메일입니다.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return studentObj;
+  }
+
   // 반별 학생 데이터 조회
-  @Get()
+  @ApiOperation({
+    summary: "반별 학생 데이터 조회",
+    description: "반별 학생 데이터 조회",
+  })
+  @Get("/class/:grade/:class")
   async findWithGradeAndClass(
     @Query("grade") grade: number,
     @Query("class") s_class: number
@@ -139,16 +173,29 @@ export class StudentController {
   }
 
   // 모든 학생 데이터 조회
+  @ApiOperation({
+    summary: " 모든 학생 데이터 조회",
+    description: " 모든 학생 데이터 조회",
+  })
   @Get()
   async findAll() {
     return await this.studentDataService.findAll();
   }
 
   // 이메일 인증코드 보내기
+  @ApiOperation({
+    summary: "이메일 인증코드 보내기",
+    description: "이메일 인증코드 보내기",
+  })
   @Post("mail")
   @HttpCode(200)
-  async sendAuthCode(@Body() email: string) {
-    const studentObj = await this.studentDataService.findOneWithEmail(email);
+  async sendAuthCode(@Body() req: EmailDto) {
+    if (!validate(req.email)) {
+      throw new HttpException("invalid email format", HttpStatus.BAD_REQUEST);
+    }
+    const studentObj = await this.studentDataService.findOneWithEmail(
+      req.email
+    );
     if (!studentObj) {
       throw new HttpException("invalid email", HttpStatus.BAD_REQUEST);
     }
@@ -156,9 +203,13 @@ export class StudentController {
     return { message: "success" };
   }
 
-  // 이메일 인증을 통한 계정 활성화
+  // 이메일에 전송된 인증코드를 통한 계정 활성화
+  @ApiOperation({
+    summary: "이메일에 전송된 인증코드를 통한 계정 활성화",
+    description: "이메일에 전송된 인증코드를 통한 계정 활성화",
+  })
   @Patch("activate")
-  async activateAccount(@Body() req: EmailAuthDto) {
+  async activateAccount(@Body() req: ActivateAccountDto) {
     // redis에서 해당 id의 authCode 가져오기
     // const authCode = await this.redisService.get_redis(req.id);
     // if (+authCode == req.authCode) {
@@ -198,9 +249,9 @@ export class TeacherController {
   @HttpCode(201)
   @ApiOperation({
     summary: "특정 학년 선생님 출력",
-    description: "특정 학년을 입력받아 선생님 찾기",
+    description: "특정 학년 선생님 찾기",
   })
-  async findTeacherWithGrade(@Body() req: findTeacherWithGrade) {
+  async findTeacherWithGrade(@Body() req: FindWithGradeDto) {
     let teacherdata = await this.teacherdataservice.findOneWithGrade(req.grade);
     if (!teacherdata)
       throw new HttpException(
@@ -216,7 +267,7 @@ export class TeacherController {
     summary: "특정 학년 및 반 선생님 출력",
     description: "특정 학년과 반을 입력받아 선생님 찾기",
   })
-  async findTeacherWithGradeAndClass(@Body() req: FindTeacherWithGradeNClass) {
+  async findTeacherWithGradeAndClass(@Body() req: FindWithGradeAndClassDto) {
     let teacherdata = await this.teacherdataservice.findOneWithGradeAndClass(
       req.grade,
       req.class
