@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   // 학생용 accessToken 발급
-  async issueToken(studentObj: Student) {
+  issueToken(studentObj: Student) {
     const payload = {
       iss: "GooutAPIServer",
       email: studentObj.email,
@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   // 선생님용 accessToken 발급
-  async issueTokenForTeacher(teacherObj: Teacher) {
+  issueTokenForTeacher(teacherObj: Teacher) {
     const payload = {
       iss: "GooutAPIServer",
       grade: teacherObj.grade,
@@ -33,9 +33,9 @@ export class AuthService {
   }
 
   // accessToken validator
-  async validator(token: string) {
+  validator(token: string) {
     try {
-      return await this.jwtService.verify(token);
+      return this.jwtService.verify(token);
     } catch (error) {
       throw new HttpException("token is expired", HttpStatus.UNAUTHORIZED);
     }
