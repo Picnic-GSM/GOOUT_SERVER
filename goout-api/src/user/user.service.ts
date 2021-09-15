@@ -16,10 +16,6 @@ export class StudentDataService {
 
   // 학생 데이터 생성
   async create(studentObj: CreateStudentDto): Promise<Student | undefined> {
-    const isExist = this.findOneWithEmail(studentObj.email);
-    if (!isExist) {
-      return;
-    }
     return await this.studentRepository.save(studentObj);
   }
 
@@ -35,9 +31,6 @@ export class StudentDataService {
 
   // 이메일을 통한 학생 데이터 검색
   findOneWithEmail(email: string): Promise<Student | undefined> {
-    if (!validate(email)) {
-      return;
-    }
     return this.studentRepository.findOne({ email: email });
   }
 
@@ -51,10 +44,7 @@ export class StudentDataService {
 
   // 각 반의 학생 데이터 조회
   findAllWithGradeAndClass(grade: number, s_class: number) {
-    if (!(1 <= grade && grade <= 4)) {
-      return;
-    }
-    if (!(1 <= s_class && s_class <= 21)) {
+    if (!(this.isValidGrade && this.isValidClass)) {
       return;
     }
     return this.studentRepository.find({
@@ -73,6 +63,21 @@ export class StudentDataService {
       email: email,
       password: hashedPassword,
     });
+  }
+
+  // 학년, 반 validator
+  isValidGrade(grade: number): Boolean {
+    if (!(1 <= grade && grade <= 4)) {
+      return false;
+    }
+  }
+
+  // 반 validator
+  isValidClass(s_class: number): Boolean {
+    if (!(1 <= s_class && s_class <= 21)) {
+      return;
+    }
+    return true;
   }
 
   // 학생 게정 활성화
