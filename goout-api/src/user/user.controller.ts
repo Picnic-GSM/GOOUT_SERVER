@@ -11,13 +11,14 @@ import { AuthService } from "src/auth/auth.service";
 import { EmailAuthDto } from "./dto/email-auth.dto";
 import { LoginDataDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
-import { StudentDataService, TeacherDataService } from "./user.service";
+import { StudentDataService, TeacherDataService, UserService } from "./user.service";
 import { ActivateTeacherDto } from "./dto/activate-teacher.dto";
 import { jwtConstants } from "src/auth/constants";
 import { findTeacherWithGrade } from "./dto/find-teacher-with-grade.dto";
 import { FindTeacherWithGradeNClass } from "./dto/find-teacher-with-grade-class.dto";
 import { RedisService } from "src/util/redis";
 import { SendEmail } from "src/util/mail";
+import * as nodemailer from "nodemailer";
 
 @ApiTags("유저 라우터")
 @Controller("user")
@@ -63,7 +64,7 @@ export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
     private readonly redisService: RedisService,
-    private readonly mailService: SendEmail
+    private readonly userService:UserService
   ) {}
   @ApiTags("학생용 라우터")
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
@@ -77,20 +78,14 @@ export class StudentController {
         "이메일이 이미 존재합니다",
         HttpStatus.BAD_REQUEST
       );
-    }
-    try {
+    } else {
       let createdResult = await this.studentDataService.create(req);
-      console.log(createdResult.id)
-      await this.mailService.sendMail(createdResult.id);
-      return "회원가입 성공";
-    } catch (error) {
-      console.log(error);
-      throw new HttpException("회원가입 에러", HttpStatus.BAD_REQUEST);
+      this.userService.sendMail(createdResult.id)
     }
+    
   }
   @Post("activate")
   async authNumCheck(@Body() req: EmailAuthDto) {
-    
     let authCode = await this.redisService.get_redis(req.userId);
     if (Number(authCode) == req.authCode) {
       this.studentDataService.Activating(req.userId);
