@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { OutStatus } from "../enum";
 
 @Entity()
 export class Out {
@@ -31,8 +32,8 @@ export class Out {
   reason: string;
 
   @ApiProperty({ description: "외출 상태 및 허가여부" })
-  @Column("enum", { default: 1 })
-  status: Status;
+  @Column("enum", { enum: OutStatus, default: OutStatus.Disapproved })
+  status: OutStatus;
 
   @CreateDateColumn({
     type: "timestamp",
@@ -43,11 +44,4 @@ export class Out {
     type: "timestamp",
   })
   updated_at: Date;
-}
-
-enum Status {
-  Disapproved = 1,
-  Rejected = 2,
-  Approved = 3,
-  Returned = 4,
 }

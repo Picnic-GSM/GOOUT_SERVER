@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { OutStatus } from "../enum";
 
 export class CreateOutDataDto {
   @ApiProperty({ description: "외출 시작 시간" })
@@ -10,14 +11,6 @@ export class CreateOutDataDto {
   @ApiProperty({ description: "외출의 이유" })
   reason: string;
 
-  status: Status;
-
+  @ApiProperty({ description: "외출한 학생의 id" })
   user_id: number;
-}
-
-enum Status {
-  Disapproved = 1,
-  Rejected = 2,
-  Approved = 3,
-  Returned = 4,
 }
