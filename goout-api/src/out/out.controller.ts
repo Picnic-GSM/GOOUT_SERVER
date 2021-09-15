@@ -183,7 +183,6 @@ export class OutController {
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     //let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
     req.user_id = await decoded["userid"];
-    req.status = await 1;
     try {
       await this.outService.create(req);
       return "신청되었습니다.";

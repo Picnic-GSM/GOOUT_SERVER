@@ -1,4 +1,3 @@
-import { StudentDataService } from "src/user/user.service";
 import * as nodemailer from "nodemailer";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { Student } from "src/user/entites/student.entity";

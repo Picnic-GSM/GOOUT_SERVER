@@ -17,7 +17,7 @@ import { LoginReqDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { LoginForTeacherDto } from "./dto/login-teacher.dto";
-import { MailHandler } from "src/util/mail";
+import { MailHandler } from "src/util/mailHandler";
 import { EmailAuthDto } from "./dto/email-auth.dto";
 import { jwtConstants } from "src/auth/constants";
 import { findTeacherWithGrade } from "./dto/find-teacher-with-grade.dto";

@@ -13,6 +13,7 @@ import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
 import { studentProviders, teacherProviders } from "./user.providers";
 import { StudentDataService, TeacherDataService } from "./user.service";
+import { MailHandler } from "src/util/mailHandler";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StudentDataService, TeacherDataService } from "./user.service";
     ...teacherProviders,
     StudentDataService,
     TeacherDataService,
+    MailHandler,
   ],
   controllers: [LoginController, StudentController, TeacherController],
 })
