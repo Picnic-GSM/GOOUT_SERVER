@@ -22,6 +22,7 @@ import { FindWithGradeDto } from "./dto/find-with-grade.dto";
 import { validate } from "email-validator";
 import { EmailDto } from "./dto/send-email.dto";
 import { FindWithGradeAndClassDto } from "./dto/find-with-grade-class.dto";
+import * as nodemailer from "nodemailer";
 
 @ApiTags("로그인 API")
 @Controller("login")
@@ -46,7 +47,8 @@ export class LoginController {
         HttpStatus.BAD_REQUEST
       );
     }
-    return { accessToken: this.authService.issueToken(studentObj) };
+
+    return await { accessToken: this.authService.issueToken(studentObj) };
   }
 
   @Post("teacher")
@@ -191,16 +193,52 @@ export class StudentController {
   @HttpCode(200)
   async sendAuthCode(@Body() req: EmailDto) {
     if (!validate(req.email)) {
-      throw new HttpException("invalid email format", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "이메일 형식이 맞지 않습니다.",
+        HttpStatus.BAD_REQUEST
+      );
     }
     const studentObj = await this.studentDataService.findOneWithEmail(
       req.email
     );
     if (!studentObj) {
-      throw new HttpException("invalid email", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "가입되지 않은 이메일입니다.",
+        HttpStatus.BAD_REQUEST
+      );
     }
-    await this.mailHandler.send(studentObj);
+    const authNum = await this.makeAuthCode();
+    try {
+      const smtpTransport = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: process.env.NODEMAILER_USER,
+          pass: process.env.NODEMAILER_PASS,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.NODEMAILER_USER,
+        to: studentObj.email,
+        subject: "Go-Out 회원가입 E-Mail인증번호",
+        text: `인증번호는 ${authNum}입니다.`,
+      };
+
+      await smtpTransport.sendMail(mailOptions);
+      // redis 모듈 추가
+      // this.redisService.add_redis(studentObj.idx, authNum, 180);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        "이메일 전송 에러",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
     return { message: "success" };
+  }
+  // 계정활성화 이메일 인증코드 생성
+  async makeAuthCode() {
+    return Number(Math.random().toString().substr(2, 6));
   }
 
   // 이메일에 전송된 인증코드를 통한 계정 활성화
@@ -225,7 +263,7 @@ export class StudentController {
   }
 }
 
-@ApiTags("선생님용 라우터")
+@ApiTags("선생님 데이터 API")
 @Controller("teacher")
 export class TeacherController {
   constructor(
@@ -245,6 +283,7 @@ export class TeacherController {
     if (teacherObj.is_active == false) teacherObj.is_active = true;
     return await this.authservice.issueTokenForTeacher(teacherObj);
   }
+
   @Post("showWithGrade")
   @HttpCode(201)
   @ApiOperation({
