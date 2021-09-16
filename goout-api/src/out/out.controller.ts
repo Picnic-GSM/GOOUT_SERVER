@@ -140,8 +140,10 @@ export class OutController {
   })
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   async get_request_check(@Headers("accessToken") accessToken) {
-    await this.authService.validator(accessToken);
-
+    let token = await this.authService.validator(accessToken);
+    if(!token['grade']) {
+      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    }
     let result = this.outService.find_with_request_check(1);
     return result;
   }
@@ -159,8 +161,10 @@ export class OutController {
     @Headers("accessToken") accessToken,
     @Body() req: CheckOutRequestDto
   ) {
-    await this.authService.validator(accessToken);
-
+    let token = await this.authService.validator(accessToken);
+    if(!token['grade']) {
+      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    }
     await this.outService.update_GoingRequestdata(req.id, req.response);
     return "승인되었습니다.";
   }
@@ -181,7 +185,7 @@ export class OutController {
     await this.authService.validator(accessToken);
     
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    req.user_id = await decoded["userid"];
+    req.user_id = await Number(decoded["sub"]);
     req.status = await 1;
     try {
       await this.outService.create(req);
@@ -208,8 +212,10 @@ export class OutController {
     @Headers("accessToken") accessToken,
     @Body() req: OutBackCheckDto
   ) {
-    await this.authService.validator(accessToken);
-
+    let token = await this.authService.validator(accessToken);
+    if(!token['grade']) {
+      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    }
     await this.outService.updateGoingdata(req.id, 4);
     return "실행됐습니다.";
   }
