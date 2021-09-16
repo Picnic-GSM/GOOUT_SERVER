@@ -14,8 +14,8 @@ export class Teacher {
   @Column()
   class: number;
 
-  @Column("tinyint")
-  activateCode: number;
+  @Column({ length: 10 })
+  activateCode: string;
 
   @Column({ default: false })
   is_active: boolean;

@@ -120,7 +120,7 @@ export class TeacherDataService {
     return this.teacherRepository.findOne(id);
   }
 
-  async findOneWithActivateCode(code: number): Promise<Teacher> {
+  async findOneWithActivateCode(code: string): Promise<Teacher> {
     return await this.teacherRepository.findOne({ activateCode: code });
   }
 
