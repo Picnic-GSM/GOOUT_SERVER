@@ -57,10 +57,16 @@ export class LoginController {
     summary: "선생님 로그인",
     description: "지급된 코드를 활용한 로그인",
   })
-  async logForTeacher(@Body() req: LoginForTeacherDto) {
+  async loginForTeacher(@Body() req: LoginForTeacherDto) {
     let teacherObj = await this.teacherDataService.findOneWithActivateCode(
       req.code
     );
+    if (!teacherObj)
+      throw new HttpException(
+        "일치하는 코드가 업습니다.",
+        HttpStatus.BAD_REQUEST
+      );
+    if (!teacherObj.is_active) teacherObj.is_active = true;
     return await this.authService.issueTokenForTeacher(teacherObj);
   }
 }
@@ -278,7 +284,6 @@ export class TeacherController {
     let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
       req.code
     );
-    console.log(process.env.JWT_SECRET_KEY);
 
     if (teacherObj.is_active == false) teacherObj.is_active = true;
     return await this.authservice.issueTokenForTeacher(teacherObj);
