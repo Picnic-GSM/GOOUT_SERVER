@@ -5,6 +5,7 @@ import { AuthService } from "src/auth/auth.service";
 import { AuthModule } from "src/auth/auth.module";
 import { DatabaseModule } from "src/database/database.module";
 import {
+  InputValidator,
   LoginController,
   StudentController,
   TeacherController,
@@ -27,6 +28,7 @@ import { MailHandler } from "src/util/mailHandler";
     StudentDataService,
     TeacherDataService,
     MailHandler,
+    InputValidator,
   ],
   controllers: [LoginController, StudentController, TeacherController],
 })

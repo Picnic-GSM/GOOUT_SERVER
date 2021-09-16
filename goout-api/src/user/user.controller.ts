@@ -2,15 +2,26 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   HttpException,
   HttpStatus,
   Param,
   Patch,
+  HttpCode,
   Post,
   Query,
+  Injectable,
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiAcceptedResponse,
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
 import { LoginReqDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
@@ -23,7 +34,32 @@ import { validate } from "email-validator";
 import { EmailDto } from "./dto/send-email.dto";
 import { FindWithGradeAndClassDto } from "./dto/find-with-grade-class.dto";
 import * as nodemailer from "nodemailer";
+@Injectable()
+export class InputValidator {
+  constructor() {}
+  // 학년 validator
+  isValidGrade(grade: number): Boolean {
+    if (!(1 <= grade && grade <= 3)) {
+      return false;
+    }
+    return true;
+  }
+  // 학년 validator
+  isValidClass(s_class: number): Boolean {
+    if (!(1 <= s_class && s_class <= 4)) {
+      return false;
+    }
+    return true;
+  }
 
+  // 번호 validator
+  isValidNumber(s_number: number): Boolean {
+    if (!(1 <= s_number && s_number <= 21)) {
+      return;
+    }
+    return true;
+  }
+}
 @ApiTags("로그인 API")
 @Controller("login")
 export class LoginController {
@@ -35,7 +71,8 @@ export class LoginController {
 
   @ApiOperation({ summary: "학생 로그인", description: "학생 로그인" })
   @Post()
-  @HttpCode(201)
+  @ApiCreatedResponse({ description: "로그인 성공 후 access token 발급 완료" })
+  @ApiBadRequestResponse({ description: "입력된 데이터가 일치하지 않을 경우" })
   async login(@Body() req: LoginReqDto) {
     const studentObj = await this.studentDataService.validator(
       req.email,
@@ -48,11 +85,12 @@ export class LoginController {
       );
     }
 
-    return await { accessToken: this.authService.issueToken(studentObj) };
+    return await this.authService.issueToken(studentObj);
   }
 
   @Post("teacher")
-  @HttpCode(201)
+  @ApiCreatedResponse({ description: "로그인 성공 후 access token 발급 완료" })
+  @ApiBadRequestResponse({ description: "입력된 코드가 존재하지 않을 경우" })
   @ApiOperation({
     summary: "선생님 로그인",
     description: "지급된 코드를 활용한 로그인",
@@ -76,29 +114,32 @@ export class LoginController {
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
-    private readonly mailHandler: MailHandler
+    private readonly inputValidator: InputValidator
   ) {}
 
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
   @Post("register")
-  @HttpCode(201)
+  @ApiCreatedResponse({ description: "회원가입 성공" })
+  @ApiBadRequestResponse({
+    description: "이메일 형식 오류 or 이메일 중복 오류 or 학년, 반, 번호 오류",
+  })
   async register(@Body() req: CreateStudentDto) {
     if (!validate(req.email)) {
       throw new HttpException(
-        "잘못된 이메일입니다. 다시 입력하여주세요.",
+        "잘못된 이메일입니다. 다시 입력해주세요.",
         HttpStatus.BAD_REQUEST
       );
     }
 
     if (
       !(
-        this.studentDataService.isValidClass(req.class) &&
-        this.studentDataService.isValidGrade(req.grade) &&
-        this.studentDataService.isValidNumber(req.s_number)
+        this.inputValidator.isValidClass(req.class) &&
+        this.inputValidator.isValidGrade(req.grade) &&
+        this.inputValidator.isValidNumber(req.s_number)
       )
     ) {
       throw new HttpException(
-        "grade는 1~3, class는 1~4, number는 1~21 내에서 입력해주십시오.",
+        "grade는 1~3, class는 1~4, number는 1~21 내에서 입력해주세요.",
         HttpStatus.BAD_REQUEST
       );
     }
@@ -118,6 +159,8 @@ export class StudentController {
     summary: "인덱스를 활용한 학생 데이터 조회",
     description: "인덱스를 활용한 학생 데이터 조회",
   })
+  @ApiOkResponse()
+  @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
   @Get("/:id")
   async findWithId(@Param("id") id: number) {
     return await this.studentDataService.findOneWithId(id);
@@ -128,32 +171,37 @@ export class StudentController {
     summary: "학년별 학생 데이터 조회",
     description: "학년별 학생 데이터 조회",
   })
+  @ApiOkResponse()
+  @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
+  @ApiBadRequestResponse({ description: "학년 범위 오류" })
   @Get("/grade/:grade")
   async findWithGrade(@Param("grade") grade: number) {
-    const studentsObj = await this.studentDataService.findAllWithGrade(grade);
-    if (!studentsObj) {
+    if (!this.inputValidator.isValidGrade(grade)) {
       throw new HttpException(
         "1~4 중 하나를 입력해주십시오.",
         HttpStatus.BAD_REQUEST
       );
     }
-    return studentsObj;
+    return await this.studentDataService.findAllWithGrade(grade);
   }
 
   // 이메일을 활용한 학생 데이터 조회
   @ApiOperation({
-    summary: " 이메일을 활용한 학생 데이터 조회",
+    summary: "이메일을 활용한 학생 데이터 조회",
     description: "이메일을 활용한 학생 데이터 조회",
   })
+  @ApiOkResponse()
+  @ApiNoContentResponse({ description: "해당 이메일로 가입된 정보 없음" })
+  @ApiBadRequestResponse({ description: "존재하지 않은 이메일" })
   @Get("email/:email")
   async findWithEmail(@Param("email") email: string) {
-    const studentObj = await this.studentDataService.findOneWithEmail(email);
-    if (!studentObj) {
+    if (!validate(email)) {
       throw new HttpException(
-        "존재하지 않는 이메일입니다.",
+        "잘못된 이메일 형식입니다. 다시 입력해주세요.",
         HttpStatus.BAD_REQUEST
       );
     }
+    const studentObj = await this.studentDataService.findOneWithEmail(email);
     return studentObj;
   }
 
@@ -162,22 +210,29 @@ export class StudentController {
     summary: "반별 학생 데이터 조회",
     description: "반별 학생 데이터 조회",
   })
+  @ApiOkResponse()
+  @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
+  @ApiBadRequestResponse({ description: "학년, 반 범위 오류" })
   @Get("/class/:grade/:class")
   async findWithGradeAndClass(
-    @Query("grade") grade: number,
-    @Query("class") s_class: number
+    @Param("grade") grade: number,
+    @Param("class") s_class: number
   ) {
-    const studentsObj = await this.studentDataService.findAllWithGradeAndClass(
-      grade,
-      s_class
-    );
-    if (!studentsObj) {
+    if (
+      !(
+        this.inputValidator.isValidGrade(grade) &&
+        this.inputValidator.isValidClass(s_class)
+      )
+    ) {
       throw new HttpException(
         "grade는 1~4, class는 1~21 내에서 입력해주십시오.",
         HttpStatus.BAD_REQUEST
       );
     }
-    return studentsObj;
+    return await this.studentDataService.findAllWithGradeAndClass(
+      grade,
+      s_class
+    );
   }
 
   // 모든 학생 데이터 조회
@@ -185,6 +240,8 @@ export class StudentController {
     summary: " 모든 학생 데이터 조회",
     description: " 모든 학생 데이터 조회",
   })
+  @ApiOkResponse()
+  @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
   @Get()
   async findAll() {
     return await this.studentDataService.findAll();
@@ -196,7 +253,11 @@ export class StudentController {
     description: "이메일 인증코드 보내기",
   })
   @Post("mail")
-  @HttpCode(200)
+  @ApiOkResponse({ description: "인증코드 발송 성공" })
+  @ApiBadRequestResponse({
+    description: "이메일 형식 오류 or 존재하지 않는 이메일",
+  })
+  @ApiInternalServerErrorResponse({ description: "이메일 전송 실패" })
   async sendAuthCode(@Body() req: EmailDto) {
     if (!validate(req.email)) {
       throw new HttpException(
@@ -253,6 +314,9 @@ export class StudentController {
     description: "이메일에 전송된 인증코드를 통한 계정 활성화",
   })
   @Patch("activate")
+  @ApiCreatedResponse({ description: "계정 활성화 성공" })
+  @ApiBadRequestResponse({ description: "잚못된 인증코드" })
+  @ApiUnauthorizedResponse({ description: "만료된 인증코드" })
   async activateAccount(@Body() req: ActivateAccountDto) {
     // redis에서 해당 id의 authCode 가져오기
     // const authCode = await this.redisService.get_redis(req.id);
@@ -274,53 +338,51 @@ export class StudentController {
 export class TeacherController {
   constructor(
     private readonly teacherdataservice: TeacherDataService,
-    private readonly authservice: AuthService
+    private readonly authservice: AuthService,
+    private readonly inputValidator: InputValidator
   ) {}
 
-  @Post("login")
-  @HttpCode(201)
-  @ApiOperation({ summary: "선생님 로그인", description: "코드로 로그인" })
-  async Code_Login(@Body() req: LoginForTeacherDto) {
-    let teacherObj = await this.teacherdataservice.findOneWithActivateCode(
-      req.code
-    );
-
-    if (teacherObj.is_active == false) teacherObj.is_active = true;
-    return await this.authservice.issueTokenForTeacher(teacherObj);
-  }
-
-  @Post("showWithGrade")
-  @HttpCode(201)
+  @Post("grade/:grade")
+  @ApiOkResponse()
+  @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
+  @ApiBadRequestResponse({ description: "학년 범위 오류" })
   @ApiOperation({
     summary: "특정 학년 선생님 출력",
     description: "특정 학년 선생님 찾기",
   })
-  async findTeacherWithGrade(@Body() req: FindWithGradeDto) {
-    let teacherdata = await this.teacherdataservice.findOneWithGrade(req.grade);
-    if (!teacherdata)
-      throw new HttpException(
-        "해당 학급 선생님을 찾을 수 없습니다.",
-        HttpStatus.BAD_REQUEST
-      );
-    return teacherdata;
+  async findTeacherWithGrade(@Param("grade") grade: number) {
+    if (!this.inputValidator.isValidGrade) {
+      throw new HttpException("학년 범위 오류", HttpStatus.BAD_REQUEST);
+    }
+    return await this.teacherdataservice.findOneWithGrade(grade);
   }
 
-  @Post("showWithGradeAndClass")
-  @HttpCode(201)
+  @Get("class/:grade/:class")
+  @ApiOkResponse()
+  @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
+  @ApiBadRequestResponse({ description: "학년, 반 범위 오류" })
   @ApiOperation({
     summary: "특정 학년 및 반 선생님 출력",
     description: "특정 학년과 반을 입력받아 선생님 찾기",
   })
-  async findTeacherWithGradeAndClass(@Body() req: FindWithGradeAndClassDto) {
-    let teacherdata = await this.teacherdataservice.findOneWithGradeAndClass(
-      req.grade,
-      req.class
-    );
-    if (!teacherdata)
+  async findTeacherWithGradeAndClass(
+    @Param("grade") grade: number,
+    @Param("class") s_class: number
+  ) {
+    if (
+      !(
+        this.inputValidator.isValidGrade(grade) &&
+        this.inputValidator.isValidClass(s_class)
+      )
+    ) {
       throw new HttpException(
-        "해당 선생님을 찾을 수 없습니다.",
+        "grade는 1~4, class는 1~21 내에서 입력해주십시오.",
         HttpStatus.BAD_REQUEST
       );
-    return teacherdata;
+    }
+    return await this.teacherdataservice.findOneWithGradeAndClass(
+      grade,
+      s_class
+    );
   }
 }
