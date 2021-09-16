@@ -161,7 +161,7 @@ export class OutController {
   ) {
     await this.authService.validator(accessToken);
 
-    await this.outService.update_GoingRequestdata(req.id, req.response);
+    await this.outService.update_GoingRequestdata(req.id, req.status);
     return "승인되었습니다.";
   }
 
