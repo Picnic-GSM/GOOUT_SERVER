@@ -167,7 +167,7 @@ export class StudentController {
   @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
   @Get("/:id")
   async findWithId(@Param("id") id: number) {
-    return await { data: this.studentDataService.findOneWithId(id) };
+    return { data: await this.studentDataService.findOneWithId(id) };
   }
 
   // 학년별 학생 데이터 조회
@@ -346,7 +346,7 @@ export class TeacherController {
     private readonly inputValidator: InputValidator
   ) {}
 
-  @Post("grade/:grade")
+  @Get("grade/:grade")
   @ApiOkResponse()
   @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
   @ApiBadRequestResponse({ description: "학년 범위 오류" })
@@ -358,7 +358,7 @@ export class TeacherController {
     if (!this.inputValidator.isValidGrade) {
       throw new HttpException("학년 범위 오류", HttpStatus.BAD_REQUEST);
     }
-    return { data: await this.teacherdataservice.findOneWithGrade(grade) };
+    return { data: await this.teacherdataservice.findAllWithGrade(grade) };
   }
 
   @Get("class/:grade/:class")
