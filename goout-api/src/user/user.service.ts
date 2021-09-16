@@ -46,9 +46,6 @@ export class StudentDataService {
 
   // 각 반의 학생 데이터 조회
   findAllWithGradeAndClass(grade: number, s_class: number) {
-    if (!(this.isValidGrade && this.isValidClass)) {
-      return;
-    }
     return this.studentRepository.find({
       grade: grade,
       class: s_class,
@@ -65,29 +62,6 @@ export class StudentDataService {
       email: email,
       password: hashedPassword,
     });
-  }
-
-  // 학년 validator
-  isValidGrade(grade: number): Boolean {
-    if (!(1 <= grade && grade <= 3)) {
-      return false;
-    }
-    return true;
-  }
-  // 학년 validator
-  isValidClass(s_class: number): Boolean {
-    if (!(1 <= s_class && s_class <= 4)) {
-      return false;
-    }
-    return true;
-  }
-
-  // 번호 validator
-  isValidNumber(s_number: number): Boolean {
-    if (!(1 <= s_number && s_number <= 21)) {
-      return;
-    }
-    return true;
   }
 
   // 학생 게정 활성화
