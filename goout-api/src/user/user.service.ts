@@ -6,6 +6,8 @@ import { Teacher } from "./entites/teacher.entity";
 import { hashSha512 } from "src/util/hash";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { validate } from "email-validator";
+import { RedisService } from "src/util/redis";
+import * as nodemailer from "nodemailer";
 
 @Injectable()
 export class StudentDataService {
@@ -26,9 +28,13 @@ export class StudentDataService {
     return this.studentRepository.find();
   }
 
-  // 인덱스를 통한 학생 데이터 검색
-  findOneWithId(id: number): Promise<Student | undefined> {
-    return this.studentRepository.findOne({ idx: id });
+  async findOne(id: number) {
+    return await this.studentRepository.findOne(id);
+  }
+
+  async findOneWithId(id: number): Promise<Student> {
+    console.log(id);
+    return await this.studentRepository.findOne(id);
   }
 
   // 이메일을 통한 학생 데이터 검색
@@ -76,6 +82,12 @@ export class StudentDataService {
 
   async remove(id: string): Promise<void> {
     await this.studentRepository.delete(id);
+  }
+  //인증 확인 후 활성화 시키는 메서드
+  async Activating(id: number) {
+    let data = await this.studentRepository.findOne(id);
+    data.is_active = true;
+    this.studentRepository.save(data);
   }
 }
 

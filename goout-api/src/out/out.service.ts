@@ -32,11 +32,15 @@ export class OutDataService {
         } else if (nowhour == hour) {
           if (nowmin > min) {
             element.status = 5;
+          } else if (nowhour == hour) {
+            if (nowmin > min) {
+              element.status = 5;
+            } else {
+              element.status = 3;
+            }
           } else {
             element.status = 3;
           }
-        } else {
-          element.status = 3;
         }
       }
     });
@@ -49,14 +53,14 @@ export class OutDataService {
   }
 
   findOne(id: number): Promise<Out> {
-    return this.outRepository.findOne({ user_id: id });
+    return this.outRepository.findOne({ relations: ["Student"] });
   }
   async findwithclass(grade: number): Promise<Out[]> {
     let goingdata = await this.outRepository.find({ status: 3 });
     let user_data: Student;
     let return_data: Out[];
     goingdata.forEach(async (i) => {
-      user_data = await this.studentDataService.findOneWithId(i.user_id);
+      user_data = await this.studentDataService.findOneWithId(i.student.idx);
       if (user_data.grade == grade) {
         return_data.push(i);
       }
@@ -69,7 +73,7 @@ export class OutDataService {
     let going_data = await this.outRepository.find({ status: 3 });
     await going_data.forEach(async (each_going) => {
       user_data = await this.studentDataService.findOneWithId(
-        each_going.user_id
+        each_going.student.idx
       );
       if (user_data.grade == grade && user_data.class == class1) {
         return_data.push(each_going);

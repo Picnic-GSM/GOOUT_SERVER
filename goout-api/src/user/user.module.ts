@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { CacheModule, Module } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthService } from "src/auth/auth.service";
@@ -12,23 +12,32 @@ import {
 } from "./user.controller";
 import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
+
 import { studentProviders, teacherProviders } from "./user.providers";
 import { StudentDataService, TeacherDataService } from "./user.service";
-import { MailHandler } from "src/util/mailHandler";
+import { RedisService } from "src/util/redis";
+import { ConfigModule } from "@nestjs/config";
+import * as redisStore from "cache-manager-ioredis";
 
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([Student, Teacher]),
     AuthModule,
+    CacheModule.register({
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      port: +process.env.REDIS_PORT,
+    }),
+    ConfigModule.forRoot(),
   ],
   providers: [
     ...studentProviders,
     ...teacherProviders,
     StudentDataService,
     TeacherDataService,
-    MailHandler,
     InputValidator,
+    RedisService,
   ],
   controllers: [LoginController, StudentController, TeacherController],
 })

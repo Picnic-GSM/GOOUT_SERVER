@@ -1,10 +1,20 @@
 import * as nodemailer from "nodemailer";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { Student } from "src/user/entites/student.entity";
+import { StudentDataService } from "src/user/user.service";
+import { RedisService } from "./redis";
 
-export class MailHandler {
-  async send(obj: Student) {
-    const authNum = await this.makeAuthCode();
+export class SendEmail {
+  constructor(
+    private readonly studentDataService: StudentDataService,
+    private readonly redisService: RedisService
+  ) {}
+
+  async sendMail(id: number) {
+    console.log("email 부분" + id);
+    const userEmail = await this.studentDataService.findOne(id);
+    console.log(userEmail);
+    let authNum = await this.makeAuthCode();
     try {
       const smtpTransport = nodemailer.createTransport({
         service: "Gmail",
@@ -16,14 +26,16 @@ export class MailHandler {
 
       const mailOptions = {
         from: process.env.NODEMAILER_USER,
-        to: obj.email,
+        to: userEmail.email,
         subject: "Go-Out 회원가입 E-Mail인증번호",
         text: `인증번호는 ${authNum}입니다.`,
       };
-
-      await smtpTransport.sendMail(mailOptions);
-      // redis 모듈 추가
-      // this.redisService.add_redis(studentObj.idx, authNum, 180);
+      try {
+        await smtpTransport.sendMail(mailOptions);
+      } catch (error) {
+        throw new HttpException("Check Email please", HttpStatus.BAD_REQUEST);
+      }
+      this.redisService.add_redis(id, authNum, 180);
     } catch (error) {
       console.log(error);
       throw new HttpException(

@@ -27,7 +27,6 @@ import { LoginReqDto } from "./dto/login.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { LoginForTeacherDto } from "./dto/login-teacher.dto";
-import { MailHandler } from "src/util/mailHandler";
 import { ActivateAccountDto } from "./dto/email-auth.dto";
 import { FindWithGradeDto } from "./dto/find-with-grade.dto";
 import { validate } from "email-validator";
@@ -86,7 +85,7 @@ export class LoginController {
       );
     }
 
-    return await { accessToken: this.authService.issueToken(studentObj) };
+    return { accessToken: await this.authService.issueToken(studentObj) };
   }
 
   @Post("teacher")
@@ -106,8 +105,8 @@ export class LoginController {
         HttpStatus.BAD_REQUEST
       );
     if (!teacherObj.is_active) teacherObj.is_active = true;
-    return await {
-      accessToken: this.authService.issueTokenForTeacher(teacherObj),
+    return {
+      accessToken: await this.authService.issueTokenForTeacher(teacherObj),
     };
   }
 }
@@ -147,14 +146,16 @@ export class StudentController {
       );
     }
 
-    const exist = await this.studentDataService.findOneWithEmail(req.email);
-    if (exist) {
+    const studentObj = await this.studentDataService.findOneWithEmail(
+      req.email
+    );
+    if (studentObj) {
       throw new HttpException(
         "이미 존재하는 이메일니다.",
         HttpStatus.BAD_REQUEST
       );
     }
-    return await this.studentDataService.create(req);
+    return { data: await this.studentDataService.create(req) };
   }
 
   // 인덱스를 활용한 학생 데이터 조회
@@ -166,7 +167,7 @@ export class StudentController {
   @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
   @Get("/:id")
   async findWithId(@Param("id") id: number) {
-    return await this.studentDataService.findOneWithId(id);
+    return await { data: this.studentDataService.findOneWithId(id) };
   }
 
   // 학년별 학생 데이터 조회
@@ -185,7 +186,7 @@ export class StudentController {
         HttpStatus.BAD_REQUEST
       );
     }
-    return await this.studentDataService.findAllWithGrade(grade);
+    return { data: await this.studentDataService.findAllWithGrade(grade) };
   }
 
   // 이메일을 활용한 학생 데이터 조회
@@ -204,8 +205,7 @@ export class StudentController {
         HttpStatus.BAD_REQUEST
       );
     }
-    const studentObj = await this.studentDataService.findOneWithEmail(email);
-    return studentObj;
+    return { data: await this.studentDataService.findOneWithEmail(email) };
   }
 
   // 반별 학생 데이터 조회
@@ -232,10 +232,12 @@ export class StudentController {
         HttpStatus.BAD_REQUEST
       );
     }
-    return await this.studentDataService.findAllWithGradeAndClass(
-      grade,
-      s_class
-    );
+    return {
+      data: await this.studentDataService.findAllWithGradeAndClass(
+        grade,
+        s_class
+      ),
+    };
   }
 
   // 모든 학생 데이터 조회
@@ -247,7 +249,7 @@ export class StudentController {
   @ApiNoContentResponse({ description: "일치하는 정보가 없을 경우" })
   @Get()
   async findAll() {
-    return await this.studentDataService.findAll();
+    return { data: await this.studentDataService.findAll() };
   }
 
   // 이메일 인증코드 보내기
@@ -331,8 +333,7 @@ export class StudentController {
     //     HttpStatus.BAD_REQUEST
     //   );
     // }
-    const studentObj = await this.studentDataService.activateAccount(req.id);
-    return studentObj;
+    return { data: await this.studentDataService.activateAccount(req.id) };
   }
 }
 
@@ -357,7 +358,7 @@ export class TeacherController {
     if (!this.inputValidator.isValidGrade) {
       throw new HttpException("학년 범위 오류", HttpStatus.BAD_REQUEST);
     }
-    return await this.teacherdataservice.findOneWithGrade(grade);
+    return { data: await this.teacherdataservice.findOneWithGrade(grade) };
   }
 
   @Get("class/:grade/:class")
@@ -383,9 +384,11 @@ export class TeacherController {
         HttpStatus.BAD_REQUEST
       );
     }
-    return await this.teacherdataservice.findOneWithGradeAndClass(
-      grade,
-      s_class
-    );
+    return {
+      data: await this.teacherdataservice.findOneWithGradeAndClass(
+        grade,
+        s_class
+      ),
+    };
   }
 }

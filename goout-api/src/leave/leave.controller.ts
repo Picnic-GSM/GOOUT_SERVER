@@ -132,9 +132,11 @@ export class LeaveController {
     description: "미승인된 조퇴 정보 출력",
   })
   async get_request_check(@Headers("accessToken") accessToken) {
-    await this.authService.validator(accessToken);
-
-    let result = await this.leaveDataService.find_with_request_check(1);
+    let token = await this.authService.validator(accessToken);
+    if(!token['grade']) {
+      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    }
+    let result = await this.leaveDataService.find_with_request_check(0);
     return result;
   }
 
@@ -151,8 +153,10 @@ export class LeaveController {
     @Headers("accessToken") accessToken,
     @Body() req: CheckLeaveRequestDto
   ) {
-    await this.authService.validator(accessToken);
-
+    let token = await this.authService.validator(accessToken);
+    if(!token['grade']) {
+      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    }
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
       //await this.leaveDataService.checkRequest(req.id, req.response);

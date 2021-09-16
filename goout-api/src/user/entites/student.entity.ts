@@ -1,4 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Leave } from "src/leave/entites/leave.entity";
+import { Out } from "src/out/entities/out.entity";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+} from "typeorm";
 
 @Entity()
 export class Student {
@@ -25,4 +35,10 @@ export class Student {
 
   @Column({ default: false })
   is_active: boolean;
+
+  @OneToMany((type) => Out, (out) => out.student)
+  out: Out[];
+
+  @OneToMany((type) => Leave, (leave) => leave.student)
+  leave: Leave[];
 }

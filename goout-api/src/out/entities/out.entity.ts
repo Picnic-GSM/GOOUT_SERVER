@@ -7,17 +7,22 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from "typeorm";
 import { OutStatus } from "../enum";
+
+enum Status {
+  Disapproved = 1,
+  Rejected = 2,
+  Approved = 3,
+  Returned = 4,
+}
 
 @Entity()
 export class Out {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: "외출 정보 id" })
   idx: number;
-
-  @OneToMany((type) => Student, (student) => student.idx)
-  user_id: number;
 
   @ApiProperty({ description: "외출 시작 시간" })
   @Column("datetime")
@@ -37,11 +42,16 @@ export class Out {
 
   @CreateDateColumn({
     type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
   })
   updated_at: Date;
+
+  @ManyToOne((type) => Student, (student) => student.out)
+  student: Student;
 }
