@@ -7,6 +7,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from "typeorm";
 
 enum Status {
@@ -22,9 +23,6 @@ export class Out {
   @ApiProperty({ description: "외출 정보 id" })
   id: number;
 
-  @OneToMany((type) => Student, (student) => student.id)
-  user_id: number;
-
   @ApiProperty({ description: "외출 시작 시간" })
   @Column("datetime")
   start_at: Date;
@@ -38,17 +36,21 @@ export class Out {
   reason: string;
 
   @ApiProperty({ description: "외출 상태 및 허가여부" })
-  @Column("enum",{enum:Status, name:'status'})
+  @Column("enum", { enum: Status, name: "status" })
   status: Status;
 
   @CreateDateColumn({
     type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
   })
   updated_at: Date;
-}
 
+  @ManyToOne(type => Student, student => student.out)
+  student: Student;
+}
