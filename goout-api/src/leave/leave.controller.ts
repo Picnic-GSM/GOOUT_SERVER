@@ -134,7 +134,7 @@ export class LeaveController {
   async get_request_check(@Headers("accessToken") accessToken) {
     await this.authService.validator(accessToken);
 
-    let result = await this.leaveDataService.find_with_request_check(1);
+    let result = await this.leaveDataService.find_with_request_check(0);
     return result;
   }
 

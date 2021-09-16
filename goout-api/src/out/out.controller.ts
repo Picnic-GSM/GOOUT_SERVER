@@ -179,9 +179,8 @@ export class OutController {
     @Body() req: CreateOutDataDto
   ) {
     await this.authService.validator(accessToken);
-
+    
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    //let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
     req.user_id = await decoded["userid"];
     req.status = await 1;
     try {

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { StudentDataService } from "src/user/user.service";
@@ -24,7 +24,14 @@ export class LeaveDataService {
   }
 
   // Todo
-  create(obj: CreateLeaveDataDto) {}
+  create(obj: CreateLeaveDataDto) {
+    try {
+      this.leaveRepository.save(obj)
+    } catch (error) {
+      throw new HttpException("저장 중 에러 발생.",HttpStatus.BAD_REQUEST)
+    }
+    
+  }
 
   async findWithClass(grade: number): Promise<Leave> {
     let leaveData = await this.leaveRepository.find({ status: 3 });
