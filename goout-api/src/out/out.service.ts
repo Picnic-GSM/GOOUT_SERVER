@@ -22,7 +22,7 @@ export class OutDataService {
     obj.forEach(async element => {
     if (element.status == 3) {
 
-      let goingtime = element.end_at;
+      let goingtime = element.end_at.toISOString();
       let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
       let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
       let time = new Date();

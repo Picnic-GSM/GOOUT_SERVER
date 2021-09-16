@@ -1,15 +1,16 @@
-/*
-import { InjectRedis, Redis } from "@nestjs-modules/ioredis";
+import { Inject, CACHE_MANAGER } from "@nestjs/common";
+import { Cache } from "cache-manager";
 
 export class RedisService {
-  constructor(@InjectRedis() private readonly redis: Redis) {}
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async add_redis(name: number, authnum: number, expiration_time: number) {
-    await this.redis.set(name, authnum, "EX", expiration_time);
+    await this.cacheManager.set(String(name), authnum, {
+      ttl: expiration_time,
+    });
   }
 
   async get_redis(name: number) {
-    return await this.redis.get(name);
+    return await this.cacheManager.get(String(name));
   }
 }
-*/
