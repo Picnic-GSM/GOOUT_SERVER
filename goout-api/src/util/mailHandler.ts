@@ -11,9 +11,7 @@ export class SendEmail {
   ) {}
 
   async sendMail(id: number) {
-    console.log("email 부분" + id);
     const userEmail = await this.studentDataService.findOne(id);
-    console.log(userEmail);
     let authNum = await this.makeAuthCode();
     try {
       const smtpTransport = nodemailer.createTransport({
