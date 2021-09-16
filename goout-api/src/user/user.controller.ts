@@ -46,7 +46,8 @@ export class UserController {
     let result = decipher.update(user.password, "base64", "utf8");
     result += decipher.final("utf8");
     console.log(result, req.password);
-    
+    */
+   let result = user.password //암호화 생략
     if (result == req.password) {
       return this.authservice.issueToken(user);
     } else {
@@ -55,7 +56,6 @@ export class UserController {
         HttpStatus.BAD_REQUEST
       );
     }
-    */
   }
 }
 
@@ -81,7 +81,6 @@ export class StudentController {
     }
     let createdResult = await this.studentDataService.create(req);
     this.userService.sendMail(createdResult.email,createdResult.id)
-/*
     try {
       let createdResult = await this.studentDataService.create(req);
       console.log(createdResult.id);
@@ -114,7 +113,6 @@ export class StudentController {
       console.log(error);
       throw new HttpException("이메일 전송 에러", HttpStatus.CONFLICT);
     }
-    */
   }
   @Post("activate")
   async authNumCheck(@Body() req: EmailAuthDto) {
