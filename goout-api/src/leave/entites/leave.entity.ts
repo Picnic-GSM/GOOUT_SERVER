@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   CreateDateColumn,
+  ManyToOne,
 } from "typeorm";
 
 enum LeaveStatus {
@@ -19,9 +20,6 @@ export class Leave {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: "조퇴 id" })
   id: number;
-
-  @OneToMany(type => Student, (student) => student.id)
-  user_id: number;
 
   @ApiProperty({ description: "조퇴 시작 시간" })
   @Column("datetime")
@@ -37,8 +35,12 @@ export class Leave {
 
   @CreateDateColumn({
     type: "timestamp",
+    default:() => "CURRENT_TIMESTAMP(6)"
   })
   created_at: Date;
+
+  @ManyToOne(type => Student, student => student.leave)
+  student: Student;
 }
 
 

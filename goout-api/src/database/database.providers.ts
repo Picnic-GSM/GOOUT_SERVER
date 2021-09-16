@@ -16,7 +16,7 @@ export const databaseProviders = [
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
         entities: [Leave,Out,Student,Teacher],
-        synchronize: true,
+        synchronize: false,
       }),
   },
 ];
