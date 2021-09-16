@@ -60,6 +60,7 @@ export class InputValidator {
     return true;
   }
 }
+
 @ApiTags("로그인 API")
 @Controller("login")
 export class LoginController {
@@ -85,7 +86,7 @@ export class LoginController {
       );
     }
 
-    return await this.authService.issueToken(studentObj);
+    return await { accessToken: this.authService.issueToken(studentObj) };
   }
 
   @Post("teacher")
@@ -105,7 +106,9 @@ export class LoginController {
         HttpStatus.BAD_REQUEST
       );
     if (!teacherObj.is_active) teacherObj.is_active = true;
-    return await this.authService.issueTokenForTeacher(teacherObj);
+    return await {
+      accessToken: this.authService.issueTokenForTeacher(teacherObj),
+    };
   }
 }
 

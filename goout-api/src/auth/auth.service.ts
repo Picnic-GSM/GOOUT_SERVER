@@ -29,7 +29,7 @@ export class AuthService {
       grade: teacherObj.grade,
       class: teacherObj.class,
     };
-    return { access_token: this.jwtService.sign(payload) };
+    return this.jwtService.sign(payload);
   }
 
   // accessToken validator
