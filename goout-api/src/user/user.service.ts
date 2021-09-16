@@ -33,7 +33,6 @@ export class StudentDataService {
   }
 
   async findOneWithId(id: number): Promise<Student> {
-    console.log(id);
     return await this.studentRepository.findOne(id);
   }
 
@@ -110,8 +109,8 @@ export class TeacherDataService {
     return await this.teacherRepository.findOne({ activateCode: code });
   }
 
-  async findOneWithGrade(grade: number): Promise<Teacher> {
-    return await this.teacherRepository.findOne({ grade: grade });
+  async findAllWithGrade(grade: number): Promise<Teacher[]> {
+    return await this.teacherRepository.find({ grade: grade });
   }
 
   async findOneWithGradeAndClass(
