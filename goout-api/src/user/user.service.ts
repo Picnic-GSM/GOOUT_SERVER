@@ -1,9 +1,11 @@
-import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Student } from "./entites/student.entity";
 import { Teacher } from "./entites/teacher.entity";
-import { LoginDataDto } from "./dto/login.dto";
+import { hashSha512 } from "src/util/hash";
+import { CreateStudentDto } from "./dto/create-student.dto";
+import { validate } from "email-validator";
 import { RedisService } from "src/util/redis";
 import * as nodemailer from "nodemailer";
 
@@ -11,44 +13,80 @@ import * as nodemailer from "nodemailer";
 export class StudentDataService {
   constructor(
     @InjectRepository(Student)
-    private usersRepository: Repository<Student>
+    private studentRepository: Repository<Student>
   ) {}
 
-  async create(createUserDto: LoginDataDto) {
-    /*
-    const cipher = crypto.createCipher("aes-256-cbc", process.env.key);
-    let result = cipher.update(createUserDto.password, "utf8", "base64");
-    result += cipher.final("base64");
-    createUserDto.password = await result;
-    */
-    let create_result = await this.usersRepository.save(createUserDto);
-    return create_result;
+  // 학생 데이터 생성
+  async create(studentObj: CreateStudentDto): Promise<Student | undefined> {
+    let hashedPassword = hashSha512(studentObj.password);
+    studentObj.password = hashedPassword;
+    return await this.studentRepository.save(studentObj);
   }
 
+  // 모든 학생 데이터 조회
   findAll(): Promise<Student[]> {
-    return this.usersRepository.find();
+    return this.studentRepository.find();
   }
 
   async findOne(id: number) {
-    return await this.usersRepository.findOne(id);
+    return await this.studentRepository.findOne(id);
   }
 
   async findOneWithId(id: number): Promise<Student> {
-    console.log(id);
-    return await this.usersRepository.findOne(id);
+    return await this.studentRepository.findOne(id);
   }
 
-  findOneWithEmail(email: string): Promise<Student> {
-    return this.usersRepository.findOne({ email: email });
+  // 이메일을 통한 학생 데이터 검색
+  findOneWithEmail(email: string): Promise<Student | undefined> {
+    return this.studentRepository.findOne({ email: email });
   }
+
+  // 각 학년 학생 데이터 조회
+  findAllWithGrade(grade: number): Promise<Student[]> {
+    if (!(1 <= grade && grade <= 4)) {
+      return;
+    }
+    return this.studentRepository.find({ grade: grade });
+  }
+
+  // 각 반의 학생 데이터 조회
+  findAllWithGradeAndClass(grade: number, s_class: number) {
+    return this.studentRepository.find({
+      grade: grade,
+      class: s_class,
+    });
+  }
+
+  // 이메일, 비밀번호 확인
+  async validator(
+    email: string,
+    password: string
+  ): Promise<Student | undefined> {
+    const hashedPassword = hashSha512(password);
+    return this.studentRepository.findOne({
+      email: email,
+      password: hashedPassword,
+    });
+  }
+
+  // 학생 게정 활성화
+  async activateAccount(id: number) {
+    const studentObj = await this.findOneWithId(id);
+    if (!studentObj) {
+      return;
+    }
+    studentObj.is_active = true;
+    return this.studentRepository.save(studentObj);
+  }
+
   async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+    await this.studentRepository.delete(id);
   }
   //인증 확인 후 활성화 시키는 메서드
   async Activating(id: number) {
-    let data = await this.usersRepository.findOne(id);
+    let data = await this.studentRepository.findOne(id);
     data.is_active = true;
-    this.usersRepository.save(data);
+    this.studentRepository.save(data);
   }
 }
 
@@ -67,12 +105,12 @@ export class TeacherDataService {
     return this.teacherRepository.findOne(id);
   }
 
-  async findOneWithActivateCode(code: number): Promise<Teacher> {
+  async findOneWithActivateCode(code: string): Promise<Teacher> {
     return await this.teacherRepository.findOne({ activateCode: code });
   }
 
-  async findOneWithGrade(grade: number): Promise<Teacher> {
-    return await this.teacherRepository.findOne({ grade: grade });
+  async findAllWithGrade(grade: number): Promise<Teacher[]> {
+    return await this.teacherRepository.find({ grade: grade });
   }
 
   async findOneWithGradeAndClass(
@@ -83,43 +121,5 @@ export class TeacherDataService {
       grade: teacherGrade,
       class: teacher_class,
     });
-  }
-}
-
-export class UserService {
-  constructor(
-    private readonly studentdataservice: StudentDataService,
-    private readonly redisService: RedisService
-  ) {}
-  async sendMail(userEmail: string, id: number) {
-    try {
-      console.log(userEmail);
-      let authNum = await Number(Math.random().toString().substr(2, 6));
-
-      const smtpTransport = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-          user: process.env.NODEMAILER_USER,
-          pass: process.env.NODEMAILER_PASS,
-        },
-      });
-
-      const mailOptions = {
-        from: process.env.NODEMAILER_USER,
-        to: userEmail,
-        subject: "Go-Out 회원가입 E-Mail인증번호",
-        text: `인증번호는 ${authNum}입니다.`,
-      };
-
-      await smtpTransport.sendMail(mailOptions, (err) => {
-        if (err) console.log(err);
-      });
-      console.log("인증번호:" + authNum);
-      this.redisService.add_redis(id, authNum, 180);
-      return "회원가입 성공";
-    } catch (error) {
-      console.log(error);
-      throw new HttpException("이메일 전송 에러", HttpStatus.CONFLICT);
-    }
   }
 }

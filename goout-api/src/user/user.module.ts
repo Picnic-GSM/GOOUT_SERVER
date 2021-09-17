@@ -4,19 +4,20 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthService } from "src/auth/auth.service";
 import { AuthModule } from "src/auth/auth.module";
 import { DatabaseModule } from "src/database/database.module";
-import { Student } from "./entites/student.entity";
-import { Teacher } from "./entites/teacher.entity";
 import {
+  InputValidator,
+  LoginController,
   StudentController,
   TeacherController,
-  UserController,
 } from "./user.controller";
+import { Student } from "./entites/student.entity";
+import { Teacher } from "./entites/teacher.entity";
+
 import { studentProviders, teacherProviders } from "./user.providers";
-import { StudentDataService, TeacherDataService, UserService } from "./user.service";
+import { StudentDataService, TeacherDataService } from "./user.service";
 import { RedisService } from "src/util/redis";
-import { SendEmail } from "src/util/mail";
 import { ConfigModule } from "@nestjs/config";
-import * as redisStore from 'cache-manager-ioredis';
+import * as redisStore from "cache-manager-ioredis";
 
 @Module({
   imports: [
@@ -24,20 +25,20 @@ import * as redisStore from 'cache-manager-ioredis';
     TypeOrmModule.forFeature([Student, Teacher]),
     AuthModule,
     CacheModule.register({
-      store:redisStore,
-      host:process.env.REDIS_HOST,
-      port:+process.env.REDIS_PORT
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      port: +process.env.REDIS_PORT,
     }),
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
   ],
   providers: [
     ...studentProviders,
     ...teacherProviders,
     StudentDataService,
     TeacherDataService,
+    InputValidator,
     RedisService,
-    UserService,
   ],
-  controllers: [UserController, StudentController, TeacherController],
+  controllers: [LoginController, StudentController, TeacherController],
 })
 export class UserModule {}

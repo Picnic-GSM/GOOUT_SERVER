@@ -141,8 +141,8 @@ export class OutController {
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   async get_request_check(@Headers("accessToken") accessToken) {
     let token = await this.authService.validator(accessToken);
-    if(!token['grade']) {
-      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    if (!token["grade"]) {
+      throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
     }
     let result = this.outService.find_with_request_check(1);
     return result;
@@ -162,10 +162,10 @@ export class OutController {
     @Body() req: CheckOutRequestDto
   ) {
     let token = await this.authService.validator(accessToken);
-    if(!token['grade']) {
-      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    if (!token["grade"]) {
+      throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
     }
-    await this.outService.update_GoingRequestdata(req.id, req.response);
+    await this.outService.update_GoingRequestdata(req.id, req.status);
     return "승인되었습니다.";
   }
 
@@ -183,10 +183,9 @@ export class OutController {
     @Body() req: CreateOutDataDto
   ) {
     await this.authService.validator(accessToken);
-    
+
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     req.user_id = await Number(decoded["sub"]);
-    req.status = await 1;
     try {
       await this.outService.create(req);
       return "신청되었습니다.";
@@ -213,8 +212,8 @@ export class OutController {
     @Body() req: OutBackCheckDto
   ) {
     let token = await this.authService.validator(accessToken);
-    if(!token['grade']) {
-      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    if (!token["grade"]) {
+      throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
     }
     await this.outService.updateGoingdata(req.id, 4);
     return "실행됐습니다.";

@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from "typeorm";
+import { OutStatus } from "../enum";
 
 enum Status {
   Disapproved = 1,
@@ -21,7 +22,7 @@ enum Status {
 export class Out {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: "외출 정보 id" })
-  id: number;
+  idx: number;
 
   @ApiProperty({ description: "외출 시작 시간" })
   @Column("datetime")
@@ -36,8 +37,8 @@ export class Out {
   reason: string;
 
   @ApiProperty({ description: "외출 상태 및 허가여부" })
-  @Column("enum", { enum: Status, name: "status" })
-  status: Status;
+  @Column("enum", { enum: OutStatus, default: OutStatus.Disapproved })
+  status: OutStatus;
 
   @CreateDateColumn({
     type: "timestamp",
@@ -51,6 +52,6 @@ export class Out {
   })
   updated_at: Date;
 
-  @ManyToOne(type => Student, student => student.out)
+  @ManyToOne((type) => Student, (student) => student.out)
   student: Student;
 }

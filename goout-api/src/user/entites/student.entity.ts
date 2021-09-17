@@ -13,13 +13,12 @@ import {
 @Entity()
 export class Student {
   @PrimaryGeneratedColumn()
-
-  id: number;
+  idx: number;
 
   @Column({ length: 45 })
   name: string;
 
-  @Column({ length: 45 })
+  @Column({ length: 100 })
   password: string;
 
   @Column({ unique: true, length: 100 })
@@ -34,12 +33,12 @@ export class Student {
   @Column("tinyint")
   s_number: number;
 
-  @Column({default:false})
+  @Column({ default: false })
   is_active: boolean;
 
-  @OneToMany(type => Out, out => out.student)
-  out: Out[]
+  @OneToMany((type) => Out, (out) => out.student)
+  out: Out[];
 
-  @OneToMany(type => Leave, leave => leave.student)
-  leave: Leave[]
+  @OneToMany((type) => Leave, (leave) => leave.student)
+  leave: Leave[];
 }

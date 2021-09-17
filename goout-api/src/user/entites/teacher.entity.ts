@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export class Teacher {
   @PrimaryColumn()
-  id: number;
+  idx: number;
 
   @Column({ length: 45 })
   name: string;
@@ -14,9 +14,9 @@ export class Teacher {
   @Column()
   class: number;
 
-  @Column("tinyint")
-  activateCode: number;
+  @Column({ length: 10 })
+  activateCode: string;
 
-  @Column({default:false})
+  @Column({ default: false })
   is_active: boolean;
 }

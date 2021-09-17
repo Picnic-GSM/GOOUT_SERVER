@@ -159,7 +159,7 @@ export class LeaveController {
     }
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
-      await this.leaveDataService.checkRequest(req.id,req.response);
+      //await this.leaveDataService.checkRequest(req.id, req.response);
       return "성공적으로 실행됐습니다.";
     } else {
       throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
@@ -181,7 +181,9 @@ export class LeaveController {
     await this.authService.validator(accessToken);
 
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    let userdata = await this.studentDataService.findOneWithId(decoded["userid"]);
+    let userdata = await this.studentDataService.findOneWithId(
+      decoded["userid"]
+    );
     try {
       await this.leaveDataService.create(req);
       return "신청되었습니다.";
