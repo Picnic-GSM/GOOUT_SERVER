@@ -33,6 +33,7 @@ import { validate } from "email-validator";
 import { EmailDto } from "./dto/send-email.dto";
 import { FindWithGradeAndClassDto } from "./dto/find-with-grade-class.dto";
 import * as nodemailer from "nodemailer";
+import { RedisService } from "src/util/redis";
 @Injectable()
 export class InputValidator {
   constructor() {}
@@ -116,7 +117,8 @@ export class LoginController {
 export class StudentController {
   constructor(
     private readonly studentDataService: StudentDataService,
-    private readonly inputValidator: InputValidator
+    private readonly inputValidator: InputValidator,
+    private readonly redisService: RedisService
   ) {}
 
   @ApiOperation({ summary: "회원가입", description: "학생 회원가입" })
@@ -297,8 +299,7 @@ export class StudentController {
       };
 
       await smtpTransport.sendMail(mailOptions);
-      // redis 모듈 추가
-      // this.redisService.add_redis(studentObj.idx, authNum, 180);
+      this.redisService.add_redis(studentObj.idx, authNum, 180);
     } catch (error) {
       console.log(error);
       throw new HttpException(
@@ -308,6 +309,7 @@ export class StudentController {
     }
     return { message: "success" };
   }
+
   // 계정활성화 이메일 인증코드 생성
   async makeAuthCode() {
     return Number(Math.random().toString().substr(2, 6));
@@ -321,18 +323,14 @@ export class StudentController {
   @Patch("activate")
   @ApiCreatedResponse({ description: "계정 활성화 성공" })
   @ApiBadRequestResponse({ description: "잚못된 인증코드" })
-  @ApiUnauthorizedResponse({ description: "만료된 인증코드" })
   async activateAccount(@Body() req: ActivateAccountDto) {
-    // redis에서 해당 id의 authCode 가져오기
-    // const authCode = await this.redisService.get_redis(req.id);
-    // if (+authCode == req.authCode) {
-    //   return "인증완료됐습니다.";
-    // } else {
-    //   throw new HttpException(
-    //     "인증코드가 잘못됐거나 만료됐습니다.",
-    //     HttpStatus.BAD_REQUEST
-    //   );
-    // }
+    const authCode = await this.redisService.get_redis(req.id);
+    if (+authCode != req.authCode)
+      throw new HttpException(
+        "인증코드가 잘못됐거나 만료됐습니다.",
+        HttpStatus.BAD_REQUEST
+      );
+    this.redisService.deleteData(req.id);
     return { data: await this.studentDataService.activateAccount(req.id) };
   }
 }
@@ -342,7 +340,6 @@ export class StudentController {
 export class TeacherController {
   constructor(
     private readonly teacherdataservice: TeacherDataService,
-    private readonly authservice: AuthService,
     private readonly inputValidator: InputValidator
   ) {}
 

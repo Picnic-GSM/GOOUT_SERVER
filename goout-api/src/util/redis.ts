@@ -13,4 +13,7 @@ export class RedisService {
   async get_redis(name: number) {
     return await this.cacheManager.get(String(name));
   }
+  async deleteData(name: number) {
+    return await this.cacheManager.del(String(name));
+  }
 }
