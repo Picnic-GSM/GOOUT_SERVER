@@ -13,9 +13,6 @@ WORKDIR /app
 # 현재 Dockerfile 있는 경로의 모든 파일을 /app 에 복사
 ADD . /app
 
-# npm install 을 실행
-RUN npm install
-
 # Entrypoint 지정
 RUN chmod +x docker-entrypoint.sh  
 ENTRYPOINT ./docker-entrypoint.sh
