@@ -30,7 +30,7 @@ services:
       - app-tier
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules # Remove this if you have pure JS dependencies
