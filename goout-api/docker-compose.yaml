@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.8"
 
 networks:
   app-tier:
@@ -8,6 +8,8 @@ services:
     networks:
       - app-tier
     image: mysql
+    platform:
+      - linux/amd
     container_name: mysql_container
     restart: always
     ports:
