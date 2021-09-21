@@ -31,7 +31,10 @@ import { Teacher } from "./user/entites/teacher.entity";
       entities: [Leave, Out, Student, Teacher],
       synchronize: true,
     }),
-    CacheModule.register(),
+    CacheModule.register({
+      host: process.env.REDIS_HOST,
+      port: +process.env.REDIS_PORT,
+    }),
     OutModule,
     UserModule,
     LeaveModule,
