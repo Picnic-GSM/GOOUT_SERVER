@@ -17,20 +17,24 @@ services:
       - MYSQL_USER=woungsub
       - MYSQL_PASSWORD=woungsub123
       - MYSQL_DATABASE=gooutdb
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
   redis:
-    networks: 
+    networks:
       - app-tier
-      image: redis
-      containter_name: redis_container
-      restart: always
-      ports:
-        - "6397:6397"
+    image: redis
+    container_name: redis_container
+    restart: always
+    ports:
+      - "6397:6397"
   app:
     networks:
       - app-tier
     build:
       context: .
       dockerfile: Dockerfile
+    image: bus3013/goout-backend-api
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules # Remove this if you have pure JS dependencies
