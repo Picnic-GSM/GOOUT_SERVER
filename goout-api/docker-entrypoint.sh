@@ -1,3 +1,4 @@
-dockerize -wait tcp://mysql:3306 -timeout 20s
+dockerize -wait tcp://mysql:3306 -timeout 80s
 
-npm run start
+npm install
+npm run start:prod
