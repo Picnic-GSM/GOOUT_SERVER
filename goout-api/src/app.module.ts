@@ -7,7 +7,6 @@ import { OutModule } from "./out/out.module";
 import { UserModule } from "./user/user.module";
 import { LeaveModule } from "./leave/leave.module";
 import { AuthModule } from "./auth/auth.module";
-import { DatabaseModule } from "./database/database.module";
 
 // Entity
 import { Leave } from "./leave/entites/leave.entity";
@@ -36,7 +35,6 @@ import { Teacher } from "./user/entites/teacher.entity";
     UserModule,
     LeaveModule,
     AuthModule,
-    DatabaseModule,
   ],
 })
 export class AppModule {}
