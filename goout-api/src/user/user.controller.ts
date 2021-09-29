@@ -299,7 +299,7 @@ export class StudentController {
       };
 
       await smtpTransport.sendMail(mailOptions);
-      this.redisService.add_redis(studentObj.idx, authNum, 180);
+      this.redisService.addData(studentObj.idx, authNum, 180);
     } catch (error) {
       console.log(error);
       throw new HttpException(
@@ -324,7 +324,7 @@ export class StudentController {
   @ApiCreatedResponse({ description: "계정 활성화 성공" })
   @ApiBadRequestResponse({ description: "잚못된 인증코드" })
   async activateAccount(@Body() req: ActivateAccountDto) {
-    const authCode = await this.redisService.get_redis(req.id);
+    const authCode = await this.redisService.getData(req.id);
     if (+authCode != req.authCode)
       throw new HttpException(
         "인증코드가 잘못됐거나 만료됐습니다.",

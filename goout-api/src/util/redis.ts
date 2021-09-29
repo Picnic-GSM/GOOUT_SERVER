@@ -4,16 +4,16 @@ import { Cache } from "cache-manager";
 export class RedisService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async add_redis(name: number, authnum: number, expiration_time: number) {
-    await this.cacheManager.set(String(name), authnum, {
+  async addData(key: number, authNum: number, expiration_time: number) {
+    await this.cacheManager.set(String(key), authNum, {
       ttl: expiration_time,
     });
   }
 
-  async get_redis(name: number) {
-    return await this.cacheManager.get(String(name));
+  async getData(key: number) {
+    return await this.cacheManager.get(String(key));
   }
-  async deleteData(name: number) {
-    return await this.cacheManager.del(String(name));
+  async deleteData(key: number) {
+    return await this.cacheManager.del(String(key));
   }
 }
