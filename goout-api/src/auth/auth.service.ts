@@ -6,11 +6,7 @@ import { StudentDataService, TeacherDataService } from "src/user/user.service";
 import { hashSha512 } from "src/util/hash";
 @Injectable()
 export class AuthService {
-  constructor(
-    private jwtService: JwtService,
-    private studentDataService: StudentDataService,
-    private teacherDataService: TeacherDataService
-  ) {}
+  constructor(private jwtService: JwtService) {}
 
   // 학생용 accessToken 발급
   issueToken(studentObj: Student) {
