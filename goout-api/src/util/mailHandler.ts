@@ -11,7 +11,7 @@ export class SendEmail {
   ) {}
 
   async sendMail(id: number) {
-    const userEmail = await this.studentDataService.findOne(id);
+    const userEmail = await this.studentDataService.findOneWithId(id);
     let authNum = await this.makeAuthCode();
     try {
       const smtpTransport = nodemailer.createTransport({

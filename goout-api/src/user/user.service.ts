@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Student } from "./entites/student.entity";
@@ -28,10 +28,7 @@ export class StudentDataService {
     return this.studentRepository.find();
   }
 
-  async findOne(id: number) {
-    return await this.studentRepository.findOne(id);
-  }
-
+  // 인덱스를 통한 학생 데이터 검색
   async findOneWithId(id: number): Promise<Student> {
     return await this.studentRepository.findOne(id);
   }
