@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { JwtModule, JwtService } from "@nestjs/jwt";
+import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Student } from "src/user/entites/student.entity";
 import { Teacher } from "src/user/entites/teacher.entity";
@@ -10,14 +10,14 @@ import { jwtConstants } from "./constants";
 
 @Module({
   imports: [
-    ConfigModule.forRoot( ),
+    ConfigModule.forRoot(),
     JwtModule.register({
-      secret: process.env.JWT_SECRET_KEY,
+      secret: jwtConstants.secret,
       signOptions: { expiresIn: "30m" },
     }),
-    TypeOrmModule.forFeature([Student,Teacher])
+    TypeOrmModule.forFeature([Student, Teacher]),
   ],
-  providers: [AuthService,StudentDataService,TeacherDataService],
+  providers: [AuthService, StudentDataService, TeacherDataService],
   exports: [AuthService],
 })
 export class AuthModule {}
