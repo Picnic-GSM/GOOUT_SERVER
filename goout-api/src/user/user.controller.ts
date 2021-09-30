@@ -62,7 +62,8 @@ export class LoginController {
   constructor(
     private readonly studentDataService: StudentDataService,
     private readonly authService: AuthService,
-    private readonly teacherDataService: TeacherDataService
+    private readonly teacherDataService: TeacherDataService,
+    private readonly redisService: RedisService
   ) {}
 
   @ApiOperation({ summary: "학생 로그인", description: "학생 로그인" })
@@ -80,8 +81,20 @@ export class LoginController {
         HttpStatus.BAD_REQUEST
       );
     }
-
-    return { accessToken: await this.authService.issueToken(studentObj) };
+    const isActive = await this.studentDataService.isActive(studentObj.idx);
+    if (!isActive) {
+      throw new HttpException(
+        "비활성화된 게정입니다. 계정 활성화 후 사용해주세요.",
+        HttpStatus.FORBIDDEN
+      );
+    }
+    const accessToken = await this.authService.issueToken(studentObj);
+    await this.redisService.addData(
+      studentObj.idx,
+      accessToken,
+      60 * 60 * 24 * 3 // 학생의 로그인 토큰 만료시간 : 3일
+    );
+    return { accessToken: accessToken };
   }
 
   @Post("teacher")
@@ -294,7 +307,7 @@ export class StudentController {
       };
 
       await smtpTransport.sendMail(mailOptions);
-      this.redisService.addData(studentObj.idx, authNum, 180);
+      this.redisService.addData(studentObj.idx, authNum.toString(), 1800);
     } catch (error) {
       console.log(error);
       throw new HttpException(
