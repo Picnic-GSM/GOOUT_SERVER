@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Student } from "./entites/student.entity";
@@ -41,7 +41,10 @@ export class StudentDataService {
   // 각 학년 학생 데이터 조회
   findAllWithGrade(grade: number): Promise<Student[]> {
     if (!(1 <= grade && grade <= 4)) {
-      return;
+      throw new HttpException(
+        "1~3 내의 숫자를 입력해주세요",
+        HttpStatus.BAD_REQUEST
+      );
     }
     return this.studentRepository.find({ grade: grade });
   }
@@ -55,15 +58,21 @@ export class StudentDataService {
   }
 
   // 이메일, 비밀번호 확인
-  async validator(
-    email: string,
-    password: string
-  ): Promise<Student | undefined> {
+  async validator(email: string, password: string): Promise<Student> {
     const hashedPassword = hashSha512(password);
     return this.studentRepository.findOne({
       email: email,
       password: hashedPassword,
     });
+  }
+
+  // 계정 활성화 여부
+  async isActive(id: number): Promise<boolean> {
+    const obj = await this.studentRepository.findOne({
+      idx: id,
+      is_active: true,
+    });
+    return obj ? true : false;
   }
 
   // 학생 게정 활성화
@@ -76,14 +85,9 @@ export class StudentDataService {
     return this.studentRepository.save(studentObj);
   }
 
-  async remove(id: string): Promise<void> {
+  // 학생 게정 삭제
+  async remove(id: number): Promise<void> {
     await this.studentRepository.delete(id);
-  }
-  //인증 확인 후 활성화 시키는 메서드
-  async Activating(id: number) {
-    let data = await this.studentRepository.findOne(id);
-    data.is_active = true;
-    this.studentRepository.save(data);
   }
 }
 
