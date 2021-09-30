@@ -33,7 +33,7 @@ export class SendEmail {
       } catch (error) {
         throw new HttpException("Check Email please", HttpStatus.BAD_REQUEST);
       }
-      this.redisService.addData(id, authNum, 180);
+      this.redisService.addData(id, authNum.toString(), 180);
     } catch (error) {
       console.log(error);
       throw new HttpException(
