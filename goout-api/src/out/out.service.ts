@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Student } from "src/user/entites/student.entity";
 import { StudentDataService } from "src/user/user.service";
@@ -17,16 +17,22 @@ export class OutDataService {
   async create(obj: CreateOutDataDto) {
     return this.outRepository.save(obj);
   }
-  async check_status(obj: Out[]) {
+  check_status(obj: Out[]) {
     obj.forEach((element) => {
       if (element.status == 3) {
-        let goingtime = element.end_at.toISOString();
-        let hour = Number(goingtime.substring(0, goingtime.indexOf(":")));
-        let min = Number(goingtime.substring(goingtime.indexOf(":") + 1, 5));
-        let time = new Date();
-        let nowhour = time.getHours();
-        let nowmin = time.getMinutes();
+        let objTime = element.end_at.toISOString();
 
+        let hour = Number(objTime.substring(0, objTime.indexOf(":")));
+        let min = Number(objTime.substring(objTime.indexOf(":") + 1, 5));
+
+        let currentTime = new Date();
+        let nowhour = currentTime.getHours();
+        let nowmin = currentTime.getMinutes();
+
+        console.log(
+          `objTime - hour : ${hour} <-> currentTime - hour : ${nowhour}
+           objTime - min : ${min} <-> currentTime - min : ${nowmin}`
+        );
         if (nowhour > hour) {
           element.status = 5;
         } else if (nowhour == hour) {
@@ -45,7 +51,7 @@ export class OutDataService {
       }
     });
 
-    return await this.outRepository.save(obj);
+    return this.outRepository.save(obj);
   }
 
   async getData(): Promise<Out[]> {
