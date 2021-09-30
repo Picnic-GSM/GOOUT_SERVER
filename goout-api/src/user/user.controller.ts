@@ -6,13 +6,10 @@ import {
   HttpStatus,
   Param,
   Patch,
-  HttpCode,
   Post,
-  Query,
   Injectable,
 } from "@nestjs/common";
 import {
-  ApiAcceptedResponse,
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -20,7 +17,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
 import { LoginReqDto } from "./dto/login.dto";
@@ -28,12 +24,11 @@ import { CreateStudentDto } from "./dto/create-student.dto";
 import { StudentDataService, TeacherDataService } from "./user.service";
 import { LoginForTeacherDto } from "./dto/login-teacher.dto";
 import { ActivateAccountDto } from "./dto/email-auth.dto";
-import { FindWithGradeDto } from "./dto/find-with-grade.dto";
 import { validate } from "email-validator";
 import { EmailDto } from "./dto/send-email.dto";
-import { FindWithGradeAndClassDto } from "./dto/find-with-grade-class.dto";
 import * as nodemailer from "nodemailer";
 import { RedisService } from "src/util/redis";
+
 @Injectable()
 export class InputValidator {
   constructor() {}
