@@ -12,7 +12,7 @@ import { jwtConstants } from "./constants";
   imports: [
     ConfigModule.forRoot(),
     JwtModule.register({
-      secret: jwtConstants.secret,
+      secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: "30m" },
     }),
     TypeOrmModule.forFeature([Student, Teacher]),
