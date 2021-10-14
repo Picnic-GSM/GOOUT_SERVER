@@ -2,8 +2,6 @@ import { HttpException, HttpStatus, Injectable, Module } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Student } from "src/user/entites/student.entity";
 import { Teacher } from "src/user/entites/teacher.entity";
-import { StudentDataService, TeacherDataService } from "src/user/user.service";
-import { hashSha512 } from "src/util/hash";
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService) {}
@@ -30,9 +28,16 @@ export class AuthService {
 
   // accessToken validator
   validator(token: string) {
+    const splitedToken = token.split(" ");
     try {
-      return this.jwtService.verify(token);
+      if (splitedToken[0] == "jwt") {
+        return this.jwtService.verify(splitedToken[1]);
+      } else {
+        // 나중에 Bearer 혹은 OAuth 추가할 때의 코드 작성
+        throw new HttpException("Invalid token input", HttpStatus.UNAUTHORIZED);
+      }
     } catch (error) {
+      console.error(error);
       throw new HttpException("token is expired", HttpStatus.UNAUTHORIZED);
     }
   }
