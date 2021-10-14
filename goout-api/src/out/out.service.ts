@@ -17,7 +17,7 @@ export class OutDataService {
   async create(obj: CreateOutDataDto) {
     return this.outRepository.save(obj);
   }
-  check_status(obj: Out[]) {
+  async checkStatus(obj: Out[]) {
     obj.forEach((element) => {
       if (element.status == 3) {
         let objTime = element.end_at.toISOString();
@@ -51,45 +51,43 @@ export class OutDataService {
       }
     });
 
-    return this.outRepository.save(obj);
+    return await this.outRepository.save(obj);
   }
 
-  async getData(): Promise<Out[]> {
-    return await this.outRepository.find();
+  getData(): Promise<Out[]> {
+    return this.outRepository.find({ relations: ["student"] });
   }
 
   findOne(id: number): Promise<Out> {
     return this.outRepository.findOne({ relations: ["Student"] });
   }
-  async findwithclass(grade: number): Promise<Out[]> {
-    let goingdata = await this.outRepository.find({ status: 3 });
-    let user_data: Student;
-    let return_data: Out[];
-    goingdata.forEach(async (i) => {
-      user_data = await this.studentDataService.findOneWithId(i.student.idx);
-      if (user_data.grade == grade) {
-        return_data.push(i);
-      }
+
+  async findWithGrade(grade: number): Promise<Out[]> {
+    let outData = await this.outRepository.find({
+      where: { status: 3 },
+      relations: ["Student"],
+    }); // 승인된 외출 요청 검색
+    let resultObj: Out[];
+    outData.forEach((elem) => {
+      if (elem.student.grade == grade) resultObj.push(elem);
     });
-    return await return_data;
+    return resultObj;
   }
-  async find_with_grade_class(grade: number, class1: number): Promise<Out[]> {
-    let user_data: Student;
-    let return_data: Out[];
-    let going_data = await this.outRepository.find({ status: 3 });
-    await going_data.forEach(async (each_going) => {
-      user_data = await this.studentDataService.findOneWithId(
-        each_going.student.idx
-      );
-      if (user_data.grade == grade && user_data.class == class1) {
-        return_data.push(each_going);
-      }
+
+  async findWithClass(grade: number, s_class: number): Promise<Out[]> {
+    let resultObj: Out[];
+    let outData = await this.outRepository.find({ status: 3 }); // 승인된 외출 요청만 검색
+    outData.forEach((elem) => {
+      if (elem.student.grade == grade && elem.student.s_number == s_class)
+        resultObj.push(elem);
     });
-    return return_data;
+    return resultObj;
   }
+
   async find_with_request_check(request: number): Promise<Out[]> {
     return await this.outRepository.find({ status: request });
   }
+
   async updateGoingdata(id: number, going_status: number) {
     const updateObj = await this.outRepository.findOne({
       idx: id,
@@ -97,6 +95,7 @@ export class OutDataService {
     updateObj.status = going_status;
     await this.outRepository.save(updateObj);
   }
+
   async update_GoingRequestdata(id: number, going_request: number) {
     const updateObj = await this.outRepository.findOne({
       idx: id,
