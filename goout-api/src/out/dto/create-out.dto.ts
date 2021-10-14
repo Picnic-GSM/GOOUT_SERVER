@@ -10,7 +10,4 @@ export class CreateOutDataDto {
 
   @ApiProperty({ description: "외출의 이유" })
   reason: string;
-
-  @ApiProperty({ description: "외출한 학생의 id" })
-  user_id: number;
 }
