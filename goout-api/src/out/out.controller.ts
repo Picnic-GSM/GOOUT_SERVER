@@ -1,31 +1,26 @@
-import { Get, HttpCode, HttpStatus } from "@nestjs/common";
+import { Get, HttpCode, HttpStatus, Param, Patch } from "@nestjs/common";
 import { HttpException } from "@nestjs/common";
 import { Body, Controller, Headers, Post } from "@nestjs/common";
 import { jwtConstants } from "src/auth/constants";
 import { CreateOutDataDto } from "src/out/dto/create-out.dto";
 import { OutDataService } from "src/out/out.service";
-import { StudentDataService } from "src/user/user.service";
 import * as jwt from "jsonwebtoken";
 import { Out } from "src/out/entities/out.entity";
-import * as crypto from "crypto";
 import {
-  ApiBody,
+  ApiCreatedResponse,
   ApiHeader,
+  ApiNoContentResponse,
   ApiOperation,
-  ApiProperty,
   ApiResponse,
   ApiTags,
-  getSchemaPath,
 } from "@nestjs/swagger";
 import { AuthService } from "src/auth/auth.service";
 import { CheckOutRequestDto } from "./dto/check-out-request.dto";
-import { decode } from "punycode";
 import { OutBackCheckDto } from "./dto/out-back-check.dto";
 
 @Controller("out")
 export class OutController {
   constructor(
-    private readonly studentDataService: StudentDataService,
     private readonly outService: OutDataService,
     private readonly authService: AuthService
   ) {}
@@ -33,96 +28,54 @@ export class OutController {
   @ApiTags("공용 라우터")
   @Get()
   @HttpCode(200)
+  @ApiNoContentResponse({ description: "일치하는 정보가 없습니다." })
   @ApiResponse({
-    description: "조퇴한 모든 학생을 출력",
+    description: "외출한 모든 학생을 출력",
     type: Out,
     isArray: true,
     status: 200,
   })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
+  @ApiHeader({ name: "Authorization", description: "Input accessToken" })
   @ApiOperation({
-    summary: "외출한 학생 모두 출력",
+    summary: "모든 외출 정보 출력",
     description: "외출 정보를 반환",
   })
-  async getOutData(@Headers("accessToken") accessToken) {
+  async getOutData(@Headers("Authorization") accessToken) {
     await this.authService.validator(accessToken);
 
     let alldata = await this.outService.getData(); //1차 값 가져오기
-    await this.outService.check_status(alldata); //값 확인 후 지각인지 확인
-    let after_check = await this.outService.getData(); //확인된 값을 다시 받아옴
-    if (!alldata) {
-      // throw or ?
+    if (!alldata.length) {
+      throw new HttpException(
+        "일치하는 데이터가 없습니다.",
+        HttpStatus.NO_CONTENT
+      );
     }
-    return await after_check;
+    await this.outService.checkStatus(alldata); //값 확인 후 지각인지 확인
+    return this.outService.getData(); //확인된 값을 다시 받아옴
   }
 
   @ApiTags("공용 라우터")
-  @Get("one")
+  @Get("/:grade")
   @HttpCode(200)
   @ApiResponse({
-    description: "외출한 1학년 출력",
+    description: "학년별 외출한 학생들 출력",
     type: Out,
     isArray: true,
     status: 200,
   })
   @ApiOperation({
-    summary: "1학년 외출 학생만 출력",
+    summary: "학년별 외출한 학생 출력",
     description: "외출 정보를 반환",
   })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async get_first_goingoutdata(@Headers("accessToken") accessToken) {
+  @ApiHeader({ name: "Authorization", description: "Input accessToken" })
+  async getOutDataWithGrade(
+    @Headers("Authorization") accessToken,
+    @Param("grade") grade: number
+  ) {
     await this.authService.validator(accessToken);
 
-    let onedata = await this.outService.findwithclass(1);
-    await this.outService.check_status(onedata);
-    onedata = await this.outService.findwithclass(1);
-    return onedata;
-  }
-
-  @ApiTags("공용 라우터")
-  @Get("two")
-  @ApiResponse({
-    description: "외출한 2학년 출력",
-    type: Out,
-    isArray: true,
-    status: 200,
-  })
-  @HttpCode(200)
-  @ApiOperation({
-    summary: "2학년 외출 학생만 출력",
-    description: "외출 정보를 반환",
-  })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async get_second_goingoutdata(@Headers("accessToken") accessToken) {
-    await this.authService.validator(accessToken);
-
-    let twodata = await this.outService.findwithclass(2);
-    await this.outService.check_status(twodata);
-    twodata = await this.outService.findwithclass(2);
-    return twodata;
-  }
-
-  @ApiTags("공용 라우터")
-  @Get("three")
-  @ApiResponse({
-    description: "외출한 3학년 출력",
-    type: Out,
-    isArray: true,
-    status: 200,
-  })
-  @HttpCode(200)
-  @ApiOperation({
-    summary: "3학년 외출 학생만 출력",
-    description: "외출 정보를 반환",
-  })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async get_third_goingoutdata(@Headers("accessToken") accessToken) {
-    await this.authService.validator(accessToken);
-
-    let threedata = await this.outService.findwithclass(3);
-    await this.outService.check_status(threedata);
-    threedata = await this.outService.findwithclass(3);
-    return threedata;
+    let outObj = await this.outService.findWithGrade(grade);
+    return this.outService.checkStatus(outObj);
   }
 
   @ApiTags("선생님용 라우터")
@@ -138,8 +91,8 @@ export class OutController {
     summary: "승인 되지 않은 외출 정보만 출력",
     description: "선생님의 승인창",
   })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async get_request_check(@Headers("accessToken") accessToken) {
+  @ApiHeader({ name: "Authorization", description: "Input accessToken" })
+  async get_request_check(@Headers("Authorization") accessToken) {
     let token = await this.authService.validator(accessToken);
     if (!token["grade"]) {
       throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
@@ -149,16 +102,18 @@ export class OutController {
   }
 
   @ApiTags("선생님용 라우터")
-  @Post("request-check")
-  @HttpCode(201)
-  @ApiResponse({ status: 201 })
+  @Patch("approve")
+  @ApiCreatedResponse()
   @ApiOperation({
-    summary: "외출을 승인시켜주는 창",
+    summary: "외출 요청 승인",
     description: "선생님이 승인할 때 사용됨",
   })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async post_request_check(
-    @Headers("accessToken") accessToken,
+  @ApiHeader({
+    name: "Teacher Authorization",
+    description: "Input accessToken",
+  })
+  async approveOutReq(
+    @Headers("Authorization") accessToken,
     @Body() req: CheckOutRequestDto
   ) {
     let token = await this.authService.validator(accessToken);
@@ -171,26 +126,22 @@ export class OutController {
 
   @ApiTags("학생용 라우터")
   @Post()
-  @HttpCode(201)
   @ApiResponse({ status: 201 })
   @ApiOperation({
     summary: "외출을 요청",
-    description: "학생들이 외출을 요청시켜줌",
+    description: "학생의 외출 요청",
   })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async create_going(
-    @Headers("accessToken") accessToken,
+  @ApiHeader({ name: "Authorization", description: "Input accessToken" })
+  async createOutReq(
+    @Headers("Authorization") accessToken,
     @Body() req: CreateOutDataDto
   ) {
     await this.authService.validator(accessToken);
-
-    let decoded = jwt.verify(accessToken, jwtConstants.secret);
-    req.user_id = await Number(decoded["sub"]);
     try {
       await this.outService.create(req);
       return "신청되었습니다.";
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new HttpException(
         "생성 중 에러 발생. 다시 시도해주세요",
         HttpStatus.UNAUTHORIZED
@@ -199,16 +150,15 @@ export class OutController {
   }
 
   @ApiTags("선생님용 라우터")
-  @Post("out-check")
+  @Patch("check")
   @ApiResponse({ status: 201 })
-  @HttpCode(201)
   @ApiOperation({
     summary: "외출 귀가 완료창",
     description: "선생님이 귀가 확인시 사용",
   })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  async out_check(
-    @Headers("accessToken") accessToken,
+  @ApiHeader({ name: "Authorization", description: "Input accessToken" })
+  async checkOut(
+    @Headers("Authorization") accessToken,
     @Body() req: OutBackCheckDto
   ) {
     let token = await this.authService.validator(accessToken);
