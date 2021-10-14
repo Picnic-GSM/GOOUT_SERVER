@@ -47,7 +47,7 @@ export class LeaveController {
     summary: "모든 학생의 조퇴 정보",
     description: "조퇴 관련 데이터 받아오기",
   })
-  async get_leavedata(@Headers("accessToken") accessToken) {
+  async get_leavedata(@Headers("accessToken") accessToken: string) {
     await this.authService.validator(accessToken);
 
     let data = await this.leaveDataService.getData();
@@ -133,8 +133,8 @@ export class LeaveController {
   })
   async get_request_check(@Headers("accessToken") accessToken) {
     let token = await this.authService.validator(accessToken);
-    if(!token['grade']) {
-      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    if (!token["grade"]) {
+      throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
     }
     let result = await this.leaveDataService.find_with_request_check(0);
     return result;
@@ -154,8 +154,8 @@ export class LeaveController {
     @Body() req: CheckLeaveRequestDto
   ) {
     let token = await this.authService.validator(accessToken);
-    if(!token['grade']) {
-      throw new HttpException("권한 없음",HttpStatus.FORBIDDEN)
+    if (!token["grade"]) {
+      throw new HttpException("권한 없음", HttpStatus.FORBIDDEN);
     }
     let decoded = jwt.verify(accessToken, jwtConstants.secret);
     if (decoded["grade"]) {
