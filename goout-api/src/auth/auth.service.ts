@@ -28,7 +28,7 @@ export class AuthService {
 
   // accessToken validator
   validator(token: string) {
-    const splitedToken = token.split(" ");
+    const splitedToken = token.split(' ');
     try {
       if (splitedToken[0] == "jwt") {
         return this.jwtService.verify(splitedToken[1]);
