@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Param,
   Post,
 } from "@nestjs/common";
 import { CreateLeaveDataDto } from "src/leave/dto/create-leave.dto";
@@ -13,15 +14,8 @@ import * as jwt from "jsonwebtoken";
 import { jwtConstants } from "src/auth/constants";
 import { LeaveDataService } from "./leave.service";
 import { StudentDataService } from "src/user/user.service";
-import {
-  ApiHeader,
-  ApiOperation,
-  ApiProperty,
-  ApiResponse,
-  ApiTags,
-} from "@nestjs/swagger";
+import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Leave } from "src/leave/entites/leave.entity";
-import { isArray } from "util";
 import { AuthService } from "src/auth/auth.service";
 import { CheckLeaveRequestDto } from "./dto/check-leave-request.dto";
 
@@ -55,66 +49,27 @@ export class LeaveController {
   }
 
   @ApiTags("공용 라우터")
-  @Get("one")
+  @Get("/:grade")
   @HttpCode(200)
   @ApiHeader({ name: "accessToken", description: "Input JWT" })
   @ApiOperation({
-    summary: "1학년의 조퇴 정보",
-    description: "1학년 학생의 조퇴 데이터 받아오기",
+    summary: "학년별 조퇴 정보 출력",
+    description: "학년별 조퇴 데이터 받아오기",
   })
   @ApiResponse({
-    description: "조퇴한 1학년 학생들만 출력",
+    description: "학년별 조퇴 학생 출력",
     type: Leave,
     isArray: true,
     status: 200,
   })
-  async first_grade_leavedata(@Headers("accessToken") accessToken) {
+  async getLeaveDataWithGrade(
+    @Headers("accessToken") accessToken,
+    @Param("grade") grade: number
+  ) {
     await this.authService.validator(accessToken);
 
-    let data = await this.leaveDataService.findWithClass(1);
-    return data;
-  }
-
-  @ApiTags("공용 라우터")
-  @Get("two")
-  @HttpCode(200)
-  @ApiResponse({
-    description: "조퇴한 2학년 학생들만 출력",
-    type: Leave,
-    isArray: true,
-    status: 200,
-  })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  @ApiOperation({
-    summary: "2학년의 조퇴 정보",
-    description: "2학년 학생의 조퇴 데이터 받아오기",
-  })
-  async second_grade_leavedata(@Headers("accessToken") accessToken) {
-    await this.authService.validator(accessToken);
-
-    let data = await this.leaveDataService.findWithClass(2);
-    return data;
-  }
-
-  @ApiTags("공용 라우터")
-  @Get("three")
-  @HttpCode(200)
-  @ApiResponse({
-    description: "조퇴한 3학년 학생들만 출력",
-    type: Leave,
-    isArray: true,
-    status: 200,
-  })
-  @ApiHeader({ name: "accessToken", description: "Input JWT" })
-  @ApiOperation({
-    summary: "3학년의 조퇴 정보",
-    description: "3학년 학생의 조퇴 데이터 받아오기",
-  })
-  async third_grade_leavedata(@Headers("accessToken") accessToken) {
-    await this.authService.validator(accessToken);
-
-    let data = await this.leaveDataService.findWithClass(3);
-    return data;
+    let leaveObj = await this.leaveDataService.findWithGrade(grade);
+    return leaveObj;
   }
 
   @ApiTags("선생님용 라우터")
