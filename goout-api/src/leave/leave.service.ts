@@ -32,10 +32,11 @@ export class LeaveDataService {
     }
   }
 
-  async findWithClass(grade: number): Promise<Leave> {
-    let leaveData = await this.leaveRepository.find({ status: 3 });
-    let userData: Student;
-    let returnData;
+  async findWithGrade(grade: number): Promise<Leave> {
+    let leaveData = await this.leaveRepository.find({
+      where: [{ status: 1 }, { status: 2 }],
+    });
+    let userData, returnData;
     leaveData.forEach(async (i) => {
       userData = await this.studentDataService.findOneWithId(i.student.idx);
       if (userData.grade == grade) {
