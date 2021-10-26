@@ -138,8 +138,7 @@ export class LeaveController {
             info.sub,
         );
         try {
-            await this.leaveDataService.create(req, studentObj);
-            return '신청되었습니다.';
+            return await this.leaveDataService.create(req, studentObj);
         } catch (error) {
             console.log(error);
             throw new HttpException(
