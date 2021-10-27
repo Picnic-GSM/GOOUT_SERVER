@@ -19,7 +19,10 @@ export class LeaveDataService {
     }
 
     findOne(id: number): Promise<Leave> {
-        return this.leaveRepository.findOne({ relations: ['Student'] });
+        return this.leaveRepository.findOne({
+            where: { idx: id },
+            relations: ['Student'],
+        });
     }
 
     // Todo
@@ -37,35 +40,30 @@ export class LeaveDataService {
         }
     }
 
-    async findWithGrade(grade: number): Promise<Leave> {
-        let leaveData = await this.leaveRepository.find({
-            where: [{ status: 1 }, { status: 2 }],
+    // 상태 구분없이 학년별 leave 데이터 검색
+    async findWithGrade(grade: number): Promise<Leave[]> {
+        let leaveObj = await this.leaveRepository.find({
+            relations: ['student'],
         });
-        let userData, returnData;
-        leaveData.forEach(async (i) => {
-            userData = await this.studentDataService.findOneWithId(
-                i.student.idx,
-            );
-            if (userData.grade == grade) {
-                returnData.push(i);
-            }
+        let userObj: Student;
+        let resultObj: Leave[] = [];
+        leaveObj.forEach((elem) => {
+            if (userObj.grade == grade) resultObj.push(elem);
         });
-        return returnData;
+        return resultObj;
     }
 
-    async findWithGradeClass(grade: number, class_n: number): Promise<Leave> {
-        let user_data: Student;
-        let return_data;
-        let leave_data = await this.leaveRepository.find({ status: 3 });
-        await leave_data.forEach(async (each_leave) => {
-            user_data = await this.studentDataService.findOneWithId(
-                each_leave.student.idx,
-            );
-            if (user_data.grade == grade && user_data.class == class_n) {
-                return_data.push(each_leave);
-            }
+    // 상태 구분없이 학년, 반별 leave 데이터 검색
+    async findWithGradeClass(grade: number, s_class: number): Promise<Leave[]> {
+        let leaveObj = await this.leaveRepository.find({
+            relations: ['student'],
         });
-        return return_data;
+        let resultObj: Leave[] = [];
+        leaveObj.forEach((elem) => {
+            if (elem.student.grade == grade && elem.student.class == s_class)
+                resultObj.push(elem);
+        });
+        return resultObj;
     }
 
     async find_with_request_check(status: number) {
