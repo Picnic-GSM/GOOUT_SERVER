@@ -1,6 +1,7 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import * as redisStore from 'cache-manager-redis-store';
 
 // Module
 import { OutModule } from './out/out.module';
@@ -31,7 +32,11 @@ import { Teacher } from './user/entites/teacher.entity';
             entities: [Leave, Out, Student, Teacher],
             synchronize: true,
         }),
-        CacheModule.register(),
+        CacheModule.register({
+            store: redisStore,
+            host: 'localhost',
+            port: 6379,
+        }),
         OutModule,
         UserModule,
         LeaveModule,

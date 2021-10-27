@@ -30,6 +30,7 @@
     "@nestjs/typeorm": "^8.0.2",
     "cache-manager": "^3.4.4",
     "cache-manager-ioredis": "^2.1.0",
+    "cache-manager-redis-store": "^2.0.0",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "email-validator": "^2.0.4",
