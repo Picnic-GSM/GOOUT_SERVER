@@ -75,6 +75,9 @@ export class OutController {
         await this.authService.validator(accessToken);
 
         let outObj = await this.outService.findWithGrade(grade);
+        if (!outObj.length)
+            // 정보가 없을 경우 204 No Content로 응답
+            throw new HttpException('정보 없음', HttpStatus.NO_CONTENT);
         return this.outService.checkStatus(outObj);
     }
 
@@ -162,9 +165,6 @@ export class OutController {
         @Body() req: OutBackCheckDto,
     ) {
         let token = await this.authService.validator(accessToken);
-        if (!token['grade']) {
-            throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
-        }
         await this.outService.updateGoingdata(req.id, 4);
         return '실행됐습니다.';
     }
