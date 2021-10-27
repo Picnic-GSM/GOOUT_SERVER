@@ -14,8 +14,8 @@ export class AuthService {
     issueToken(studentObj: Student) {
         const payload = {
             iss: 'GooutAPIServer',
-            email: studentObj.email,
             sub: studentObj.idx,
+            email: studentObj.email,
         };
         return this.jwtService.sign(payload);
     }
@@ -24,6 +24,7 @@ export class AuthService {
     issueTokenForTeacher(teacherObj: Teacher) {
         const payload = {
             iss: 'GooutAPIServer',
+            sub: teacherObj.idx,
             grade: teacherObj.grade,
             class: teacherObj.class,
         };
