@@ -4,19 +4,11 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    OneToMany,
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
 } from 'typeorm';
 import { OutStatus } from '../enum';
-
-enum Status {
-    Disapproved = 1,
-    Rejected = 2,
-    Approved = 3,
-    Returned = 4,
-}
 
 @Entity()
 export class Out {
@@ -50,7 +42,7 @@ export class Out {
         type: 'timestamp',
         default: () => 'CURRENT_TIMESTAMP(6)',
     })
-    updated_at: Date;
+    updatedAt: Date;
 
     @ManyToOne((type) => Student, (student) => student.out)
     student: Student;
