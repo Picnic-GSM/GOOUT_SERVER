@@ -101,26 +101,26 @@ export class OutDataService {
             relations: ['student'],
         });
     }
-
+    // 상태에 관계없이 학년별 외출 데이터 검색
     async findWithGrade(grade: number): Promise<Out[]> {
-        let outData = await this.outRepository.find({
-            where: { status: 3 },
+        let outObj = await this.outRepository.find({
             relations: ['student'],
-        }); // 승인된 외출 요청 검색
+        });
         let resultObj: Out[] = [];
-        outData.forEach((elem) => {
+        outObj.forEach((elem) => {
             if (elem.student.grade == grade) resultObj.push(elem);
         });
         return resultObj;
     }
 
+    // 상태에 관계없이 학년, 반별 외출 데이터 검색
     async findWithClass(grade: number, s_class: number): Promise<Out[]> {
-        let outData = await this.outRepository.find({
-            where: { status: 3 },
+        let outObj = await this.outRepository.find({
             relations: ['student'],
-        }); // 승인된 외출 요청만 검색
+        });
+
         let resultObj: Out[] = [];
-        outData.forEach((elem) => {
+        outObj.forEach((elem) => {
             if (elem.student.grade == grade && elem.student.s_number == s_class)
                 resultObj.push(elem);
         });
