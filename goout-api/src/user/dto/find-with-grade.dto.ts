@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class FindWithGradeDto {
-  @ApiProperty({ description: "찾을 학년(1~4) 입력 " })
-  grade: number;
+    @ApiProperty({ description: '찾을 학년(1~4) 입력 ' })
+    grade: number;
 }

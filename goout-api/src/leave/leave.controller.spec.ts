@@ -2,17 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LeaveController } from './leave.controller';
 
 describe('LeaveController', () => {
-  let controller: LeaveController;
+    let controller: LeaveController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [LeaveController],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [LeaveController],
+        }).compile();
 
-    controller = module.get<LeaveController>(LeaveController);
-  });
+        controller = module.get<LeaveController>(LeaveController);
+    });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+    it('should be defined', () => {
+        expect(controller).toBeDefined();
+    });
 });

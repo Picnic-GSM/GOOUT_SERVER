@@ -1,18 +1,18 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { LeaveDataService } from "./leave.service";
+import { Test, TestingModule } from '@nestjs/testing';
+import { LeaveDataService } from './leave.service';
 
-describe("LeaveDataService", () => {
-  let service: LeaveDataService;
+describe('LeaveDataService', () => {
+    let service: LeaveDataService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [LeaveDataService],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [LeaveDataService],
+        }).compile();
 
-    service = module.get<LeaveDataService>(LeaveDataService);
-  });
+        service = module.get<LeaveDataService>(LeaveDataService);
+    });
 
-  it("should be defined", () => {
-    expect(service).toBeDefined();
-  });
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
 });

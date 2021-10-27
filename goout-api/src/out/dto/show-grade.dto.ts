@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ShowGradeDto {
-  @ApiProperty({ description: "보고싶은 학년" })
-  grade: number;
+    @ApiProperty({ description: '보고싶은 학년' })
+    grade: number;
 }

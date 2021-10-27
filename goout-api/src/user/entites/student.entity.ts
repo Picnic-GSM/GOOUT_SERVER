@@ -1,44 +1,44 @@
-import { Leave } from "src/leave/entites/leave.entity";
-import { Out } from "src/out/entities/out.entity";
+import { Leave } from 'src/leave/entites/leave.entity';
+import { Out } from 'src/out/entities/out.entity';
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  OneToMany,
-} from "typeorm";
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+    ManyToOne,
+    OneToMany,
+} from 'typeorm';
 
 @Entity()
 export class Student {
-  @PrimaryGeneratedColumn()
-  idx: number;
+    @PrimaryGeneratedColumn()
+    idx: number;
 
-  @Column({ length: 45 })
-  name: string;
+    @Column({ length: 45 })
+    name: string;
 
-  @Column({ length: 100 })
-  password: string;
+    @Column({ length: 100 })
+    password: string;
 
-  @Column({ unique: true, length: 100 })
-  email: string;
+    @Column({ unique: true, length: 100 })
+    email: string;
 
-  @Column("tinyint")
-  grade: number;
+    @Column('tinyint')
+    grade: number;
 
-  @Column("tinyint")
-  class: number;
+    @Column('tinyint')
+    class: number;
 
-  @Column("tinyint")
-  s_number: number;
+    @Column('tinyint')
+    s_number: number;
 
-  @Column({ default: false })
-  is_active: boolean;
+    @Column({ default: false })
+    is_active: boolean;
 
-  @OneToMany((type) => Out, (out) => out.student)
-  out: Out[];
+    @OneToMany((type) => Out, (out) => out.student)
+    out: Out[];
 
-  @OneToMany((type) => Leave, (leave) => leave.student)
-  leave: Leave[];
+    @OneToMany((type) => Leave, (leave) => leave.student)
+    leave: Leave[];
 }
