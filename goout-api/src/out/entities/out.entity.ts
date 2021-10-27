@@ -44,6 +44,6 @@ export class Out {
     })
     updatedAt: Date;
 
-    @ManyToOne((type) => Student, (student) => student.out)
+    @ManyToOne((type) => Student, (student) => student.out, { nullable: false })
     student: Student;
 }

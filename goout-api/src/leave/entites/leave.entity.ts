@@ -33,6 +33,8 @@ export class Leave {
     })
     created_at: Date;
 
-    @ManyToOne((type) => Student, (student) => student.leave)
+    @ManyToOne((type) => Student, (student) => student.leave, {
+        nullable: false,
+    })
     student: Student;
 }
