@@ -10,14 +10,12 @@ import {
     Post,
 } from '@nestjs/common';
 import { CreateLeaveDataDto } from 'src/leave/dto/create-leave.dto';
-import * as jwt from 'jsonwebtoken';
-import { jwtConstants } from 'src/auth/constants';
 import { LeaveDataService } from './leave.service';
 import { StudentDataService } from 'src/user/user.service';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Leave } from 'src/leave/entites/leave.entity';
 import { AuthService } from 'src/auth/auth.service';
-import { CheckLeaveRequestDto } from './dto/check-leave-request.dto';
+import { UpdateLeaveRequestDto } from './dto/check-leave-request.dto';
 
 @Controller('leave')
 export class LeaveController {
@@ -87,12 +85,8 @@ export class LeaveController {
         description: '미승인된 조퇴 정보 출력',
     })
     async get_request_check(@Headers('Authorization') accessToken) {
-        let token = await this.authService.validator(accessToken);
-        if (!token['grade']) {
-            throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
-        }
+        await this.authService.validator(accessToken);
         let result = await this.leaveDataService.find_with_request_check(0);
-        return result;
     }
 
     @ApiTags('선생님용 라우터')
@@ -104,21 +98,15 @@ export class LeaveController {
         description: '선생님이 조퇴를 허가해줌',
     })
     @ApiResponse({ status: 201 })
-    async post_request_check(
+    async approveLeaveRequest(
         @Headers('Authorization') accessToken,
-        @Body() req: CheckLeaveRequestDto,
+        @Body() req: UpdateLeaveRequestDto,
     ) {
-        let token = await this.authService.validator(accessToken);
-        if (!token['grade']) {
+        const payload = await this.authService.validator(accessToken);
+        if (this.authService.classifyToken(payload)) {
             throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
-        let decoded = jwt.verify(accessToken, jwtConstants.secret);
-        if (decoded['grade']) {
-            //await this.leaveDataService.checkRequest(req.id, req.response);
-            return '성공적으로 실행됐습니다.';
-        } else {
-            throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
-        }
+        return this.leaveDataService.updateStatusWithId(req.id, req.status);
     }
     @ApiTags('학생용 라우터')
     @Post()
@@ -133,18 +121,13 @@ export class LeaveController {
         @Headers('Authorization') accessToken,
         @Body() req: CreateLeaveDataDto,
     ) {
-        const info = await this.authService.validator(accessToken);
-        const studentObj = await this.studentDataService.findOneWithId(
-            info.sub,
-        );
-        try {
-            return await this.leaveDataService.create(req, studentObj);
-        } catch (error) {
-            console.log(error);
-            throw new HttpException(
-                '생성 중 에러 발생. 다시 시도해주세요',
-                HttpStatus.UNAUTHORIZED,
-            );
+        const payload = await this.authService.validator(accessToken);
+        if (!this.authService.classifyToken(payload)) {
+            throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
+        const studentObj = await this.studentDataService.findOneWithId(
+            payload.sub,
+        );
+        return await this.leaveDataService.create(req, studentObj);
     }
 }
