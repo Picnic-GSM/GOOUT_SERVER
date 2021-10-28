@@ -57,7 +57,7 @@ export class AuthService {
     // Return data
     // 0: teacher
     // 1: student
-    classifyToken(payload) {
+    classifyToken(payload): number {
         return payload.grade ? 0 : 1;
     }
 }
