@@ -95,13 +95,12 @@ export class OutController {
         description: '선생님의 승인창',
     })
     @ApiHeader({ name: 'Authorization', description: 'Input accessToken' })
-    async get_request_check(@Headers('Authorization') accessToken) {
-        let token = await this.authService.validator(accessToken);
-        if (!token['grade']) {
+    async getDisapprovedRequest(@Headers('Authorization') accessToken) {
+        const payload = await this.authService.validator(accessToken);
+        if (this.authService.classifyToken(payload)) {
             throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
-        let result = this.outService.find_with_request_check(1);
-        return result;
+        return this.outService.findWithStatus(1); // 미승인 상태인 데이터만 조회
     }
 
     @ApiTags('선생님용 라우터')
@@ -115,15 +114,15 @@ export class OutController {
         name: 'Teacher Authorization',
         description: 'Input accessToken',
     })
-    async approveOutReq(
+    async approveOutRequest(
         @Headers('Authorization') accessToken,
         @Body() req: CheckOutRequestDto,
     ) {
-        let token = await this.authService.validator(accessToken);
-        if (!token['grade']) {
+        const payload = await this.authService.validator(accessToken);
+        if (this.authService.classifyToken(payload)) {
             throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
-        await this.outService.update_GoingRequestdata(req.id, req.status);
+        await this.outService.updateStatusWithId(req.idx, req.status);
         return '승인되었습니다.';
     }
 
@@ -139,8 +138,11 @@ export class OutController {
         @Headers('Authorization') accessToken,
         @Body() reqBody: CreateOutDataDto,
     ) {
-        let info = await this.authService.validator(accessToken);
-        let studentObj = await this.studentService.findOneWithId(info.sub);
+        let payload = await this.authService.validator(accessToken);
+        if (!this.authService.classifyToken(payload)) {
+            throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
+        }
+        const studentObj = await this.studentService.findOneWithId(payload.sub);
         try {
             return await this.outService.create(reqBody, studentObj);
         } catch (error) {
@@ -164,8 +166,10 @@ export class OutController {
         @Headers('Authorization') accessToken,
         @Body() req: OutBackCheckDto,
     ) {
-        let token = await this.authService.validator(accessToken);
-        await this.outService.updateGoingdata(req.id, 4);
-        return '실행됐습니다.';
+        const payload = await this.authService.validator(accessToken);
+        if (this.authService.classifyToken(payload)) {
+            throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
+        }
+        return await this.outService.updateStatusWithId(req.idx, 4);
     }
 }
