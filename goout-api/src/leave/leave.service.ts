@@ -45,11 +45,16 @@ export class LeaveDataService {
         let leaveObj = await this.leaveRepository.find({
             relations: ['student'],
         });
-        let userObj: Student;
         let resultObj: Leave[] = [];
         leaveObj.forEach((elem) => {
-            if (userObj.grade == grade) resultObj.push(elem);
+            if (elem.student.grade == grade) resultObj.push(elem);
         });
+        if (!leaveObj.length) {
+            throw new HttpException(
+                '일치하는 정보 없음',
+                HttpStatus.NO_CONTENT,
+            );
+        }
         return resultObj;
     }
 
@@ -63,6 +68,12 @@ export class LeaveDataService {
             if (elem.student.grade == grade && elem.student.class == s_class)
                 resultObj.push(elem);
         });
+        if (!leaveObj.length) {
+            throw new HttpException(
+                '일치하는 정보 없음',
+                HttpStatus.NO_CONTENT,
+            );
+        }
         return resultObj;
     }
 
@@ -70,10 +81,10 @@ export class LeaveDataService {
         return await this.leaveRepository.find({ status: status });
     }
 
-    async checkRequest(id: number, response: number) {
-        const updatedata = await this.leaveRepository.findOne({ idx: id });
-        updatedata.status = 2;
-        await this.leaveRepository.save(updatedata);
+    async updateStatusWithId(id: number, status: number) {
+        const updateObj = await this.leaveRepository.findOne({ idx: id });
+        updateObj.status = 2;
+        await this.leaveRepository.save(updateObj);
     }
 
     async remove(id: string): Promise<void> {
