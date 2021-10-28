@@ -12,7 +12,7 @@ export class AuthService {
 
     // 학생용 accessToken 발급
     issueToken(studentObj: Student) {
-        const payload = {
+        const payload: StudentAccessTokenPayload = {
             iss: 'GooutAPIServer',
             sub: studentObj.idx,
             email: studentObj.email,
@@ -22,7 +22,7 @@ export class AuthService {
 
     // 선생님용 accessToken 발급
     issueTokenForTeacher(teacherObj: Teacher) {
-        const payload = {
+        const payload: TeacherAccessTokenPayload = {
             iss: 'GooutAPIServer',
             sub: teacherObj.idx,
             grade: teacherObj.grade,
@@ -52,4 +52,25 @@ export class AuthService {
             throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
         }
     }
+
+    // payload가 교사용인지 학생용인지 구분
+    // Return data
+    // 0: teacher
+    // 1: student
+    classifyToken(payload) {
+        return payload.grade ? 0 : 1;
+    }
+}
+
+interface StudentAccessTokenPayload {
+    iss: string;
+    sub: number;
+    email: string;
+}
+
+interface TeacherAccessTokenPayload {
+    iss: string;
+    sub: number;
+    grade: number;
+    class: number;
 }
