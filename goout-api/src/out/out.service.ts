@@ -127,25 +127,20 @@ export class OutDataService {
         return resultObj;
     }
 
-    async find_with_request_check(request: number): Promise<Out[]> {
-        return await this.outRepository.find({ status: request });
+    // 특정 status 값에 헤당하는 데이터 조회
+    async findWithStatus(status: number): Promise<Out[]> {
+        return await this.outRepository.find({ status: status });
     }
 
-    async updateGoingdata(id: number, going_status: number) {
-        const updateObj = await this.outRepository.findOne({
-            idx: id,
+    // 인덱스 값을 통해 특정 외출 데이터의 status 값 수정
+    async updateStatusWithId(idx: number, status: number) {
+        let updateObj = await this.outRepository.findOne({
+            idx: idx,
         });
-        updateObj.status = going_status;
-        await this.outRepository.save(updateObj);
+        updateObj.status = status;
+        return this.outRepository.save(updateObj);
     }
 
-    async update_GoingRequestdata(id: number, going_request: number) {
-        const updateObj = await this.outRepository.findOne({
-            idx: id,
-        });
-        updateObj.status = going_request;
-        await this.outRepository.save(updateObj);
-    }
     async remove(id: string): Promise<void> {
         await this.outRepository.delete(id);
     }
