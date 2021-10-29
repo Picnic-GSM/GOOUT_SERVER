@@ -59,7 +59,7 @@ export class LeaveDataService {
 
     // 상태 구분없이 학년, 반별 leave 데이터 검색
     async findWithGradeClass(grade: number, s_class: number): Promise<Leave[]> {
-        let leaveObj = await this.leaveRepository.find({
+        const leaveObj = await this.leaveRepository.find({
             relations: ['student'],
         });
         let resultObj: Leave[] = [];
@@ -79,6 +79,24 @@ export class LeaveDataService {
     // 특정 상태별 leave 데이터 검색
     async findWithStatus(status: number) {
         return await this.leaveRepository.find({ status: status });
+    }
+
+    async findWithGradeStatus(grade: number, status: number): Promise<Leave[]> {
+        const leaveObj = await this.leaveRepository.find({
+            relations: ['student'],
+            where: { status: status },
+        });
+        let resultObj: Leave[] = [];
+        leaveObj.forEach((elem) => {
+            if (elem.student.grade == grade) resultObj.push(elem);
+        });
+        if (!leaveObj.length) {
+            throw new HttpException(
+                '일치하는 정보 없음',
+                HttpStatus.NO_CONTENT,
+            );
+        }
+        return resultObj;
     }
 
     // Leave 데이터 id값을 통한 status 변경
