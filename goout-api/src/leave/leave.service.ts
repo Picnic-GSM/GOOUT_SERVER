@@ -25,7 +25,6 @@ export class LeaveDataService {
         });
     }
 
-    // Todo
     create(obj: CreateLeaveDataDto, studentObj: Student) {
         try {
             this.leaveRepository.save({
@@ -77,10 +76,12 @@ export class LeaveDataService {
         return resultObj;
     }
 
-    async find_with_request_check(status: number) {
+    // 특정 상태별 leave 데이터 검색
+    async findWithStatus(status: number) {
         return await this.leaveRepository.find({ status: status });
     }
 
+    // Leave 데이터 id값을 통한 status 변경
     async updateStatusWithId(id: number, status: number) {
         const updateObj = await this.leaveRepository.findOne({ idx: id });
         updateObj.status = 2;
