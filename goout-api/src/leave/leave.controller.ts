@@ -39,11 +39,10 @@ export class LeaveController {
         summary: '모든 학생의 조퇴 정보',
         description: '조퇴 관련 데이터 받아오기',
     })
-    async get_leavedata(@Headers('Authorization') accessToken: string) {
+    async getLeaveData(@Headers('Authorization') accessToken: string) {
         await this.authService.validator(accessToken);
 
-        let data = await this.leaveDataService.getData();
-        return data;
+        return await this.leaveDataService.getData();
     }
 
     @ApiTags('공용 라우터')
@@ -66,8 +65,7 @@ export class LeaveController {
     ) {
         await this.authService.validator(accessToken);
 
-        let leaveObj = await this.leaveDataService.findWithGrade(grade);
-        return leaveObj;
+        return await this.leaveDataService.findWithGrade(grade);
     }
 
     @ApiTags('선생님용 라우터')
@@ -84,9 +82,9 @@ export class LeaveController {
         summary: '조퇴 미승인 목록',
         description: '미승인된 조퇴 정보 출력',
     })
-    async get_request_check(@Headers('Authorization') accessToken) {
+    async getDisapprovedLeaveRequest(@Headers('Authorization') accessToken) {
         await this.authService.validator(accessToken);
-        let result = await this.leaveDataService.find_with_request_check(0);
+        return await this.leaveDataService.findWithStatus(0);
     }
 
     @ApiTags('선생님용 라우터')
@@ -104,10 +102,12 @@ export class LeaveController {
     ) {
         const payload = await this.authService.validator(accessToken);
         if (this.authService.classifyToken(payload)) {
+            // 교사인지 확인
             throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
         return this.leaveDataService.updateStatusWithId(req.id, req.status);
     }
+
     @ApiTags('학생용 라우터')
     @Post()
     @HttpCode(201)
@@ -117,12 +117,13 @@ export class LeaveController {
         description: '학생이 조퇴를 신청할 때 사용',
     })
     @ApiResponse({ status: 201 })
-    async leave_request(
+    async registerLeave(
         @Headers('Authorization') accessToken,
         @Body() req: CreateLeaveDataDto,
     ) {
         const payload = await this.authService.validator(accessToken);
         if (!this.authService.classifyToken(payload)) {
+            // 학생인지 확인
             throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
         const studentObj = await this.studentDataService.findOneWithId(
