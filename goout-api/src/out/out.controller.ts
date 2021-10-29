@@ -43,15 +43,7 @@ export class OutController {
     async getOutData(@Headers('Authorization') accessToken) {
         await this.authService.validator(accessToken);
 
-        let alldata = await this.outService.getData(); //1차 값 가져오기
-        if (!alldata.length) {
-            throw new HttpException(
-                '일치하는 데이터가 없습니다.',
-                HttpStatus.NO_CONTENT,
-            );
-        }
-        await this.outService.checkStatus(alldata); //값 확인 후 지각인지 확인
-        return this.outService.getData(); //확인된 값을 다시 받아옴
+        return await this.outService.getData();
     }
 
     @ApiTags('공용 라우터')

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from 'src/user/entites/student.entity';
 import { StudentDataService } from 'src/user/user.service';
@@ -64,20 +64,24 @@ export class OutDataService {
                 let min = Number(
                     objTime.substring(objTime.indexOf(':') + 1, 5),
                 );
+                console.log(`objTime: ${objTime}, hour: ${hour}, min: ${min}`);
 
                 let currentTime = new Date();
                 let nowhour = currentTime.getHours();
                 let nowmin = currentTime.getMinutes();
+                console.log(
+                    `currentTime: ${currentTime}, nowhour: ${nowhour}, nowmin: ${nowmin}`,
+                );
 
                 // 해당 요청의 외출 시작 시간과 현재 시간 비교하여 해당 데이터 만료시키기
                 if (nowhour > hour) {
-                    element.status = 6; // 늦음 상태로 표시
+                    element.status = 7; // 늦음 상태로 표시
                 } else if (nowhour == hour) {
                     if (nowmin > min) {
-                        element.status = 6;
+                        element.status = 7;
                     } else if (nowhour == hour) {
                         if (nowmin > min) {
-                            element.status = 6;
+                            element.status = 7;
                         } else {
                             return obj;
                         }
@@ -91,8 +95,17 @@ export class OutDataService {
         return await this.outRepository.save(obj);
     }
 
-    getData(): Promise<Out[]> {
-        return this.outRepository.find({ relations: ['student'] });
+    async getData(): Promise<Out[]> {
+        const outObj = await this.outRepository.find({
+            relations: ['student'],
+        });
+        if (!outObj.length) {
+            throw new HttpException(
+                '일치하는 데이터가 없습니다.',
+                HttpStatus.NO_CONTENT,
+            );
+        }
+        return this.checkStatus(outObj);
     }
 
     findOne(id: number): Promise<Out> {
