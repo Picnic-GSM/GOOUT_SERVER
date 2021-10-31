@@ -105,7 +105,7 @@ export class OutDataService {
                 HttpStatus.NO_CONTENT,
             );
         }
-        return this.checkStatus(outObj);
+        return await this.checkStatus(outObj);
     }
 
     findOne(id: number): Promise<Out> {

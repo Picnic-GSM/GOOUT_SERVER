@@ -70,11 +70,11 @@ export class OutController {
         if (!outObj.length)
             // 정보가 없을 경우 204 No Content로 응답
             throw new HttpException('정보 없음', HttpStatus.NO_CONTENT);
-        return this.outService.checkStatus(outObj);
+        return await this.outService.checkStatus(outObj);
     }
 
     @ApiTags('선생님용 라우터')
-    @Get('request-check')
+    @Get('/disapproved')
     @HttpCode(200)
     @ApiResponse({
         description: '승인 되지 않은 외출 정보들 출력',
@@ -96,7 +96,7 @@ export class OutController {
     }
 
     @ApiTags('선생님용 라우터')
-    @Patch('approve')
+    @Patch('/approve')
     @ApiCreatedResponse()
     @ApiOperation({
         summary: '외출 요청 승인',
@@ -147,7 +147,7 @@ export class OutController {
     }
 
     @ApiTags('선생님용 라우터')
-    @Patch('check')
+    @Patch('/return')
     @ApiResponse({ status: 201 })
     @ApiOperation({
         summary: '외출 귀가 완료창',
